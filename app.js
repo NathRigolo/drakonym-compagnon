@@ -100,7 +100,7 @@ const FICHE_DEMO = {
         },
         perks: [
             { id: 'dp1', nom: 'Storm Affinity', source: 'Family Core', color: 'purple',
-              description: 'Le dragon ignore le terrain difficile lié aux orages, à la pluie, et aux vents violents. Ses attaques avec le tag Lightning gagnent un Boon.',
+              description: 'Le dragon ignore le terrain difficile lié aux orages, à la pluie, et aux vents violents. Ses attaques avec le tag Lightning gagnent un Faveur.',
               used: false },
             { id: 'dp2', nom: 'Bond Sense', source: 'Bond', color: 'gold',
               description: "Tu sais toujours l'état émotionnel et la position générale de ton dragon, même séparés. Once per scene, demande au Herald une question oui/non sur ce que ton dragon voit ou entend.",
@@ -133,13 +133,13 @@ const FICHE_DEMO = {
    - color : 'crimson' (sévère) ou 'shadow' (mental/contrôle)
    - description : effet en jeu, formulé en mes propres mots */
 const STATUSES_CATALOG = [
-    { id: 'blinded',     nomFr: 'Aveuglé',     emoji: '🙈', hasIntensity: false, color: 'shadow',  description: "Tous tes checks d'attaque subissent un Bane." },
+    { id: 'blinded',     nomFr: 'Aveuglé',     emoji: '🙈', hasIntensity: false, color: 'shadow',  description: "Tous tes checks d'attaque subissent un Fardeau." },
     { id: 'bloodied',    nomFr: 'Ensanglanté', emoji: '🩸', hasIntensity: false, color: 'crimson', description: "Si tu prends une Wound supplémentaire, tu meurs (drapeau narratif)." },
     { id: 'burning',     nomFr: 'En feu',      emoji: '🔥', hasIntensity: true,  color: 'crimson', description: "En début de tour, subis X Light Wounds. Tes dégâts physiques sont divisés par 2. Coût : 1 AP/BP pour étouffer." },
     { id: 'charmed',     nomFr: 'Charmé',      emoji: '💞', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas cibler le charmeur. Termine si lui ou ses alliés te blessent." },
     { id: 'confused',    nomFr: 'Confus',      emoji: '😵\u200d💫', hasIntensity: false, color: 'shadow',  description: "En début de tour, lance 1d6. 1-3 = agis erratiquement (Herald décide), 4-6 = normal." },
-    { id: 'dazed',       nomFr: 'Hébété',      emoji: '😶\u200d🌫️', hasIntensity: false, color: 'shadow',  description: "Pool d'AP réduit de 1, BP du dragon réduit de 2. Interruptions subissent un Bane." },
-    { id: 'frightened',  nomFr: 'Effrayé',     emoji: '😱', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas cibler la source de la peur. Tant qu'elle est en vue, Bane sur tous tes checks." },
+    { id: 'dazed',       nomFr: 'Hébété',      emoji: '😶\u200d🌫️', hasIntensity: false, color: 'shadow',  description: "Pool d'AP réduit de 1, BP du dragon réduit de 2. Interruptions subissent un Fardeau." },
+    { id: 'frightened',  nomFr: 'Effrayé',     emoji: '😱', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas cibler la source de la peur. Tant qu'elle est en vue, Fardeau sur tous tes checks." },
     { id: 'frozen',      nomFr: 'Gelé',        emoji: '🧊', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas bouger. Toute attaque physique te fait moitié des dégâts en plus." },
     { id: 'knocked_down',nomFr: 'À terre',     emoji: '🤕', hasIntensity: false, color: 'shadow',  description: "Tu es à terre (Prone). Coût : 1 AP/BP pour te relever." },
     { id: 'poisoned',    nomFr: 'Empoisonné',  emoji: '🧪', hasIntensity: true,  color: 'crimson', description: "À la fin de chaque round, subis X Light Wounds. Double chaque round non traité. Coût : 1 AP pour traiter ou utiliser un antidote." },
@@ -147,8 +147,8 @@ const STATUSES_CATALOG = [
     { id: 'silenced',    nomFr: 'Bâillonné',   emoji: '🤐', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas parler ni lancer de sort, sauf via Subtle Cast ou capacité similaire." },
     { id: 'slowed',      nomFr: 'Ralenti',     emoji: '🐢', hasIntensity: false, color: 'shadow',  description: "Mouvement divisé par 2." },
     { id: 'stunned',     nomFr: 'Sonné',       emoji: '⚡', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas utiliser d'interruptions." },
-    { id: 'unseen',      nomFr: 'Invisible',   emoji: '👻', hasIntensity: false, color: 'shadow',  description: "Tant que tu n'es pas détecté, tu ne peux pas être ciblé. Tes attaques gagnent un Boon." },
-    { id: 'weakened',    nomFr: 'Affaibli',    emoji: '💪', hasIntensity: false, color: 'shadow',  description: "Tes checks d'attaque subissent Bane 2." },
+    { id: 'unseen',      nomFr: 'Invisible',   emoji: '👻', hasIntensity: false, color: 'shadow',  description: "Tant que tu n'es pas détecté, tu ne peux pas être ciblé. Tes attaques gagnent un Faveur." },
+    { id: 'weakened',    nomFr: 'Affaibli',    emoji: '💪', hasIntensity: false, color: 'shadow',  description: "Tes checks d'attaque subissent Fardeau 2." },
 ];
 
 
@@ -460,7 +460,7 @@ function renderFiche(f) {
     document.getElementById('grit-bar').style.width =
         f.grit_max > 0 ? Math.min(100, (f.grit_current / f.grit_max) * 100) + '%' : '0%';
 
-    // (Hero Points : seulement dans la Vital Bar maintenant, plus de carte dédiée)
+    // (Points de Héros : seulement dans la Vital Bar maintenant, plus de carte dédiée)
 
     const statusesEl = document.getElementById('statuses-chips');
     statusesEl.innerHTML = '';
@@ -523,7 +523,7 @@ function bindFicheActions() {
     const gritBtn = document.getElementById('resource-grit');
     if (gritBtn) gritBtn.addEventListener('click', openGritSheet);
 
-    // (Hero Points carte retirée — l'accès reste via la Vital Bar)
+    // (Points de Héros carte retirée — l'accès reste via la Vital Bar)
 
     const statusesEl = document.getElementById('statuses-chips');
     if (statusesEl) {
@@ -617,7 +617,7 @@ function openCounterSheet(opts) {
 }
 
 
-/* ─── Sheets spécifiques : Mana, Grit, AP, Defense, Hero Points ── */
+/* ─── Sheets spécifiques : Mana, Grit, AP, Defense, Points de Héros ── */
 function openManaSheet() {
     openCounterSheet({
         title: 'Mana',
@@ -672,7 +672,7 @@ function openDefenseSheet() {
 
 function openHeroPointsSheet() {
     openCounterSheet({
-        title: 'Hero Points',
+        title: 'Points de Héros',
         current: currentFiche.hp_current,
         max: currentFiche.hp_max,
         onChange: (v) => {
@@ -864,7 +864,7 @@ function confirmShortRest() {
     const html = `
         <div class="confirm-sheet">
             <p class="confirm-message">
-                <strong>Short Rest</strong> appliquera&nbsp;:<br><br>
+                <strong>Repos court</strong> appliquera&nbsp;:<br><br>
                 ▸ Wounds&nbsp;: Heavy → Light, Light → 0<br>
                 ▸ Mana et Grit&nbsp;: +${refillAmount} chacun<br>
                 ▸ Compteur&nbsp;: ${currentFiche.short_rests_used + 1} / 3
@@ -876,7 +876,7 @@ function confirmShortRest() {
         </div>
     `;
 
-    openBottomSheet('Short Rest', html, (contentEl) => {
+    openBottomSheet('Repos court', html, (contentEl) => {
         contentEl.querySelector('[data-action="cancel"]').addEventListener('click', closeBottomSheet);
         contentEl.querySelector('[data-action="confirm"]').addEventListener('click', () => {
             // Wounds : Heavy → Light (transfert), Light → 0. Deadly inchangé (règle officielle).
@@ -896,7 +896,7 @@ function confirmShortRest() {
             saveFiche();
             renderAll();
             closeBottomSheet();
-            showToast('Short Rest appliqué');
+            showToast('Repos court appliqué');
         });
     });
 }
@@ -1166,7 +1166,22 @@ function castSpell(item) {
     saveFiche();
     renderFiche(currentFiche);
     const successesNeeded = manaToSuccesses(cost);
-    showToast(`✨ ${item.titre} lancé · −${cost} Mana · ${successesNeeded} succès requis`);
+    const spellBonus = currentFiche.spell_bonus || 0;
+    const primary = currentFiche.primary;
+
+    // Si Primary défini, ouvre le dice roller pré-rempli pour le spellcasting check
+    if (primary && currentFiche.attributs[primary] != null) {
+        // Pool spellcasting = Primary + Spell Bonus (mode attaque, sans doublement)
+        openDiceRoller([primary], {
+            modifier: spellBonus,
+            attackMode: true,
+            label: `✨ Sort : ${item.titre}`,
+            difficulty: successesNeeded,
+        });
+        showToast(`✨ −${cost} Mana · ${successesNeeded} succès requis`);
+    } else {
+        showToast(`✨ ${item.titre} · −${cost} Mana · ${successesNeeded} succès requis (définis un Primary pour auto-rouler)`);
+    }
 }
 
 /* ─── Action : Utiliser une technique (consomme Grit) ─ */
@@ -1434,7 +1449,7 @@ const WEAPON_PRESETS = [
     { nom: 'Orb',        type: 'focus',  bonus_dice: 2, damage_tiers: [0,0,0,0,0], damage_type: '',            range: 0, min_body: 0, perk: 'Adaptable : Can be embedded into another item (weapon or shield).', draviks: 70 },
     { nom: 'Staff',      type: 'focus',  bonus_dice: 1, damage_tiers: [3,4,4,5,5], damage_type: 'Bludgeoning', range: 1, min_body: 1, perk: 'Weapon : May be used as a melee weapon.', draviks: 25 },
     { nom: 'Tome',       type: 'focus',  bonus_dice: 1, damage_tiers: [0,0,0,0,0], damage_type: '',            range: 0, min_body: 0, perk: 'Insight : Once per scene, reroll one failed spellcasting check.', draviks: 50 },
-    { nom: 'Wand',       type: 'focus',  bonus_dice: 1, damage_tiers: [0,0,0,0,0], damage_type: '',            range: 0, min_body: 0, perk: 'Overcharge : Once per scene, spells you cast gain a Boon.', draviks: 40 },
+    { nom: 'Wand',       type: 'focus',  bonus_dice: 1, damage_tiers: [0,0,0,0,0], damage_type: '',            range: 0, min_body: 0, perk: 'Overcharge : Once per scene, spells you cast gain a Faveur.', draviks: 40 },
 ];
 
 /* Presets officiels d'armures (rulebook page 131) */
@@ -2463,7 +2478,7 @@ function performBreathAttack() {
     const d = currentFiche.dragon;
     const b = d.breath || {};
     if ((b.charges_current || 0) < 1) {
-        showToast('Aucune charge de souffle restante (recharge au Short Rest)');
+        showToast('Aucune charge de souffle restante (recharge au Repos court)');
         return;
     }
     const primary = currentFiche.primary;
@@ -2570,14 +2585,14 @@ function openDragonBpEditor() {
             </div>
             <p style="font-size: 12px; color: var(--text-muted); font-style: italic;">
                 Cap suggéré selon stage : Hatchling=6 · Juvenile=9 · Mature=12 · Elder=15 · Mythic=18.<br>
-                Regain : 1 BP + ½ niv au début du Hero Round, +2 BP via Pillars/RP, ½ max au Short Rest, full au Downtime.
+                Regain : 1 BP + ½ niv au début du Hero Round, +2 BP via Pillars/RP, ½ max au Repos court, full au Downtime.
             </p>
             <div class="form-row-grid">
                 <button type="button" class="form-btn cancel" data-action="m1">−1</button>
                 <button type="button" class="form-btn cancel" data-action="p1">+1</button>
             </div>
             <div class="form-row-grid">
-                <button type="button" class="form-btn cancel" data-action="rest">↻ Short Rest (½ max)</button>
+                <button type="button" class="form-btn cancel" data-action="rest">↻ Repos court (½ max)</button>
                 <button type="button" class="form-btn cancel" data-action="full">↻↻ Downtime (full)</button>
             </div>
             <div class="form-actions">
@@ -2627,7 +2642,7 @@ function openBreathEditor() {
     const html = `
         <div class="capacite-form">
             <p style="font-size: 12px; color: var(--text-muted); font-style: italic; line-height: 1.4;">
-                Pool = <strong>Dragon Soul + Player Primary</strong>. Charges max = ⌈Soul/2⌉ (recharge au Short Rest).
+                Pool = <strong>Dragon Soul + Player Primary</strong>. Charges max = ⌈Soul/2⌉ (recharge au Repos court).
             </p>
             <div class="form-row">
                 <label class="form-row-label">Élément</label>
@@ -2992,14 +3007,130 @@ function openDragonArmorForm(itemId) {
    Mécaniques officielles Drakonym (Core Rulebook v1.0) :
    - Pool : 2 attributs additionnés OU 1 attribut doublé (Single Attribute Check)
    - 5 sur d6 = 1 succès, 6 sur d6 = 2 succès, 1 ne fait rien
-   - Boon : compte un 4 comme succès OU Second Wind sur doublons non-succès (1-4)
-   - Bane : ignore un 5 (strict, pas de fallback)
+   - Faveur : compte un 4 comme succès OU Second Wind sur doublons non-succès (1-4)
+   - Fardeau : ignore un 5 (strict, pas de fallback)
    - Boons et Banes s'annulent 1-pour-1 avant le jet
    - Shadow Die (d12) : narratif (1=Disaster, 2-3=Complication, 4-9=Aucun, 10-11=Opportunity, 12=Miracle)
-   - Hero Points : Boon (-1HP), Reroll (-2HP), Aide allié (-1HP), Narratif (-3HP)
+   - Points de Héros : Faveur (-1HP), Reroll (-2HP), Aide allié (-1HP), Narratif (-3HP)
    ═══════════════════════════════════════════════════════════════ */
 
 const DICE_LOG_KEY = 'drakonym_compagnon_dice_log';
+const DICE_PRESETS_KEY = 'drakonym_compagnon_dice_presets';
+
+/* ─── Presets de jets sauvegardés (Vague 8) ─────────── */
+let dicePresets = [];
+
+function loadDicePresets() {
+    try {
+        const raw = localStorage.getItem(DICE_PRESETS_KEY);
+        if (raw) dicePresets = JSON.parse(raw) || [];
+    } catch (e) { dicePresets = []; }
+}
+
+function saveDicePresets() {
+    try { localStorage.setItem(DICE_PRESETS_KEY, JSON.stringify(dicePresets)); }
+    catch (e) {}
+}
+
+function saveCurrentRollAsPreset() {
+    if (!currentRoll) return;
+    const html = `
+        <div class="capacite-form">
+            <div class="form-row">
+                <label class="form-row-label">Nom du preset *</label>
+                <input type="text" class="form-row-input" id="form-preset-nom" placeholder="Ex: Attaque Longsword, Sneak attack…" maxlength="40" autofocus>
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted); font-style: italic;">
+                Le preset enregistre les attributs sélectionnés, le modificateur, la difficulté et le mode (attaque ou normal).
+            </p>
+            <div class="form-actions">
+                <button type="button" class="form-btn cancel" data-action="cancel">Annuler</button>
+                <button type="button" class="form-btn save" data-action="save">Enregistrer</button>
+            </div>
+        </div>
+    `;
+    openBottomSheet('Sauver le jet', html, (root) => {
+        const input = root.querySelector('#form-preset-nom');
+        setTimeout(() => input.focus(), 100);
+        // Pré-rempli avec le label si dispo
+        if (currentRoll.label) input.value = currentRoll.label;
+
+        root.querySelector('[data-action="cancel"]').addEventListener('click', closeBottomSheet);
+        root.querySelector('[data-action="save"]').addEventListener('click', () => {
+            const nom = input.value.trim();
+            if (!nom) { showToast('Donne un nom au preset'); return; }
+            dicePresets.push({
+                id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+                nom,
+                attrs: currentRoll.attrs.slice(),
+                modifier: currentRoll.modifier || 0,
+                attackMode: !!currentRoll.attackMode,
+                difficulty: currentRoll.difficulty || 0,
+                useShadow: !!currentRoll.useShadow,
+                label: currentRoll.label || nom,
+            });
+            saveDicePresets();
+            closeBottomSheet();
+            renderDicePresetsList();
+            showToast(`💾 Preset « ${nom} » sauvé`);
+        });
+    });
+}
+
+function applyDicePreset(presetId) {
+    const p = dicePresets.find(x => x.id === presetId);
+    if (!p) return;
+    currentRoll.attrs = p.attrs.slice();
+    currentRoll.modifier = p.modifier;
+    currentRoll.attackMode = p.attackMode;
+    currentRoll.difficulty = p.difficulty;
+    currentRoll.useShadow = p.useShadow;
+    currentRoll.label = p.label;
+    renderDiceModal();
+    showToast(`📌 ${p.nom} chargé`);
+}
+
+function deleteDicePreset(presetId) {
+    const idx = dicePresets.findIndex(x => x.id === presetId);
+    if (idx < 0) return;
+    const p = dicePresets[idx];
+    dicePresets.splice(idx, 1);
+    saveDicePresets();
+    renderDicePresetsList();
+    showToast(`Preset « ${p.nom} » supprimé`);
+}
+
+function renderDicePresetsList() {
+    const listEl = document.getElementById('dice-presets-list');
+    if (!listEl) return;
+    if (dicePresets.length === 0) {
+        listEl.innerHTML = `<p class="dice-presets-empty">Aucun preset. Configure un jet et tap « Sauver ».</p>`;
+        return;
+    }
+    listEl.innerHTML = dicePresets.map(p => {
+        const attrSummary = p.attrs.length > 0 ? p.attrs.join('+') : '∅';
+        const modSign = p.modifier > 0 ? '+' : '';
+        return `
+            <div class="dice-preset-row" data-id="${p.id}">
+                <button type="button" class="dice-preset-apply" data-action="apply" data-id="${p.id}">
+                    <span class="dice-preset-name">${escapeHtml(p.nom)}</span>
+                    <span class="dice-preset-meta">${attrSummary}${p.modifier !== 0 ? ` ${modSign}${p.modifier}` : ''}${p.attackMode ? ' · ⚔' : ''}${p.difficulty > 0 ? ` · D${p.difficulty}` : ''}</span>
+                </button>
+                <button type="button" class="dice-preset-delete" data-action="delete" data-id="${p.id}" aria-label="Supprimer">🗑</button>
+            </div>
+        `;
+    }).join('');
+    // Bind clicks
+    listEl.querySelectorAll('[data-action="apply"]').forEach(btn => {
+        btn.addEventListener('click', () => applyDicePreset(btn.dataset.id));
+    });
+    listEl.querySelectorAll('[data-action="delete"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteDicePreset(btn.dataset.id);
+        });
+    });
+}
 const MAX_DICE_LOG = 20;
 
 let currentRoll = null;  // état du jet en cours
@@ -3131,15 +3262,15 @@ function renderDiceConfigHtml() {
     const pool = computePoolSize();
     const mode = getPoolModeLabel();
 
-    // Auto-cancellation pour l'affichage du Net Boon/Bane
+    // Auto-cancellation pour l'affichage du Net Faveur/Fardeau
     const effBoons = currentRoll.boons + (currentRoll.useHpBoon ? 1 : 0);
     const effBanes = currentRoll.banes;
     const cancel = Math.min(effBoons, effBanes);
     const netBoon = effBoons - cancel;
     const netBane = effBanes - cancel;
     let netLabel = '';
-    if (netBoon > 0) netLabel = `+${netBoon} Boon net`;
-    else if (netBane > 0) netLabel = `+${netBane} Bane net`;
+    if (netBoon > 0) netLabel = `+${netBoon} Faveur nette`;
+    else if (netBane > 0) netLabel = `+${netBane} Fardeau net`;
     else if (cancel > 0) netLabel = 'Annulés';
     else netLabel = 'aucun';
 
@@ -3157,7 +3288,7 @@ function renderDiceConfigHtml() {
     }).join('');
 
     const rollLabel = pool > 0
-        ? `LANCER ${pool}d6${netBoon > 0 ? ` + ${netBoon} Boon` : ''}${netBane > 0 ? ` + ${netBane} Bane` : ''}${currentRoll.useShadow ? ' + d12' : ''}`
+        ? `LANCER ${pool}d6${netBoon > 0 ? ` + ${netBoon} Faveur` : ''}${netBane > 0 ? ` + ${netBane} Fardeau` : ''}${currentRoll.useShadow ? ' + d12' : ''}`
         : 'SÉLECTIONNE UN ATTRIBUT';
 
     return `
@@ -3232,9 +3363,17 @@ function renderDiceConfigHtml() {
                 <span class="dice-toggle-switch"></span>
             </div>
             <div class="dice-toggle${currentRoll.useHpBoon ? ' active' : ''}${!hpAvailable ? ' disabled' : ''}" data-toggle="useHpBoon">
-                <span class="dice-toggle-label"><span class="dice-toggle-icon">⭐</span> Hero Point · Boon gratuit (−1 HP)</span>
+                <span class="dice-toggle-label"><span class="dice-toggle-icon">⭐</span> Point de Héros · Faveur gratuite (−1 HP)</span>
                 <span class="dice-toggle-switch"></span>
             </div>
+        </div>
+
+        <div class="dice-config-block dice-presets-block">
+            <div class="dice-config-label">
+                <span>📌 Mes presets de jets</span>
+                <button type="button" class="dice-preset-save-btn" data-action="save-preset">💾 Sauver ce jet</button>
+            </div>
+            <div class="dice-presets-list" id="dice-presets-list"></div>
         </div>
 
         <button type="button" class="dice-roll-btn" id="dice-roll-btn"${pool === 0 ? ' disabled' : ''}>
@@ -3292,6 +3431,13 @@ function bindDiceConfigActions(root) {
     if (rollBtn && !rollBtn.disabled) {
         rollBtn.addEventListener('click', performRoll);
     }
+
+    // Save preset button
+    const savePresetBtn = root.querySelector('[data-action="save-preset"]');
+    if (savePresetBtn) savePresetBtn.addEventListener('click', saveCurrentRollAsPreset);
+
+    // Render presets list (after the rest of the config is in DOM)
+    renderDicePresetsList();
 }
 
 
@@ -3300,7 +3446,7 @@ function performRoll() {
     const pool = computePoolSize();
     if (pool < 1) return;
 
-    // Hero Point boon : on consomme 1 HP et on ajoute 1 Boon
+    // Point de Héros boon : on consomme 1 HP et on ajoute 1 Faveur
     let totalBoons = currentRoll.boons + (currentRoll.useHpBoon ? 1 : 0);
     let totalBanes = currentRoll.banes;
 
@@ -3321,7 +3467,7 @@ function performRoll() {
         dice.push({ id: i, value: rollD6(), boonConverted: false, baneCanceled: false });
     }
 
-    // Appliquer les Banes : annule un 5 par Bane (strict, pas de fallback sur 6)
+    // Appliquer les Banes : annule un 5 par Fardeau (strict, pas de fallback sur 6)
     let banesToApply = totalBanes;
     for (const d of dice) {
         if (banesToApply <= 0) break;
@@ -3344,9 +3490,12 @@ function performRoll() {
     currentRoll.bonesAfterCancel = cancel;
     currentRoll.secondWindUsed = [];
     currentRoll._logged = false;
+    currentRoll._freshRoll = true;
 
     diceModalView = 'result';
     renderDiceModal();
+    // Reset le flag après l'animation (sans re-render — l'animation CSS termine d'elle-même)
+    setTimeout(() => { if (currentRoll) currentRoll._freshRoll = false; }, 700);
 }
 
 
@@ -3401,20 +3550,25 @@ function renderDiceResultHtml() {
     let diceHtml = '<div class="dice-display">';
     for (const d of currentRoll.dice) {
         let cls = 'dice-die';
+        const canSelect = !d.baneCanceled && !d.boonConverted;
         if (d.baneCanceled) cls += ' bane-canceled';
         else if (d.boonConverted) cls += ' boon-converted';
         else if (d.value === 5 || d.value === 6) cls += ' success';
-        diceHtml += `<div class="${cls}" data-die-id="${d.id}">${d.value}</div>`;
+        if (canSelect && d._rerollSelected) cls += ' selected-reroll';
+        if (canSelect) cls += ' selectable';
+        if (currentRoll._freshRoll) cls += ' fresh-roll';
+        diceHtml += `<div class="${cls}" data-die-id="${d.id}" ${canSelect ? 'data-action="toggle-reroll"' : ''}>${d.value}</div>`;
     }
     diceHtml += '</div>';
+    diceHtml += '<p class="dice-reroll-hint">💡 Tap les dés pour les sélectionner à relancer</p>';
 
-    // Détails Bane
+    // Détails Fardeau
     let baneDetail = '';
     if (currentRoll.bonesAfterCancel > 0 || currentRoll.banesApplied > 0 || currentRoll.banesWasted > 0) {
         const parts = [];
-        if (currentRoll.bonesAfterCancel > 0) parts.push(`${currentRoll.bonesAfterCancel} Boon/Bane annulés`);
-        if (currentRoll.banesApplied > 0) parts.push(`${currentRoll.banesApplied} Bane appliqué (5 ignoré)`);
-        if (currentRoll.banesWasted > 0) parts.push(`${currentRoll.banesWasted} Bane gaspillé (pas de 5)`);
+        if (currentRoll.bonesAfterCancel > 0) parts.push(`${currentRoll.bonesAfterCancel} Faveur/Fardeau annulés`);
+        if (currentRoll.banesApplied > 0) parts.push(`${currentRoll.banesApplied} Fardeau appliqué (5 ignoré)`);
+        if (currentRoll.banesWasted > 0) parts.push(`${currentRoll.banesWasted} Fardeau gaspillé (pas de 5)`);
         baneDetail = `<p style="font-size: 11px; color: var(--text-muted); text-align: center; margin: -8px 0 12px; font-family: 'EB Garamond', serif; font-style: italic;">${parts.join(' · ')}</p>`;
     }
 
@@ -3435,7 +3589,7 @@ function renderDiceResultHtml() {
             </div>`;
     }
 
-    // Boon panel
+    // Faveur panel
     let boonHtml = '';
     if (currentRoll.boonsRemaining > 0) {
         const fours = currentRoll.dice.filter(d => d.value === 4 && !d.baneCanceled && !d.boonConverted);
@@ -3463,13 +3617,13 @@ function renderDiceResultHtml() {
                 </button>`;
         }
         if (!actionsHtml) {
-            actionsHtml = `<p class="dice-boon-empty">Aucune action Boon dispo (pas de 4 ni de doublons non-succès)</p>`;
+            actionsHtml = `<p class="dice-boon-empty">Aucune action Faveur dispo (pas de 4 ni de doublons non-succès)</p>`;
         }
 
         boonHtml = `
             <div class="dice-boon-panel">
                 <div class="dice-boon-header">
-                    <span class="dice-boon-title">⭐ Boon disponible</span>
+                    <span class="dice-boon-title">⭐ Faveur disponible</span>
                     <span class="dice-boon-count">${currentRoll.boonsRemaining} / ${currentRoll.boonsInitial}</span>
                 </div>
                 ${actionsHtml}
@@ -3479,10 +3633,15 @@ function renderDiceResultHtml() {
     }
 
     // Actions
-    const canReroll = (currentFiche.hp_current || 0) >= 2;
+    const selectedReroll = currentRoll.dice.filter(d => d._rerollSelected && !d.baneCanceled && !d.boonConverted);
+    const rerollCost = selectedReroll.length * 2;
+    const canReroll = selectedReroll.length > 0 && (currentFiche.hp_current || 0) >= rerollCost;
+    const rerollLabel = selectedReroll.length === 0
+        ? `🔄 Sélectionne des dés à relancer`
+        : `🔄 Relancer ${selectedReroll.length} dé${selectedReroll.length > 1 ? 's' : ''} <small>−${rerollCost} HP</small>`;
     const configSummary = currentRoll.attrs.join(' + ').toUpperCase() +
         ` · ${currentRoll.dice.length}d6` +
-        (currentRoll.boonsInitial > 0 ? ` + ${currentRoll.boonsInitial} BOON` : '') +
+        (currentRoll.boonsInitial > 0 ? ` + ${currentRoll.boonsInitial} FAVEUR` : '') +
         (currentRoll.shadowValue !== null ? ' · SHADOW' : '');
 
     return `
@@ -3504,11 +3663,11 @@ function renderDiceResultHtml() {
 
         <div class="dice-result-actions">
             <div class="dice-result-actions-row">
-                <button type="button" class="action-btn${canReroll ? '' : ' disabled'}" data-action="reroll">
-                    🔄 Reroll <small>−2 HP</small>
+                <button type="button" class="action-btn${canReroll ? '' : ' disabled'}" data-action="reroll-selected">
+                    ${rerollLabel}
                 </button>
                 <button type="button" class="action-btn" data-action="repeat">
-                    ↻ Refaire
+                    ↻ Refaire (gratuit)
                 </button>
             </div>
             <button type="button" class="action-btn primary" data-action="close">FERMER</button>
@@ -3517,8 +3676,21 @@ function renderDiceResultHtml() {
 }
 
 function bindDiceResultActions(root) {
+    // Click sur un dé : toggle sélection pour reroll
+    root.querySelectorAll('[data-die-id][data-action="toggle-reroll"]').forEach(dieEl => {
+        dieEl.addEventListener('click', () => {
+            const id = dieEl.dataset.dieId;
+            const die = currentRoll.dice.find(d => d.id === id);
+            if (!die || die.baneCanceled || die.boonConverted) return;
+            die._rerollSelected = !die._rerollSelected;
+            renderDiceModal();
+        });
+    });
+
     root.querySelectorAll('[data-action]').forEach(btn => {
         const action = btn.dataset.action;
+        // skip les data-action toggle-reroll (déjà bind ci-dessus)
+        if (action === 'toggle-reroll') return;
         btn.addEventListener('click', () => {
             if (action === 'convert4') {
                 // Convertit le premier 4 disponible
@@ -3534,20 +3706,34 @@ function bindDiceResultActions(root) {
                 for (const d of currentRoll.dice) {
                     if (d.value === val && !d.baneCanceled && !d.boonConverted) {
                         d.value = rollD6();
+                        delete d._rerollSelected;
                     }
                 }
                 currentRoll.secondWindUsed.push(val);
                 currentRoll.boonsRemaining--;
                 renderDiceModal();
-            } else if (action === 'reroll') {
+            } else if (action === 'reroll-selected') {
                 if (btn.classList.contains('disabled')) return;
-                if ((currentFiche.hp_current || 0) < 2) return;
-                currentFiche.hp_current -= 2;
+                const selected = currentRoll.dice.filter(d => d._rerollSelected && !d.baneCanceled && !d.boonConverted);
+                const cost = selected.length * 2;
+                if (selected.length === 0) {
+                    showToast('Tap un dé pour le sélectionner');
+                    return;
+                }
+                if ((currentFiche.hp_current || 0) < cost) {
+                    showToast(`Pas assez de HP (${cost} requis)`);
+                    return;
+                }
+                currentFiche.hp_current -= cost;
                 saveFiche();
                 renderVitalBar(currentFiche);
-                // Relance complète : nouveau jet avec la même config
-                if (currentRoll && !currentRoll._logged) addCurrentRollToLog();
-                performRoll();
+                // Relance uniquement les dés sélectionnés
+                for (const d of selected) {
+                    d.value = rollD6();
+                    delete d._rerollSelected;
+                }
+                renderDiceModal();
+                showToast(`🔄 ${selected.length} dé${selected.length > 1 ? 's' : ''} relancé${selected.length > 1 ? 's' : ''} · −${cost} HP`);
             } else if (action === 'repeat') {
                 // Refait un jet identique sans coût
                 if (currentRoll && !currentRoll._logged) addCurrentRollToLog();
@@ -4297,6 +4483,7 @@ function handleStartupAction() {
 function init() {
     currentFiche = loadFiche();
     loadDiceLog();
+    loadDicePresets();
 
     applyTheme(getStoredTheme());
     bindThemeToggle();

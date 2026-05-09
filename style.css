@@ -1747,7 +1747,144 @@ a:hover, a:focus { color: var(--gold-bright); }
     font-size: 9px;
     color: var(--on-gold);
 }
+.dice-die.selectable {
+    cursor: pointer;
+    transition: transform 100ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+.dice-die.selectable:active { transform: scale(0.92); }
+.dice-die.selected-reroll {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px var(--gold), 0 0 8px var(--gold-bright);
+    animation: rerollPulse 1.2s ease-in-out infinite;
+}
+.dice-die.selected-reroll::before {
+    content: '🔄';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 11px;
+    background: var(--gold);
+    color: var(--on-gold);
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+@keyframes rerollPulse {
+    0%, 100% { box-shadow: 0 0 0 2px var(--gold), 0 0 8px var(--gold-bright); }
+    50%      { box-shadow: 0 0 0 2px var(--gold-bright), 0 0 14px var(--gold-bright); }
+}
+.dice-reroll-hint {
+    text-align: center;
+    font-family: 'EB Garamond', serif;
+    font-size: 11px;
+    color: var(--text-subtle);
+    font-style: italic;
+    margin: 4px 0 8px;
+}
+
+/* ─── Presets de jets sauvegardés (Vague 8) ──────────── */
+.dice-presets-block .dice-config-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.dice-preset-save-btn {
+    background: var(--bg-card-alt);
+    border: 1px dashed var(--gold);
+    color: var(--gold);
+    font-family: 'EB Garamond', serif;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+}
+.dice-preset-save-btn:active { background: var(--gold); color: var(--on-gold); }
+
+.dice-presets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 8px;
+}
+.dice-presets-empty {
+    font-family: 'EB Garamond', serif;
+    font-size: 11px;
+    color: var(--text-subtle);
+    font-style: italic;
+    margin: 4px 0;
+    text-align: center;
+}
+.dice-preset-row {
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.dice-preset-apply {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    text-align: left;
+    padding: 6px 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    transition: background-color 150ms ease;
+}
+.dice-preset-apply:active { background: var(--bg-card); }
+.dice-preset-name {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+}
+.dice-preset-meta {
+    font-family: 'Spectral', sans-serif;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.4px;
+}
+.dice-preset-delete {
+    background: transparent;
+    border: none;
+    border-left: 1px dashed var(--border);
+    color: var(--text-muted);
+    width: 32px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 150ms ease, color 150ms ease;
+}
+.dice-preset-delete:active { background: var(--crimson); color: #f5e8c5; }
 .dice-die.rolling { animation: dieRoll 80ms ease infinite; }
+.dice-die.fresh-roll {
+    animation: dieEntrance 600ms cubic-bezier(0.17, 0.89, 0.32, 1.49) backwards;
+}
+.dice-die.fresh-roll:nth-child(2)  { animation-delay: 50ms; }
+.dice-die.fresh-roll:nth-child(3)  { animation-delay: 100ms; }
+.dice-die.fresh-roll:nth-child(4)  { animation-delay: 150ms; }
+.dice-die.fresh-roll:nth-child(5)  { animation-delay: 200ms; }
+.dice-die.fresh-roll:nth-child(6)  { animation-delay: 250ms; }
+.dice-die.fresh-roll:nth-child(7)  { animation-delay: 300ms; }
+.dice-die.fresh-roll:nth-child(8)  { animation-delay: 350ms; }
+.dice-die.fresh-roll:nth-child(9)  { animation-delay: 400ms; }
+.dice-die.fresh-roll:nth-child(10) { animation-delay: 450ms; }
+@keyframes dieEntrance {
+    0%   { transform: scale(0.3) rotate(-180deg); opacity: 0; }
+    60%  { transform: scale(1.18) rotate(20deg); opacity: 1; }
+    80%  { transform: scale(0.94) rotate(-8deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
 @keyframes dieRoll {
     0%, 100% { transform: rotate(0deg); }
     50% { transform: rotate(15deg); }
