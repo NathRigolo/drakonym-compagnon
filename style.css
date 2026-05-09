@@ -35,10 +35,10 @@
     --on-gold:      #2a1810;
 
     /* Voile par-dessus l'image de fond (Parchemin : voile clair, dragon discret) */
-    --bg-overlay:   rgba(247, 238, 209, 0.80);
+    --bg-overlay:   rgba(247, 238, 209, 0.88);
 
     /* Version semi-transparente du fond Vital pour laisser passer le dragon (desktop) */
-    --bg-vital-translucent: rgba(237, 224, 184, 0.88);
+    --bg-vital-translucent: rgba(237, 224, 184, 0.94);
 }
 
 /* ─── VARIABLES : MODE NUIT (sombre) ─────────────────────────── */
@@ -65,11 +65,11 @@
 
     --on-gold:      #1f1812;
 
-    /* Voile sombre : dragon plus visible dans les zones vides */
-    --bg-overlay:   rgba(31, 24, 18, 0.50);
+    /* Voile sombre : dragon discret pour préserver la lisibilité */
+    --bg-overlay:   rgba(31, 24, 18, 0.82);
 
     /* Version semi-transparente du fond Vital pour laisser passer le dragon (desktop) */
-    --bg-vital-translucent: rgba(21, 16, 11, 0.78);
+    --bg-vital-translucent: rgba(21, 16, 11, 0.92);
 }
 
 /* ─── MODE AUTO : suit le système si data-theme="auto" ──────── */
@@ -92,8 +92,8 @@
         --border:       rgba(212, 160, 23, 0.3);
         --border-strong: rgba(212, 160, 23, 0.5);
         --on-gold:      #1f1812;
-        --bg-overlay:   rgba(31, 24, 18, 0.50);
-        --bg-vital-translucent: rgba(21, 16, 11, 0.78);
+        --bg-overlay:   rgba(31, 24, 18, 0.82);
+        --bg-vital-translucent: rgba(21, 16, 11, 0.92);
     }
 }
 
