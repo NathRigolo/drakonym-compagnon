@@ -3546,8 +3546,6 @@ a:hover, a:focus { color: var(--gold-bright); }
        v1.11.0 — LAYOUT 3 ZONES : sidebar gauche + centre + sidebar droite
        ═══════════════════════════════════════════════════════════════ */
 
-    body { background: var(--bg); }
-
     .app-layout {
         display: grid;
         grid-template-columns: 180px minmax(0, 1fr) 320px;
