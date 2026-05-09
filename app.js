@@ -2227,6 +2227,19 @@ function renderDragon() {
     document.getElementById('dragon-fear').value = (d.pillars && d.pillars.fear) || '';
     document.getElementById('dragon-instinct').value = (d.pillars && d.pillars.instinct) || '';
 
+    // Configuration dragon (champs sans focus)
+    const setCfg = (id, value) => {
+        const el = document.getElementById(id);
+        if (el && document.activeElement !== el) el.value = value;
+    };
+    setCfg('cfg-d-body', (d.attributs && d.attributs.Body) || 0);
+    setCfg('cfg-d-mind', (d.attributs && d.attributs.Mind) || 0);
+    setCfg('cfg-d-soul', (d.attributs && d.attributs.Soul) || 0);
+    setCfg('cfg-d-bp-cur', d.bp_current || 0);
+    setCfg('cfg-d-bp-max', d.bp_max || 0);
+    setCfg('cfg-d-speed', d.speed || 0);
+    setCfg('cfg-d-armor', d.armor_bonus || 0);
+
     // Listes
     renderDragonList('dperks');
     renderDragonList('dweapons');
@@ -2374,6 +2387,38 @@ function bindDragonActions() {
         d.speed = Math.max(0, parseInt(speedInput.value, 10) || 0);
         saveFiche();
     });
+
+    // ─── Section Configuration du dragon (auto-save sur change) ───
+    const cfgBindNumber = (id, key, max, callback) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('change', () => {
+            let v = parseInt(el.value, 10);
+            if (isNaN(v)) v = 0;
+            v = Math.max(0, max != null ? Math.min(max, v) : v);
+            el.value = v;
+            if (typeof key === 'function') key(v);
+            saveFiche();
+            renderDragon();
+        });
+    };
+    cfgBindNumber('cfg-d-body', (v) => { d.attributs.Body = v; }, 10);
+    cfgBindNumber('cfg-d-mind', (v) => { d.attributs.Mind = v; }, 10);
+    cfgBindNumber('cfg-d-soul', (v) => {
+        d.attributs.Soul = v;
+        // Auto-ajuste les charges max du souffle
+        d.breath.charges_max = dragonBreathChargesMax(v);
+        if (d.breath.charges_current > d.breath.charges_max) d.breath.charges_current = d.breath.charges_max;
+    }, 10);
+    cfgBindNumber('cfg-d-bp-cur', (v) => {
+        d.bp_current = Math.min(d.bp_max || 0, v);
+    }, 50);
+    cfgBindNumber('cfg-d-bp-max', (v) => {
+        d.bp_max = v;
+        if (d.bp_current > v) d.bp_current = v;
+    }, 50);
+    cfgBindNumber('cfg-d-speed', (v) => { d.speed = v; }, 20);
+    cfgBindNumber('cfg-d-armor', (v) => { d.armor_bonus = v; }, 10);
 
     // Attributs : tap pour ouvrir éditeur
     document.querySelectorAll('[data-dattr]').forEach(cell => {
@@ -3218,6 +3263,10 @@ function renderDiceModal() {
         titleEl.textContent = 'Historique';
         bodyEl.innerHTML = renderDiceLogHtml();
         bindDiceLogActions(bodyEl);
+    } else if (diceModalView === 'rolling' && currentRoll && currentRoll.dice) {
+        titleEl.textContent = 'Lancement…';
+        bodyEl.innerHTML = renderDiceRollingHtml();
+        // Pas de bind, l'animation se gère via JS direct
     } else if (diceModalView === 'result' && currentRoll && currentRoll.dice) {
         titleEl.textContent = 'Résultat';
         bodyEl.innerHTML = renderDiceResultHtml();
@@ -3227,6 +3276,28 @@ function renderDiceModal() {
         bodyEl.innerHTML = renderDiceConfigHtml();
         bindDiceConfigActions(bodyEl);
     }
+}
+
+function renderDiceRollingHtml() {
+    const pool = currentRoll.dice.length;
+    const dice = Array.from({ length: pool }, (_, i) =>
+        `<div class="dice-die rolling-die" data-rolling-idx="${i}">${Math.ceil(Math.random() * 6)}</div>`
+    ).join('');
+    return `
+        <div class="dice-rolling-banner">
+            <div class="dice-rolling-spinner">⚄</div>
+            <p class="dice-rolling-text">${currentRoll.label ? escapeHtml(currentRoll.label) + ' · ' : ''}<strong>${pool} dés en cours…</strong></p>
+        </div>
+        <div class="dice-display dice-display-rolling">
+            ${dice}
+        </div>
+        ${currentRoll.shadowValue !== null ? `
+            <div class="dice-shadow-rolling">
+                <span class="dice-rolling-spinner small">🌑</span>
+                <span class="dice-shadow-rolling-value" id="shadow-rolling-value">${Math.ceil(Math.random()*12)}</span>
+            </div>
+        ` : ''}
+    `;
 }
 
 
@@ -3501,10 +3572,28 @@ function performRoll() {
     currentRoll._logged = false;
     currentRoll._freshRoll = true;
 
-    diceModalView = 'result';
+    // Phase 1 : rolling animation (~1.2s)
+    diceModalView = 'rolling';
     renderDiceModal();
-    // Reset le flag après l'animation (sans re-render — l'animation CSS termine d'elle-même)
-    setTimeout(() => { if (currentRoll) currentRoll._freshRoll = false; }, 700);
+
+    // Mise à jour rapide des valeurs aléatoires pendant l'anim
+    let tick = 0;
+    const totalTicks = 14;
+    const rollingInterval = setInterval(() => {
+        document.querySelectorAll('.rolling-die').forEach(el => {
+            el.textContent = Math.ceil(Math.random() * 6);
+        });
+        const shadowEl = document.getElementById('shadow-rolling-value');
+        if (shadowEl) shadowEl.textContent = Math.ceil(Math.random() * 12);
+        tick++;
+        if (tick >= totalTicks) {
+            clearInterval(rollingInterval);
+            // Phase 2 : afficher le résultat
+            diceModalView = 'result';
+            renderDiceModal();
+            setTimeout(() => { if (currentRoll) currentRoll._freshRoll = false; }, 700);
+        }
+    }, 80);
 }
 
 
@@ -4018,15 +4107,51 @@ function switchToFiche(id) {
     showToast(`Fiche active : ${currentFiche.nom || 'Sans nom'}`);
 }
 
+/* Crée une fiche vraiment vierge (attributs à 1 minimum selon la règle officielle de création) */
+function createBlankFiche(nom) {
+    return mergeFicheDefaults({
+        _fiche_id: 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+        nom: nom || 'Nouveau personnage',
+        niveau: 1,
+        kin: '',
+        classe: '',
+        primary: 'Body',
+        attributs: { Body: 1, Mind: 1, Soul: 1, Shadow: 1, Gods: 1, World: 1 },
+        hp_current: 0, hp_max: 0,
+        mana_current: 0, mana_max: 0,
+        grit_current: 0, grit_max: 0,
+        defense_current: 0, defense_max: 0,
+        armure_bonus: 0,
+        spell_bonus: 0,
+        wounds: { light: 0, heavy: 0, deadly: 0, light_max: 3, heavy_max: 3, deadly_max: 3 },
+        statuses: [],
+        short_rests_taken: 0, short_rests_max: 3,
+        perks: [], sorts: [], techniques: [], wild_perks: [],
+        draviks: 0,
+        weapons: [], armors: [], tools: [],
+        dragon: {
+            nom: '', family: '', stage: 'Hatchling', speed: 6,
+            pillars: { love: '', fear: '', instinct: '' },
+            attributs: { Body: 1, Mind: 1, Soul: 1 },
+            bp_current: 0, bp_max: 6,
+            armor_bonus: 0,
+            breath: { element: '', shape: 'Cone', description: '', effect: '', charges_current: 0, charges_max: 1 },
+            perks: [], weapons: [], armors: [],
+        },
+        apparence: '', histoire: '', liens: '', notes: '',
+    });
+}
+
 function createNewFiche() {
     const html = `
         <div class="capacite-form">
             <div class="form-row">
                 <label class="form-row-label">Nom du nouveau personnage *</label>
-                <input type="text" class="form-row-input" id="form-new-nom" placeholder="Ex: Lyriel" maxlength="40" autofocus>
+                <input type="text" class="form-row-input" id="form-new-nom" placeholder="Ex: Lyriel" maxlength="40">
             </div>
             <p style="font-size: 12px; color: var(--text-muted); font-style: italic;">
-                Une nouvelle fiche vierge sera créée et activée. Tu pourras la remplir ensuite dans l'onglet Fiche.
+                Une fiche vide est créée et activée. Tu pourras la remplir via la section ⚙️ Configuration de l'onglet Fiche.<br>
+                <strong style="color: var(--text);">Note :</strong> les 6 attributs commencent à 1 (règle de création officielle Drakonym).
             </p>
             <div class="form-actions">
                 <button type="button" class="form-btn cancel" data-action="cancel">Annuler</button>
@@ -4036,21 +4161,12 @@ function createNewFiche() {
     `;
     openBottomSheet('Nouvelle fiche', html, (root) => {
         const input = root.querySelector('#form-new-nom');
-        setTimeout(() => input.focus(), 100);
+        setTimeout(() => input.focus(), 200);
         root.querySelector('[data-action="cancel"]').addEventListener('click', closeBottomSheet);
         root.querySelector('[data-action="save"]').addEventListener('click', () => {
             const nom = input.value.trim();
             if (!nom) { showToast('Donne un nom au personnage'); return; }
-            // Crée une fiche vierge (basée sur FICHE_DEMO mais nettoyée)
-            const blank = mergeFicheDefaults({ nom, niveau: 1 });
-            // Vide les listes pour éviter d'hériter de la démo
-            blank.perks = []; blank.sorts = []; blank.techniques = []; blank.wild_perks = [];
-            blank.weapons = []; blank.armors = []; blank.tools = [];
-            blank.statuses = [];
-            blank.dragon.perks = []; blank.dragon.weapons = []; blank.dragon.armors = [];
-            blank.dragon.nom = '';
-            blank.apparence = ''; blank.histoire = ''; blank.liens = ''; blank.notes = '';
-            // Sauve dans le store et active
+            const blank = createBlankFiche(nom);
             const store = loadStore();
             store.fiches[blank._fiche_id] = blank;
             store.activeId = blank._fiche_id;
@@ -4058,7 +4174,6 @@ function createNewFiche() {
             currentFiche = blank;
             closeBottomSheet();
             renderAll();
-            renderHistoireFields();
             renderFichesList();
             showToast(`✨ ${nom} créé`);
         });

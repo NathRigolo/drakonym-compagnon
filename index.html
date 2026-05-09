@@ -440,6 +440,56 @@
                     </div>
                 </div>
 
+                <!-- CONFIGURATION DU DRAGON (création / level up / changements) -->
+                <details class="config-block">
+                    <summary class="config-summary">⚙️ Configuration du dragon</summary>
+                    <div class="config-content">
+                        <p class="config-hint">📝 Modifie ici toutes les valeurs du dragon : attributs, BP max, vitesse, armure, breath weapon.</p>
+
+                        <h4 class="config-subtitle">Attributs (0-6)</h4>
+                        <div class="config-grid-3">
+                            <div class="config-field">
+                                <label class="config-label">Body</label>
+                                <input type="number" id="cfg-d-body" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Mind</label>
+                                <input type="number" id="cfg-d-mind" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Soul</label>
+                                <input type="number" id="cfg-d-soul" class="config-input" min="0" max="10">
+                            </div>
+                        </div>
+
+                        <h4 class="config-subtitle">Bond Points &amp; vitesse</h4>
+                        <div class="config-grid-3">
+                            <div class="config-field">
+                                <label class="config-label">BP actuel</label>
+                                <input type="number" id="cfg-d-bp-cur" class="config-input" min="0" max="50">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">BP max</label>
+                                <input type="number" id="cfg-d-bp-max" class="config-input" min="0" max="50">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Vitesse</label>
+                                <input type="number" id="cfg-d-speed" class="config-input" min="0" max="20">
+                            </div>
+                        </div>
+                        <p class="config-hint-small">Cap suggéré par stage : Hatchling=6 · Juvenile=9 · Mature=12 · Elder=15 · Mythic=18</p>
+
+                        <h4 class="config-subtitle">Armure (bonus pour les Defense Slots)</h4>
+                        <div class="config-grid-3">
+                            <div class="config-field">
+                                <label class="config-label">Armure (bonus)</label>
+                                <input type="number" id="cfg-d-armor" class="config-input" min="0" max="10">
+                            </div>
+                        </div>
+                        <p class="config-hint-small">Bonus d'armure additionnel (en plus des armures équipées). DS = Armures + Body + ½ niveau joueur.</p>
+                    </div>
+                </details>
+
                 <!-- Sous-onglets : Stats / Capacités / Équipement -->
                 <div class="subtabs-bar" role="tablist" data-scope="dragon">
                     <button class="subtab active" type="button" data-subtab="dstats" aria-selected="true">
@@ -632,7 +682,7 @@
                     <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.8.1 (Vague 8 - Polish)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.9.0 (Polish + UX)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>

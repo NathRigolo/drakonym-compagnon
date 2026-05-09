@@ -1890,6 +1890,66 @@ a:hover, a:focus { color: var(--gold-bright); }
     50% { transform: rotate(15deg); }
 }
 
+/* ─── Phase rolling : animation ~1.2s avant résultat ─── */
+.dice-rolling-banner {
+    text-align: center;
+    margin: 20px 0 24px;
+    padding: 0 16px;
+}
+.dice-rolling-spinner {
+    font-size: 64px;
+    line-height: 1;
+    color: var(--gold);
+    display: inline-block;
+    animation: rollingSpinner 0.5s linear infinite;
+}
+.dice-rolling-spinner.small {
+    font-size: 32px;
+    color: var(--text-muted);
+}
+@keyframes rollingSpinner {
+    0%   { transform: rotate(0deg) scale(1); }
+    50%  { transform: rotate(180deg) scale(1.15); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+.dice-rolling-text {
+    font-family: 'EB Garamond', serif;
+    font-size: 14px;
+    color: var(--text);
+    margin: 12px 0 0;
+}
+.dice-rolling-text strong {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+}
+.dice-display-rolling {
+    margin: 0 16px 16px;
+}
+.rolling-die {
+    animation: rollingDie 0.18s ease-in-out infinite alternate;
+    background: linear-gradient(135deg, var(--bg-card), var(--bg-card-alt));
+    border-color: var(--gold);
+    color: var(--gold);
+}
+@keyframes rollingDie {
+    0%   { transform: rotate(-12deg) translateY(0px) scale(1); }
+    100% { transform: rotate(12deg)  translateY(-3px) scale(1.05); }
+}
+.dice-shadow-rolling {
+    text-align: center;
+    margin: 12px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+.dice-shadow-rolling-value {
+    font-family: 'Cinzel', serif;
+    font-size: 24px;
+    color: var(--text);
+}
+
 .dice-shadow-result {
     background: var(--bg-card);
     border: 1px solid var(--shadow);
@@ -3431,4 +3491,131 @@ a:hover, a:focus { color: var(--gold-bright); }
         right: 32px;
         bottom: 96px;
     }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   POLISH UX (v1.9.0) — bumps de tailles pour lisibilité mobile
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Boutons d'action des cards (Capacités, Équipement, Dragon) */
+.capacite-action-btn {
+    font-size: 13px !important;
+    padding: 9px 14px !important;
+    min-height: 40px !important;
+}
+
+/* Mini-boutons (✎ ✏ 🗑) sur les fiches et items */
+.fiche-action-mini {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 15px !important;
+}
+
+/* Color swatches plus tactiles */
+.color-swatch {
+    width: 42px !important;
+    height: 42px !important;
+}
+
+/* Boutons de form (Annuler / Enregistrer / Créer / etc.) */
+.form-btn {
+    font-size: 14px !important;
+    padding: 11px 16px !important;
+    min-height: 46px !important;
+}
+
+/* Boutons confirm dans bottom sheets */
+.confirm-btn {
+    font-size: 14px !important;
+    padding: 11px 16px !important;
+    min-height: 46px !important;
+}
+
+/* Boutons des paramètres */
+.settings-btn {
+    font-size: 14px !important;
+    padding: 12px 16px !important;
+    min-height: 46px !important;
+}
+
+/* Stepper +/- sur counters et BP */
+.dice-row-stepper-controls button,
+.counter-controls button {
+    min-width: 40px !important;
+    min-height: 40px !important;
+    font-size: 17px !important;
+}
+
+/* Tags meta sous les items (sources, types, range, etc.) */
+.capacite-meta-tag {
+    font-size: 11px !important;
+    padding: 3px 8px !important;
+}
+
+/* Métadonnées de fiches (kin, classe, niveau, dragon) */
+.fiche-item-meta {
+    font-size: 13px !important;
+}
+.fiche-item-name {
+    font-size: 15px !important;
+}
+
+/* Labels de config + inputs */
+.config-label {
+    font-size: 11px !important;
+}
+.config-input,
+.config-select {
+    font-size: 14px !important;
+    padding: 9px 10px !important;
+    min-height: 42px !important;
+}
+
+/* Hints et notes */
+.config-hint,
+.config-hint-small,
+.capacites-hint {
+    font-size: 12px !important;
+}
+
+/* Compteur des capacités (ex: "Perks · 3") */
+.capacites-count {
+    font-size: 13px !important;
+}
+
+/* Boutons "+ Ajouter" dans les listes */
+.btn-add-capacite {
+    font-size: 13px !important;
+    padding: 7px 14px !important;
+    min-height: 38px !important;
+}
+
+/* Sous-onglets (Perks/Sorts/Techniques/Wild + Stats/Capacités/Équipement Dragon) */
+.subtab {
+    min-height: 44px !important;
+}
+.subtab-text {
+    font-size: 12px !important;
+}
+
+/* Onglets du bas (Fiche / Capacités / Équipement / Dragon / Plus) */
+.bottom-tab-text {
+    font-size: 11px !important;
+}
+
+/* Sliders/toggles dans dice config */
+.dice-toggle-label {
+    font-size: 13px !important;
+}
+
+/* Cellules d'attributs (déjà touch-friendly mais texte un peu petit) */
+.attribute-name {
+    font-size: 12px !important;
+}
+
+/* Description d'un item dans une card */
+.capacite-item-description {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
 }
