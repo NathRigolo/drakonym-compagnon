@@ -4649,7 +4649,7 @@ function bindDesktopSidebar() {
     // Bouton "Lancer dés" sidebar gauche
     const desktopDiceBtn = document.getElementById('desktop-dice-btn');
     if (desktopDiceBtn) {
-        desktopDiceBtn.addEventListener('click', () => openDiceModal(null));
+        desktopDiceBtn.addEventListener('click', () => openDiceRoller([], {}));
     }
 
     // Persona switcher sidebar droite
