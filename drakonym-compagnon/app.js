@@ -175,6 +175,71 @@ function showToast(message, duration = 1800) {
 
 
 /* ═══════════════════════════════════════════════════════════════
+   INSTALLATION PWA — bouton install + détection plateforme
+   ═══════════════════════════════════════════════════════════════ */
+let deferredInstallPrompt = null;
+
+function setupInstallFlow() {
+    const btnInstall = document.getElementById('btn-install');
+    const statusHint = document.getElementById('install-status-hint');
+    if (!btnInstall || !statusHint) return;
+
+    // Détection iOS Safari (qui ne supporte pas beforeinstallprompt)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    // Détection si on est déjà en mode standalone (donc déjà installé)
+    const isStandalone =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true;
+
+    if (isStandalone) {
+        statusHint.innerHTML = '✓ <strong>App installée</strong> et lancée en mode plein écran.';
+        return;
+    }
+
+    if (isIOS) {
+        statusHint.innerHTML = "Sur iOS, l'installation se fait manuellement&nbsp;: tap le bouton <strong>Partager</strong> dans Safari, puis <em>«&nbsp;Sur l'écran d'accueil&nbsp;»</em>. Voir détails ci-dessous.";
+        return;
+    }
+
+    // Par défaut : on attend que le navigateur déclenche beforeinstallprompt
+    statusHint.textContent = "Si ton navigateur supporte l'installation, un bouton apparaîtra ici dans quelques secondes.";
+
+    // Écoute l'événement beforeinstallprompt (Android Chrome, Desktop Chrome/Edge)
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        btnInstall.hidden = false;
+        statusHint.textContent = "Ton appareil est prêt à installer l'app.";
+    });
+
+    // Clic sur le bouton install
+    btnInstall.addEventListener('click', async () => {
+        if (!deferredInstallPrompt) return;
+
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+
+        if (outcome === 'accepted') {
+            showToast('Installation en cours...');
+        } else {
+            showToast('Installation annulée');
+        }
+
+        deferredInstallPrompt = null;
+        btnInstall.hidden = true;
+    });
+
+    // Détecte l'installation réussie a posteriori
+    window.addEventListener('appinstalled', () => {
+        showToast('App installée avec succès !');
+        statusHint.innerHTML = '✓ <strong>App installée.</strong>';
+        btnInstall.hidden = true;
+    });
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
    SERVICE WORKER — enregistrement pour fonctionnement offline
    ═══════════════════════════════════════════════════════════════ */
 function registerServiceWorker() {
@@ -215,6 +280,7 @@ function init() {
     bindVitalBarActions();
     bindFab();
     renderVitalBar(FICHE_DEMO);
+    setupInstallFlow();
     handleStartupAction();
     registerServiceWorker();
 }

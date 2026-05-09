@@ -536,10 +536,178 @@ a:hover, a:focus { color: var(--gold-bright); }
 
 
 /* ═══════════════════════════════════════════════════════════════
-   RESPONSIVE — ajustements pour écrans plus larges (tablette)
+   INSTALL BUTTON — bloc Installation dans l'onglet Plus
    ═══════════════════════════════════════════════════════════════ */
+.install-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    background: var(--gold);
+    color: var(--on-gold);
+    font-family: 'Spectral', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 14px;
+    border-radius: 6px;
+    margin-top: 12px;
+    transition: transform 100ms ease, background-color 200ms ease;
+    min-height: 48px;
+}
+.install-btn:active { transform: scale(0.98); }
+.install-btn span:first-child { font-size: 18px; line-height: 1; }
+
+.install-details {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+}
+
+.install-details summary {
+    cursor: pointer;
+    font-family: 'Spectral', sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    padding: 4px 0;
+    list-style: none;
+    user-select: none;
+}
+.install-details summary::-webkit-details-marker { display: none; }
+.install-details summary::before {
+    content: '▸ ';
+    transition: transform 150ms ease;
+    display: inline-block;
+}
+.install-details[open] summary::before { content: '▾ '; }
+
+.install-instructions {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+.install-instructions p {
+    margin: 10px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+.install-instructions strong {
+    color: var(--text);
+    font-weight: 500;
+}
+
+.kbd {
+    display: inline-block;
+    padding: 1px 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--gold);
+    vertical-align: 1px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — adaptation tablette et desktop
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── TABLETTE PORTRAIT (≥ 600px) : iPad mini, Android tablette ─ */
 @media (min-width: 600px) {
-    .vital-name { font-size: 20px; }
-    .placeholder-icon { font-size: 56px; }
-    .fab { right: 24px; }
+    .app-shell { max-width: 720px; }
+
+    /* Vital Bar plus généreuse */
+    .vital-bar {
+        padding: 14px 24px 16px;
+    }
+    .vital-name { font-size: 22px; }
+    .vital-subtitle { font-size: 11px; }
+    .vital-level-value { font-size: 26px; }
+    .vital-stat-label { font-size: 11px; }
+    .vital-stat-value { font-size: 18px; }
+    .vital-ico { font-size: 15px; }
+    .hp-pip { width: 16px; height: 16px; }
+    .wound-pip { width: 13px; height: 13px; }
+
+    /* Contenu plus aéré */
+    .tab-section { padding: 32px 24px; }
+    .placeholder { padding: 64px 24px; }
+    .placeholder-icon { font-size: 64px; }
+    .placeholder-title { font-size: 26px; }
+    .placeholder-text { font-size: 17px; max-width: 400px; }
+
+    /* Onglet Plus : centre les blocs avec une largeur confortable */
+    .plus-tab-content { max-width: 560px; }
+
+    /* Tabs plus grandes et lisibles */
+    .tabs { height: 72px; }
+    .tab-glyph { font-size: 26px; }
+    .tab-label { font-size: 12px; }
+
+    /* FAB plus grand et plus à droite */
+    .fab {
+        width: 64px;
+        height: 64px;
+        right: 24px;
+        bottom: 88px;
+    }
+    .fab-glyph { font-size: 32px; }
+}
+
+
+/* ─── TABLETTE LANDSCAPE / DESKTOP (≥ 1024px) ─────────────────── */
+@media (min-width: 1024px) {
+    .app-shell { max-width: 900px; }
+
+    .vital-bar {
+        padding: 16px 32px 18px;
+    }
+    .vital-name { font-size: 24px; }
+
+    /* Sur grand écran, on peut redistribuer la Vital Bar :
+       identité à gauche, stats inline avec niveau à droite */
+    .vital-bar {
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto;
+        grid-template-areas: "identity stats-inline";
+        align-items: center;
+        gap: 16px 32px;
+    }
+    .vital-level {
+        display: inline-block;
+        margin-left: 16px;
+    }
+    .vital-identity {
+        display: flex;
+        align-items: baseline;
+        gap: 16px;
+    }
+    .vital-identity .vital-level {
+        text-align: left;
+    }
+    .vital-identity .vital-level-label { display: inline; margin-right: 6px; }
+    .vital-identity .vital-level-value { display: inline; font-size: 22px; }
+
+    .vital-stats {
+        grid-area: stats-inline;
+        border-top: none;
+        padding-top: 0;
+        gap: 16px;
+        justify-content: flex-end;
+    }
+    .vital-stat { flex: 0 0 auto; min-width: 60px; }
+
+    /* Plus d'air dans le contenu */
+    .tab-section { padding: 48px 32px; }
+    .placeholder { padding: 80px 24px; }
+
+    /* FAB encore mieux positionné */
+    .fab {
+        right: 32px;
+        bottom: 96px;
+    }
 }

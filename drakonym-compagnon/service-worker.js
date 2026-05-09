@@ -5,7 +5,7 @@
    pour forcer la mise à jour côté utilisateur.
    ═══════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'drakonym-v1.0.0';
+const CACHE_NAME = 'drakonym-v1.0.1';
 
 // Fichiers à mettre en cache au premier chargement
 const APP_SHELL = [

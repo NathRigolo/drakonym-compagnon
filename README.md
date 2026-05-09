@@ -1,6 +1,11 @@
-# 🐉 Drakonym Compagnon — Vague 1
+# 🐉 Drakonym Compagnon — Vague 1 (v1.0.1)
 
 App mobile-first PWA pour gérer ta fiche Drakonym en pleine session.
+
+## 🆕 Nouveautés v1.0.1
+- ✨ **Bouton "Installer"** intégré dans l'onglet Plus (marche sur Chrome/Edge)
+- 📱 **Détection plateforme** : iOS Safari affiche les instructions adaptées, Android propose le bouton, PC aussi
+- 🖥️ **Adaptation tablette/desktop** : breakpoints à 600px et 1024px, layout plus aéré, Vital Bar redistribuée sur grand écran
 
 ## 📦 Contenu de la Vague 1
 
@@ -51,18 +56,31 @@ Tout le reste affiche un placeholder **"à venir en Vague X"**. Les vagues suiva
 
 ---
 
-## 📲 Installation sur ton téléphone
+## 📲 Installation sur tes appareils
+
+### iPhone / iPad (Safari uniquement)
+Apple **ne propose JAMAIS** de bannière d'install automatique. C'est manuel :
+1. Ouvre l'URL dans **Safari** (pas Chrome iOS qui ne gère pas l'install PWA correctement).
+2. Tap le bouton **Partager** ⤴ (carré avec flèche vers le haut).
+3. Fais défiler les options et choisis **« Sur l'écran d'accueil »**.
+4. Confirme avec **« Ajouter »**.
+
+L'icône D dorée apparaît sur ton écran d'accueil. Tu peux la déplacer comme n'importe quelle autre app.
 
 ### Android (Chrome)
-1. Ouvre l'URL dans Chrome.
-2. Une bannière "Installer Drakonym Compagnon ?" apparaît en bas. → Tap "Installer".
-3. Une icône D dorée apparaît sur ton écran d'accueil.
+Deux possibilités selon le navigateur :
+- Une bannière **« Installer Drakonym Compagnon ? »** apparaît automatiquement (souvent au bout de quelques secondes d'utilisation).
+- Sinon : menu ⋮ en haut à droite → **« Installer l'application »** ou **« Ajouter à l'écran d'accueil »**.
 
-### iPhone (Safari)
-1. Ouvre l'URL dans **Safari** (pas Chrome iOS, qui ne supporte pas l'install PWA correctement).
-2. Tap le bouton **Partager** (carré avec flèche vers le haut).
-3. Fais défiler et choisis **"Sur l'écran d'accueil"**.
-4. Confirme avec **"Ajouter"**. L'icône apparaît.
+### PC (Chrome / Edge)
+- Une **petite icône d'installation** ⊕ apparaît dans la barre d'adresse, à droite de l'URL. Clique dessus → confirme.
+- Si invisible : menu ⋮ → **« Installer Drakonym Compagnon »**.
+
+### Bouton "Installer" dans l'app
+L'app embarque aussi un **bouton install** dans l'onglet **« Plus »** qui marche sur Chrome/Edge desktop et Android. Sur iOS le bouton n'apparaît pas (limitation Apple) mais l'app affiche les instructions à suivre.
+
+### Firefox
+Pas de support PWA install natif. Tu peux quand même utiliser l'app dans le navigateur, mais sans icône sur l'écran d'accueil.
 
 ---
 
