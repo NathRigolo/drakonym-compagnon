@@ -129,8 +129,9 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
     background-image: url('dragon-bg.webp');
     background-size: cover;
     background-position: center center;
@@ -147,8 +148,9 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
     background: var(--bg-overlay);
     z-index: -1;
     pointer-events: none;
