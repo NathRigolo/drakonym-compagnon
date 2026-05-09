@@ -141,6 +141,10 @@ const STORAGE_KEY_V2 = 'drakonym_compagnon_fiches';
 /* Applique tous les défauts à une fiche (factorisé pour réutilisation) */
 function mergeFicheDefaults(fiche) {
     const merged = Object.assign({}, FICHE_DEMO, fiche);
+    // Migration : hp_max minimum 3 (règle officielle Drakonym page 15 — Players can hold up to 3 Hero Points)
+    if (typeof merged.hp_max !== 'number' || merged.hp_max < 3) merged.hp_max = 3;
+    if (typeof merged.hp_current !== 'number') merged.hp_current = 1;
+    if (merged.hp_current > merged.hp_max) merged.hp_current = merged.hp_max;
     merged.wounds = Object.assign(
         { light: 0, heavy: 0, deadly: 0, light_max: 3, heavy_max: 3, deadly_max: 3 },
         merged.wounds || {}
@@ -3938,6 +3942,9 @@ function bindConfigFields() {
     });
 
     // Pools max + bonuses
+    bindNumber('cfg-hp-max', 'hp_max', 10, () => {
+        if (currentFiche.hp_current > currentFiche.hp_max) currentFiche.hp_current = currentFiche.hp_max;
+    });
     bindNumber('cfg-mana-max', 'mana_max', 50, () => {
         if (currentFiche.mana_current > currentFiche.mana_max) currentFiche.mana_current = currentFiche.mana_max;
     });
@@ -3983,6 +3990,7 @@ function renderConfigFields() {
         setVal(`cfg-attr-${name}`, (f.attributs && f.attributs[name]) || 0);
     });
     setVal('cfg-mana-max', f.mana_max || 0);
+    setVal('cfg-hp-max', f.hp_max || 3);
     setVal('cfg-grit-max', f.grit_max || 0);
     setVal('cfg-defense-max', f.defense_max || 0);
     setVal('cfg-armure', f.armure_bonus || 0);

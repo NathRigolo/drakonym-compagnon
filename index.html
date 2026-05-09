@@ -167,6 +167,10 @@
                         <h4 class="config-subtitle">Pools maximum</h4>
                         <div class="config-grid-3">
                             <div class="config-field">
+                                <label class="config-label">HP max</label>
+                                <input type="number" id="cfg-hp-max" class="config-input" min="1" max="10">
+                            </div>
+                            <div class="config-field">
                                 <label class="config-label">Mana max</label>
                                 <input type="number" id="cfg-mana-max" class="config-input" min="0" max="50">
                             </div>
@@ -187,6 +191,7 @@
                                 <input type="number" id="cfg-spell-bonus" class="config-input" min="0" max="5">
                             </div>
                         </div>
+                        <p class="config-hint-small">💡 <strong>HP max</strong> par défaut = 3 (règle officielle Drakonym). Extensible via Perks comme <strong>Deep Reserves</strong>.</p>
 
                         <h4 class="config-subtitle">Niveaux de Blessures (extensibles via Perks)</h4>
                         <p class="config-hint-small">Ex: <strong>Loyal to the Last</strong> = +1 box par tier. <strong>Loyal Heart</strong>, etc.</p>
@@ -682,7 +687,7 @@
                     <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.9.2 (Traduction finale)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.9.3 (Fix HP max)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>
