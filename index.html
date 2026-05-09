@@ -740,7 +740,7 @@
                     <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.12.2 (Fix mobile bg dvh)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.13.0 (Vague D - Sidebar cachable)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>
@@ -809,6 +809,11 @@
              ════════════════════════════════════════════════ -->
         <aside class="desktop-sidebar desktop-sidebar-right" id="desktop-sidebar-right" aria-label="Panneau de jeu">
 
+            <!-- Bouton pour cacher la sidebar -->
+            <button type="button" class="desktop-sidebar-toggle" id="desktop-sidebar-toggle-hide" aria-label="Masquer ce panneau" title="Masquer">
+                <span aria-hidden="true">⟩</span>
+            </button>
+
             <!-- Persona switcher -->
             <div class="desktop-side-block">
                 <div class="desktop-side-label">Personnage actif</div>
@@ -835,6 +840,11 @@
             </div>
 
         </aside>
+
+        <!-- Onglet réouverture sidebar droite (visible quand sidebar cachée) -->
+        <button type="button" class="desktop-sidebar-show-tab" id="desktop-sidebar-toggle-show" aria-label="Afficher le panneau de jeu" title="Afficher le panneau">
+            <span aria-hidden="true">⟨</span>
+        </button>
 
     </div>
 

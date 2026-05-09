@@ -4656,15 +4656,32 @@ function bindDesktopSidebar() {
     const personaBtn = document.getElementById('desktop-persona-btn');
     if (personaBtn) {
         personaBtn.addEventListener('click', () => {
-            // Bascule vers l'onglet Plus pour gérer les fiches
             switchToTab('plus');
-            // Et scroll vers la liste des fiches
             setTimeout(() => {
                 const list = document.getElementById('list-fiches');
                 if (list) list.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 100);
         });
     }
+
+    // Toggle sidebar droite (Vague D)
+    const hideBtn = document.getElementById('desktop-sidebar-toggle-hide');
+    const showBtn = document.getElementById('desktop-sidebar-toggle-show');
+    if (hideBtn) hideBtn.addEventListener('click', () => setDesktopSidebarRightHidden(true));
+    if (showBtn) showBtn.addEventListener('click', () => setDesktopSidebarRightHidden(false));
+
+    // Restaurer l'état au chargement
+    const saved = localStorage.getItem('drakonym_sidebar_right_hidden');
+    if (saved === '1') setDesktopSidebarRightHidden(true);
+}
+
+function setDesktopSidebarRightHidden(hidden) {
+    const layout = document.querySelector('.app-layout');
+    if (!layout) return;
+    layout.classList.toggle('right-hidden', hidden);
+    try {
+        localStorage.setItem('drakonym_sidebar_right_hidden', hidden ? '1' : '0');
+    } catch (e) { /* localStorage indispo, on ignore */ }
 }
 
 function refreshDesktopPersona() {

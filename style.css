@@ -3572,6 +3572,78 @@ a:hover, a:focus { color: var(--gold-bright); }
         min-height: 100dvh;
         max-width: 1800px;
         margin: 0 auto;
+        transition: grid-template-columns 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* Sidebar droite cachée : la colonne se réduit à 0 */
+    .app-layout.right-hidden {
+        grid-template-columns: 180px minmax(0, 1fr) 0;
+    }
+    .app-layout.right-hidden .desktop-sidebar-right {
+        transform: translateX(100%);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Bouton "masquer" dans la sidebar droite */
+    .desktop-sidebar-toggle {
+        position: absolute;
+        top: 12px;
+        left: 8px;
+        width: 26px;
+        height: 26px;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+    }
+    .desktop-sidebar-toggle:hover {
+        border-color: var(--gold);
+        color: var(--gold);
+        background: rgba(212, 160, 23, 0.08);
+    }
+
+    /* Onglet "afficher" qui apparaît au bord droit quand sidebar cachée */
+    .desktop-sidebar-show-tab {
+        position: fixed;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        width: 22px;
+        height: 80px;
+        background: var(--bg-vital-translucent);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid var(--border);
+        border-right: none;
+        border-radius: 8px 0 0 8px;
+        color: var(--gold);
+        cursor: pointer;
+        font-size: 14px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        transition: background-color 150ms ease, color 150ms ease, padding-right 150ms ease;
+    }
+    .desktop-sidebar-show-tab:hover {
+        background: var(--bg-card);
+        padding-right: 4px;
+    }
+    /* Visible uniquement quand la sidebar droite est cachée */
+    .app-layout.right-hidden .desktop-sidebar-show-tab {
+        display: flex;
+    }
+
+    /* Sidebar droite : transition douce de translation */
+    .desktop-sidebar-right {
+        transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease;
     }
 
     /* Sidebars visibles */
