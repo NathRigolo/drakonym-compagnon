@@ -1,6 +1,32 @@
-# 🐉 Drakonym Compagnon — Vague 2 (v1.1.0)
+# 🐉 Drakonym Compagnon — Vague 4 (v1.4.0)
 
 App mobile-first PWA pour gérer ta fiche Drakonym en pleine session.
+
+## 🆕 Nouveautés v1.4.0 (Vague 4 — Capacités)
+- 📚 **Onglet Capacités complet** avec 4 sous-onglets : Perks · Sorts · Techniques · Wild Perks
+- 💪 **Perks** : capacités passives (juste titre + emoji + description)
+- ✨ **Sorts** : avec choix d'Aspect (Arcanum/Divinity/Inheric/Radiant/Untamed/Voidcraft), coût Mana et coût AP. Bouton "Lancer le sort" qui consomme automatiquement le Mana et affiche le nombre de succès requis selon la table officielle
+- ⚔️ **Techniques Martiales** : avec choix de Tradition (Assessment/Momentum/Power/Precision/Protection/Suppression), coût Grit et AP. Bouton "Utiliser" qui consomme le Grit
+- ⚡ **Wild Perks** : bordure dorée épaisse, toggle utilisé/non utilisé (atténué + barré quand utilisé). Bouton ↻ "Restaurer" pour les remettre toutes disponibles si le Herald décide
+- ➕ **Ajout/édition** via bottom sheet avec formulaire adapté au type
+- 🧮 Calcul auto du coût AP depuis le coût Mana (table officielle p.17)
+
+## 🆕 Nouveautés v1.3.0 (Vague 3 — Lanceur de dés)
+- 🎲 **Lanceur de dés complet** plein écran, accessible via le FAB doré OU en tapant un attribut dans la Fiche
+- ⚖️ **Mécaniques officielles** strictement vérifiées dans le rulebook : 5=1 succès, 6=2 succès, 1 ne fait rien (pas de pénalité), Bane n'annule que les 5 (pas de fallback sur 6)
+- ⭐ **Boon interactif post-jet** : convertir un 4 en succès OU Second Wind (relance les doublons non-succès)
+- 🌑 **Shadow Die (d12)** avec interprétation narrative complète (Disaster / Complication / No Change / Opportunity / Miracle)
+- 💫 **Hero Points intégrés** : toggle "Boon gratuit (-1 HP)" dans la config, bouton **Reroll (-2 HP)** dans le résultat (consomme tes HP en live, sauve dans la fiche)
+- 🎯 **Difficulté Dx** optionnelle : si tu mets une difficulté, le résultat affiche Réussite / Échec
+- 📜 **Historique des 20 derniers jets** (icône ⟳ en haut à droite du modal), persistant via localStorage
+- 🗑️ Carte Hero Points retirée de la Fiche (redondante avec la Vital Bar)
+
+## 🆕 Nouveautés v1.2.0 (Vague 2)
+- 🩹 **Wounds — vraie règle officielle** : 3 tracks indépendants, chacun jusqu'à 3 boxes (extensible via Perks). **Overflow** : track plein → wound suivante passe au tier supérieur. Deadly overflow = mort.
+- 📦 Nouveau modèle data : `wounds: { light, heavy, deadly, light_max, heavy_max, deadly_max }` — les `_max` sont à 3 par défaut, modifiables si une Perk étend une track
+- 🇫🇷 **Statuses corrigés** : la vraie liste officielle (16 statuses : Blinded, Bloodied, Burning, Charmed, Confused, Dazed, Frightened, Frozen, Knocked Down, Poisoned, Rooted, Silenced, Slowed, Stunned, Unseen, Weakened) avec emoji + descriptions précises tirées du rulebook
+- ⚡ Seuls **Burning** et **Poisoned** ont une intensité (X = dégâts par tour, pas durée)
+- 🎨 Wound boxes visuelles dans la modale, couleurs distinctes par tier (orange / rouge clair / rouge sombre)
 
 ## 🆕 Nouveautés v1.1.0 (Vague 2)
 - 📜 **Onglet Fiche complet** : identité, attributs (Soul mis en valeur Primary), Mana/Grit avec barres, Hero Points, Statuses

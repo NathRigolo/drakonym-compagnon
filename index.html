@@ -134,17 +134,6 @@
                     </div>
                 </div>
 
-                <!-- HERO POINTS -->
-                <div class="block">
-                    <h3 class="block-title">Hero Points</h3>
-                    <button class="hero-points-card" id="hero-points-card" type="button" aria-label="Modifier les Hero Points">
-                        <div class="hp-stars" id="hp-stars">
-                            <!-- généré par JS -->
-                        </div>
-                        <div class="hp-text" id="hp-text">2 / 3 disponibles</div>
-                    </button>
-                </div>
-
                 <!-- STATUSES -->
                 <div class="block">
                     <h3 class="block-title">Statuses</h3>
@@ -164,33 +153,314 @@
                     </button>
                 </div>
 
+                <!-- HISTOIRE & NOTES (collapsible) -->
+                <details class="histoire-block">
+                    <summary class="histoire-summary">📜 Histoire &amp; Notes</summary>
+                    <div class="histoire-content">
+                        <div class="histoire-row">
+                            <label class="histoire-label">👁 Apparence</label>
+                            <textarea id="fiche-apparence" class="histoire-input" rows="3" placeholder="Apparence physique, vêtements, traits distinctifs…"></textarea>
+                        </div>
+                        <div class="histoire-row">
+                            <label class="histoire-label">📖 Histoire / Background</label>
+                            <textarea id="fiche-histoire" class="histoire-input" rows="5" placeholder="D'où vient ton perso, ce qui l'a façonné, ses motivations…"></textarea>
+                        </div>
+                        <div class="histoire-row">
+                            <label class="histoire-label">🤝 Liens &amp; relations</label>
+                            <textarea id="fiche-liens" class="histoire-input" rows="3" placeholder="Alliés, ennemis, famille, contacts…"></textarea>
+                        </div>
+                        <div class="histoire-row">
+                            <label class="histoire-label">📝 Notes libres</label>
+                            <textarea id="fiche-notes" class="histoire-input" rows="4" placeholder="Tout ce que tu veux retenir : journal de session, idées RP, plans futurs…"></textarea>
+                        </div>
+                    </div>
+                </details>
+
             </section>
 
             <!-- Onglet : CAPACITÉS -->
             <section class="tab-section" id="section-capacites" data-tab="capacites">
-                <div class="placeholder">
-                    <div class="placeholder-icon">✨</div>
-                    <h2 class="placeholder-title">Onglet Capacités</h2>
-                    <p class="placeholder-text">Perks, Sorts, Techniques Martiales et Wild Perks arriveront en Vague 4.</p>
+                <!-- Barre de sous-onglets (Perks / Sorts / Techniques / Wild) -->
+                <div class="subtabs-bar" role="tablist" data-scope="capacites">
+                    <button class="subtab active" type="button" data-subtab="perks" aria-selected="true">
+                        <span class="subtab-icon">💪</span>
+                        <span class="subtab-text">Perks</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="sorts" aria-selected="false">
+                        <span class="subtab-icon">✨</span>
+                        <span class="subtab-text">Sorts</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="techniques" aria-selected="false">
+                        <span class="subtab-icon">⚔️</span>
+                        <span class="subtab-text">Tech.</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="wild_perks" aria-selected="false">
+                        <span class="subtab-icon">⚡</span>
+                        <span class="subtab-text">Wild</span>
+                    </button>
+                </div>
+
+                <!-- Sous-section : PERKS -->
+                <div class="subtab-section active" id="subsection-perks" data-subtab="perks">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Perks &amp; Capacités · <span id="count-perks">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="perks">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-perks"></div>
+                </div>
+
+                <!-- Sous-section : SORTS -->
+                <div class="subtab-section" id="subsection-sorts" data-subtab="sorts">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Sorts (Mana) · <span id="count-sorts">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="sorts">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-sorts"></div>
+                </div>
+
+                <!-- Sous-section : TECHNIQUES -->
+                <div class="subtab-section" id="subsection-techniques" data-subtab="techniques">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Techniques Martiales (Grit) · <span id="count-techniques">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="techniques">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-techniques"></div>
+                </div>
+
+                <!-- Sous-section : WILD PERKS -->
+                <div class="subtab-section" id="subsection-wild_perks" data-subtab="wild_perks">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Wild Perks · <span id="count-wild_perks">0</span></p>
+                        <div class="capacites-header-actions">
+                            <button class="btn-restore-wild" type="button" id="btn-restore-wild" title="Restaurer toutes les Wild Perks">↻</button>
+                            <button class="btn-add-capacite" type="button" data-list="wild_perks">+ Ajouter</button>
+                        </div>
+                    </div>
+                    <p class="capacites-hint">⚡ Bursts uniques donnés par le Herald, à utiliser pour des moments épiques. Une fois utilisée, l'effet disparaît (sauf si le Herald décide autrement).</p>
+                    <div class="capacites-list" id="list-wild_perks"></div>
                 </div>
             </section>
 
             <!-- Onglet : ÉQUIPEMENT -->
             <section class="tab-section" id="section-equipement" data-tab="equipement">
-                <div class="placeholder">
-                    <div class="placeholder-icon">⚔</div>
-                    <h2 class="placeholder-title">Onglet Équipement</h2>
-                    <p class="placeholder-text">Armes, armure, outils et Draviks arriveront en Vague 5.</p>
+
+                <!-- Compteur Draviks (la monnaie) -->
+                <button class="draviks-card" id="draviks-card" type="button">
+                    <span class="draviks-icon">◈</span>
+                    <span class="draviks-text">
+                        <span class="draviks-label">Draviks</span>
+                        <span class="draviks-value" id="draviks-value">0</span>
+                    </span>
+                    <span class="draviks-edit-hint">tap pour modifier</span>
+                </button>
+
+                <!-- Barre de sous-onglets (Armes / Armures / Outils) -->
+                <div class="subtabs-bar" role="tablist" data-scope="equipement">
+                    <button class="subtab active" type="button" data-subtab="weapons" aria-selected="true">
+                        <span class="subtab-icon">⚔️</span>
+                        <span class="subtab-text">Armes</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="armors" aria-selected="false">
+                        <span class="subtab-icon">🛡️</span>
+                        <span class="subtab-text">Armures</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="tools" aria-selected="false">
+                        <span class="subtab-icon">🎒</span>
+                        <span class="subtab-text">Outils</span>
+                    </button>
                 </div>
+
+                <!-- Sous-section : ARMES -->
+                <div class="subtab-section active" id="subsection-weapons" data-subtab="weapons">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Armes &amp; Focuses · <span id="count-weapons">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="weapons">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-weapons"></div>
+                </div>
+
+                <!-- Sous-section : ARMURES -->
+                <div class="subtab-section" id="subsection-armors" data-subtab="armors">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Armures &amp; Boucliers · <span id="count-armors">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="armors">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-armors"></div>
+                </div>
+
+                <!-- Sous-section : OUTILS -->
+                <div class="subtab-section" id="subsection-tools" data-subtab="tools">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Outils &amp; Items · <span id="count-tools">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="tools">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-tools"></div>
+                </div>
+
             </section>
 
             <!-- Onglet : DRAGON -->
             <section class="tab-section" id="section-dragon" data-tab="dragon">
-                <div class="placeholder">
-                    <div class="placeholder-icon">🐉</div>
-                    <h2 class="placeholder-title">Onglet Dragon</h2>
-                    <p class="placeholder-text">Identité, stats, Bond Points, Breath Weapon et Perks arriveront en Vague 6.</p>
+
+                <!-- Carte d'identité du dragon (toujours visible) -->
+                <div class="dragon-identity-card">
+                    <div class="dragon-id-row dragon-id-name-row">
+                        <input type="text" id="dragon-nom" class="dragon-id-name" placeholder="Nom du dragon" maxlength="30">
+                    </div>
+                    <div class="dragon-id-row dragon-id-meta">
+                        <select id="dragon-family" class="dragon-id-select">
+                            <option value="">Famille…</option>
+                            <option value="Astral">Astral</option>
+                            <option value="Aura">Aura</option>
+                            <option value="Mirror">Mirror</option>
+                            <option value="Moon">Moon</option>
+                            <option value="Pyre">Pyre</option>
+                            <option value="Shard">Shard</option>
+                            <option value="Storm">Storm</option>
+                            <option value="Sun">Sun</option>
+                            <option value="Half-Dragon">Half-Dragon</option>
+                        </select>
+                        <select id="dragon-stage" class="dragon-id-select">
+                            <option value="Hatchling">Hatchling (Lvl 1, BP 6)</option>
+                            <option value="Juvenile">Juvenile (Lvl 2, BP 9)</option>
+                            <option value="Mature">Mature (Lvl 4, BP 12)</option>
+                            <option value="Elder">Elder (Lvl 6, BP 15)</option>
+                            <option value="Mythic">Mythic (Lvl 8, BP 18)</option>
+                        </select>
+                    </div>
                 </div>
+
+                <!-- Sous-onglets : Stats / Capacités / Équipement -->
+                <div class="subtabs-bar" role="tablist" data-scope="dragon">
+                    <button class="subtab active" type="button" data-subtab="dstats" aria-selected="true">
+                        <span class="subtab-icon">📊</span>
+                        <span class="subtab-text">Stats</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="dperks" aria-selected="false">
+                        <span class="subtab-icon">🔗</span>
+                        <span class="subtab-text">Bond Perks</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="dgear" aria-selected="false">
+                        <span class="subtab-icon">⚔️</span>
+                        <span class="subtab-text">Équipement</span>
+                    </button>
+                </div>
+
+                <!-- Sous-section : STATS -->
+                <div class="subtab-section active" id="subsection-dstats" data-subtab="dstats">
+
+                    <!-- Attributs Body / Mind / Soul -->
+                    <h3 class="dragon-section-title">⚜ Attributs</h3>
+                    <div class="dragon-attrs-grid">
+                        <button type="button" class="attribute-cell" data-dattr="Body">
+                            <span class="attribute-name">Body</span>
+                            <span class="attribute-value" id="dragon-attr-Body">1</span>
+                        </button>
+                        <button type="button" class="attribute-cell" data-dattr="Mind">
+                            <span class="attribute-name">Mind</span>
+                            <span class="attribute-value" id="dragon-attr-Mind">1</span>
+                        </button>
+                        <button type="button" class="attribute-cell" data-dattr="Soul">
+                            <span class="attribute-name">Soul</span>
+                            <span class="attribute-value" id="dragon-attr-Soul">1</span>
+                        </button>
+                    </div>
+
+                    <!-- Bond Points + Defense Slots calculé -->
+                    <div class="dragon-resources-grid">
+                        <button type="button" class="resource-card" id="dragon-bp-card">
+                            <span class="resource-icon">🔗</span>
+                            <span class="resource-text">
+                                <span class="resource-label">Bond Points</span>
+                                <span class="resource-value">
+                                    <span id="dragon-bp-current">0</span>
+                                    <span class="resource-sep">/</span>
+                                    <span id="dragon-bp-max">6</span>
+                                </span>
+                            </span>
+                        </button>
+                        <div class="resource-card resource-readonly">
+                            <span class="resource-icon">🛡</span>
+                            <span class="resource-text">
+                                <span class="resource-label">Defense Slots</span>
+                                <span class="resource-value" id="dragon-ds-value">0</span>
+                            </span>
+                            <span class="resource-formula" id="dragon-ds-formula">Armure + Body + ½ Niv</span>
+                        </div>
+                    </div>
+
+                    <!-- Vitesse -->
+                    <div class="dragon-speed-row">
+                        <label class="dragon-speed-label">⚡ Vitesse</label>
+                        <input type="number" id="dragon-speed" class="dragon-speed-input" min="0" max="20" value="6">
+                        <span class="dragon-speed-hint">cases / round</span>
+                    </div>
+
+                    <!-- Breath Weapon -->
+                    <h3 class="dragon-section-title">🔥 Breath Weapon</h3>
+                    <button type="button" class="breath-card" id="breath-card">
+                        <div class="breath-card-header">
+                            <span class="breath-element" id="breath-element-display">— Aucun —</span>
+                            <span class="breath-shape" id="breath-shape-display">Cone</span>
+                            <span class="breath-charges-pill">
+                                <span id="breath-charges-current">0</span>/<span id="breath-charges-max">1</span>
+                            </span>
+                        </div>
+                        <div class="breath-card-body">
+                            <p class="breath-description" id="breath-description-display">— Tap pour configurer —</p>
+                            <p class="breath-effect" id="breath-effect-display"></p>
+                            <p class="breath-formula">Pool : Dragon Soul + Player Primary</p>
+                        </div>
+                    </button>
+                    <div class="breath-actions">
+                        <button type="button" class="capacite-action-btn primary" id="btn-breath-launch">🐉 Lancer le souffle</button>
+                        <button type="button" class="capacite-action-btn" id="btn-breath-recharge">↻ Recharger</button>
+                    </div>
+
+                    <!-- Pillars -->
+                    <h3 class="dragon-section-title">💞 Pillars</h3>
+                    <div class="pillars-grid">
+                        <div class="pillar-row">
+                            <label class="pillar-label">❤️ Love</label>
+                            <textarea id="dragon-love" class="pillar-input" rows="2" placeholder="Ce qui apaise ou réjouit ton dragon"></textarea>
+                        </div>
+                        <div class="pillar-row">
+                            <label class="pillar-label">😨 Fear</label>
+                            <textarea id="dragon-fear" class="pillar-input" rows="2" placeholder="Ce qui le tourmente ou l'effraie"></textarea>
+                        </div>
+                        <div class="pillar-row">
+                            <label class="pillar-label">⚡ Instinct</label>
+                            <textarea id="dragon-instinct" class="pillar-input" rows="2" placeholder="Ce qu'il fait sans réfléchir"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Sous-section : BOND PERKS -->
+                <div class="subtab-section" id="subsection-dperks" data-subtab="dperks">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Bond Perks &amp; Family Perks · <span id="count-dperks">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="dperks">+ Ajouter</button>
+                    </div>
+                    <p class="capacites-hint">🔗 Ajoute ici les Bond Perks (génériques) et les Family Perks (Core/Minor/Major) propres à la famille de ton dragon. Tu peux marquer les "once per scene" comme utilisées.</p>
+                    <div class="capacites-list" id="list-dperks"></div>
+                </div>
+
+                <!-- Sous-section : ÉQUIPEMENT DRAGON -->
+                <div class="subtab-section" id="subsection-dgear" data-subtab="dgear">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Armes du dragon · <span id="count-dweapons">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="dweapons">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-dweapons"></div>
+
+                    <div class="capacites-header" style="margin-top: 16px;">
+                        <p class="capacites-count">Armures du dragon · <span id="count-darmors">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="darmors">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-darmors"></div>
+                </div>
+
             </section>
 
             <!-- Onglet : PLUS -->
@@ -229,14 +499,30 @@
                     </div>
 
                     <div class="settings-block">
-                        <h3 class="settings-block-title">Données</h3>
-                        <p class="settings-info">Histoire du personnage, import/export JSON, gestion multi-fiches&nbsp;: à venir en Vague 7.</p>
+                        <h3 class="settings-block-title">📋 Mes fiches</h3>
+                        <p class="settings-info">Gère plusieurs personnages. La fiche active est en doré.</p>
+                        <div class="fiches-list" id="fiches-list"></div>
+                        <div class="fiches-actions">
+                            <button type="button" class="settings-btn" id="btn-fiche-new">+ Nouvelle fiche</button>
+                            <button type="button" class="settings-btn" id="btn-fiche-duplicate">⎘ Dupliquer la fiche active</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-block">
+                        <h3 class="settings-block-title">💾 Sauvegarde &amp; transfert</h3>
+                        <p class="settings-info">Exporte ta fiche en JSON pour la sauvegarder ou la transférer entre PC et téléphone.</p>
+                        <div class="fiches-actions">
+                            <button type="button" class="settings-btn" id="btn-export-active">⇩ Exporter la fiche active</button>
+                            <button type="button" class="settings-btn" id="btn-export-all">⇩ Exporter toutes les fiches</button>
+                            <button type="button" class="settings-btn" id="btn-import">⇧ Importer un fichier JSON</button>
+                            <input type="file" id="import-file-input" accept=".json,application/json" hidden>
+                        </div>
                     </div>
 
                     <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.1.0 (Vague 2)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.7.0 (Vague 7)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>
@@ -294,9 +580,24 @@
     </div>
 
     <!-- ════════════════════════════════════════════════
+         DICE MODAL — lanceur de dés plein écran
+         ════════════════════════════════════════════════ -->
+    <div class="dice-modal" id="dice-modal" hidden>
+        <header class="dice-modal-header">
+            <button class="dice-modal-icon-btn" id="dice-modal-close" type="button" aria-label="Fermer">✕</button>
+            <h2 class="dice-modal-title" id="dice-modal-title">Lancer de dés</h2>
+            <button class="dice-modal-icon-btn" id="dice-modal-history-btn" type="button" aria-label="Historique">⟳</button>
+        </header>
+
+        <div class="dice-modal-body" id="dice-modal-body">
+            <!-- Vue config OU résultat OU historique injectée par JS -->
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
          BOTTOM SHEET — modale qui glisse depuis le bas
          ════════════════════════════════════════════════ -->
-    <div class="bottom-sheet-backdrop" id="bottom-sheet-backdrop" hidden>
+    <div class="bottom-sheet-backdrop" id="bottom-sheet-backdrop" hidden>>
         <div class="bottom-sheet" id="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="bottom-sheet-title">
             <div class="bottom-sheet-handle" aria-hidden="true"></div>
             <div class="bottom-sheet-header">
