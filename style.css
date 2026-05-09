@@ -136,6 +136,13 @@ body::before {
     background-repeat: no-repeat;
     z-index: -2;
     pointer-events: none;
+    /* Force la création d'une compositor layer GPU dédiée → l'image reste
+       vraiment immobile pendant le scroll iOS et ne saute plus aux changements de tab */
+    transform: translateZ(0);
+    -webkit-transform: translate3d(0, 0, 0);
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 /* Voile semi-transparent par-dessus l'image, sous tout le contenu */
@@ -146,6 +153,8 @@ body::after {
     background: var(--bg-overlay);
     z-index: -1;
     pointer-events: none;
+    transform: translateZ(0);
+    -webkit-transform: translate3d(0, 0, 0);
 }
 
 /* Tous les contenus visibles passent au-dessus de l'overlay */
@@ -3909,12 +3918,6 @@ a:hover, a:focus { color: var(--gold-bright); }
     .capacites-list:empty,
     .equipement-list:empty {
         display: block;
-    }
-    /* Item déplié : prend toute la largeur pour ne pas tirer son voisin
-       et permet aux autres items de rester compactes en dessous */
-    .capacites-list .capacite-item.expanded,
-    .equipement-list .capacite-item.expanded {
-        grid-column: 1 / -1;
     }
 
     /* === Bottom sheets → modals centrés sur desktop === */
