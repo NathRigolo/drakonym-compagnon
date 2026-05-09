@@ -3500,12 +3500,205 @@ a:hover, a:focus { color: var(--gold-bright); }
 }
 
 
+/* ─── DESKTOP : sidebars cachées par défaut (mobile-first) ─────── */
+.desktop-sidebar { display: none; }
+
 /* ─── TABLETTE LANDSCAPE / DESKTOP (≥ 1024px) ─────────────────── */
 @media (min-width: 1024px) {
-    /* L'app-shell s'étend à 1100px — les tabs restent dedans */
-    .app-shell { max-width: 1100px; }
-    .tabs { max-width: 1100px; }
 
+    /* ═══════════════════════════════════════════════════════════════
+       v1.11.0 — LAYOUT 3 ZONES : sidebar gauche + centre + sidebar droite
+       ═══════════════════════════════════════════════════════════════ */
+
+    body { background: var(--bg); }
+
+    .app-layout {
+        display: grid;
+        grid-template-columns: 160px minmax(0, 1fr) 280px;
+        min-height: 100vh;
+        min-height: 100dvh;
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    /* Sidebars visibles */
+    .desktop-sidebar {
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-vital);
+        border-right: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        height: 100dvh;
+        overflow-y: auto;
+    }
+    .desktop-sidebar-right {
+        border-right: none;
+        border-left: 1px solid var(--border);
+    }
+
+    /* ─── Sidebar GAUCHE ─── */
+    .desktop-brand {
+        padding: 18px 18px 16px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    .desktop-brand-name {
+        font-family: 'Cinzel', serif;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--gold);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+    .desktop-brand-sub {
+        font-family: 'EB Garamond', serif;
+        font-size: 11px;
+        color: var(--text-muted);
+        font-style: italic;
+    }
+    .desktop-nav {
+        display: flex;
+        flex-direction: column;
+        padding: 12px 0;
+        flex: 1;
+    }
+    .desktop-nav-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 18px;
+        background: transparent;
+        border: none;
+        border-left: 3px solid transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-family: 'EB Garamond', serif;
+        font-size: 14px;
+        text-align: left;
+        transition: background-color 150ms ease, color 150ms ease;
+    }
+    .desktop-nav-btn:hover {
+        background: rgba(201, 169, 96, 0.06);
+        color: var(--text);
+    }
+    .desktop-nav-btn.active {
+        background: rgba(201, 169, 96, 0.10);
+        border-left-color: var(--gold);
+        color: var(--gold);
+    }
+    .desktop-nav-glyph {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+    .desktop-nav-label {
+        flex: 1;
+    }
+    .desktop-dice-btn {
+        margin: 14px;
+        padding: 12px 14px;
+        background: var(--gold);
+        color: var(--on-gold);
+        border: 1px solid var(--gold-bright);
+        border-radius: 8px;
+        font-family: 'Cinzel', serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: transform 100ms ease, filter 150ms ease;
+    }
+    .desktop-dice-btn:hover { filter: brightness(1.08); }
+    .desktop-dice-btn:active { transform: scale(0.97); }
+    .desktop-dice-icon { font-size: 18px; }
+
+    /* ─── Sidebar DROITE ─── */
+    .desktop-side-block {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .desktop-side-block-grow {
+        flex: 1;
+        border-bottom: none;
+    }
+    .desktop-side-label {
+        font-family: 'Cinzel', serif;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+    .desktop-side-content {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .desktop-side-empty {
+        font-family: 'EB Garamond', serif;
+        font-style: italic;
+        color: var(--text-muted);
+        font-size: 12px;
+        margin: 4px 0;
+    }
+    .desktop-persona-btn {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 10px 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        color: var(--text);
+        font-family: 'EB Garamond', serif;
+        font-size: 14px;
+        transition: border-color 150ms ease;
+    }
+    .desktop-persona-btn:hover {
+        border-color: var(--gold);
+    }
+    .desktop-persona-name {
+        font-weight: 500;
+        color: var(--gold);
+        text-align: left;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .desktop-persona-arrow {
+        color: var(--text-muted);
+        font-size: 12px;
+    }
+
+    /* ─── App-shell central : pas de max-width sur desktop ─── */
+    .app-shell {
+        max-width: none;
+        margin: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+    }
+
+    /* Cacher bottom-tabs et FAB sur desktop (remplacés par sidebar gauche) */
+    .tabs { display: none; }
+    .fab { display: none; }
+
+    /* Vital bar inchangée mais centrée dans la colonne */
     .vital-bar {
         padding: 16px 32px 18px;
     }
@@ -3544,22 +3737,10 @@ a:hover, a:focus { color: var(--gold-bright); }
     .vital-stat { flex: 0 0 auto; min-width: 60px; }
 
     /* Plus d'air dans le contenu */
-    .tab-section { padding: 32px 24px 100px; }
+    .tab-section { padding: 32px 40px 60px; }
     .placeholder { padding: 80px 24px; }
 
-    /* FAB encore mieux positionné */
-    .fab {
-        right: 32px;
-        bottom: 96px;
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       v1.10.0 — DESKTOP : multi-colonnes pour onglets denses
-       ═══════════════════════════════════════════════════════════════ */
-
-    /* === Onglet FICHE : 2 colonnes pour les blocs denses ===
-       Identité (haut), Configuration (haut), Histoire & Notes (bas) restent pleine largeur
-       Attributs / Ressources / Statuts / Repos court se répartissent en 2 colonnes */
+    /* === Onglet FICHE : 2 colonnes pour les blocs denses === */
     #section-fiche {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -3572,8 +3753,7 @@ a:hover, a:focus { color: var(--gold-bright); }
         grid-column: 1 / -1;
     }
 
-    /* === Listes en 2 colonnes (Capacités, Équipement, Dragon) ===
-       Quand il y a beaucoup d'items, on les dispose en 2 colonnes pour utiliser la largeur */
+    /* === Listes en 2 colonnes (Capacités, Équipement, Dragon) === */
     .capacites-list,
     .equipement-list {
         display: grid;
@@ -3585,15 +3765,14 @@ a:hover, a:focus { color: var(--gold-bright); }
         display: block;
     }
 
-    /* === Bottom sheets → modals centrés sur desktop ===
-       Le backdrop centre maintenant verticalement au lieu d'aligner en bas */
+    /* === Bottom sheets → modals centrés sur desktop === */
     .bottom-sheet-backdrop {
         align-items: center;
     }
     .bottom-sheet {
         max-width: 600px;
         max-height: 80vh;
-        border-radius: 12px; /* tous les coins arrondis (pas juste le haut) */
+        border-radius: 12px;
         border-top: 1px solid var(--border-strong);
         animation: bottomSheetFadeIn 220ms cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -3601,7 +3780,6 @@ a:hover, a:focus { color: var(--gold-bright); }
         from { opacity: 0; transform: translateY(-12px); }
         to   { opacity: 1; transform: translateY(0); }
     }
-    /* Sur desktop, on peut cacher le handle (peu utile à la souris) */
     .bottom-sheet-handle { display: none; }
 }
 

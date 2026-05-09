@@ -298,6 +298,10 @@ function switchToTab(tabName) {
         t.classList.toggle('active', isActive);
         t.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
+    // Sync sidebar gauche desktop
+    document.querySelectorAll('.desktop-nav-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.desktopTab === tabName);
+    });
     document.querySelectorAll('.tab-section').forEach(s => {
         s.classList.toggle('active', s.dataset.tab === tabName);
     });
@@ -317,6 +321,7 @@ function renderAll() {
     renderDragon();
     renderConfigFields();
     renderHistoireFields();
+    refreshDesktopPersona();
 }
 
 function renderVitalBar(f) {
@@ -4596,12 +4601,54 @@ function init() {
     bindBottomSheetGlobalActions();
     bindDiceModalGlobalActions();
     setupInstallFlow();
+    bindDesktopSidebar();
 
     renderAll();
     renderFichesList();
 
     handleStartupAction();
     registerServiceWorker();
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   v2.0.0 — RACCOURCIS CLAVIER (desktop)
+   ═══════════════════════════════════════════════════════════════ */
+function bindDesktopSidebar() {
+    // Sidebar gauche : navigation onglets
+    document.querySelectorAll('.desktop-nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.dataset.desktopTab;
+            if (tab) switchToTab(tab);
+        });
+    });
+
+    // Bouton "Lancer dés" sidebar gauche
+    const desktopDiceBtn = document.getElementById('desktop-dice-btn');
+    if (desktopDiceBtn) {
+        desktopDiceBtn.addEventListener('click', () => openDiceModal(null));
+    }
+
+    // Persona switcher sidebar droite
+    const personaBtn = document.getElementById('desktop-persona-btn');
+    if (personaBtn) {
+        personaBtn.addEventListener('click', () => {
+            // Bascule vers l'onglet Plus pour gérer les fiches
+            switchToTab('plus');
+            // Et scroll vers la liste des fiches
+            setTimeout(() => {
+                const list = document.getElementById('list-fiches');
+                if (list) list.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        });
+    }
+}
+
+function refreshDesktopPersona() {
+    const nameEl = document.getElementById('desktop-persona-name');
+    if (!nameEl) return;
+    const f = currentFiche;
+    nameEl.textContent = (f && f.nom) ? f.nom : '— Nouveau personnage —';
 }
 
 if (document.readyState === 'loading') {

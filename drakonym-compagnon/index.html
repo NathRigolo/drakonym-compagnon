@@ -32,7 +32,45 @@
 </head>
 <body>
 
-    <div class="app-shell">
+    <div class="app-layout">
+
+        <!-- ════════════════════════════════════════════════
+             SIDEBAR GAUCHE (desktop uniquement)
+             ════════════════════════════════════════════════ -->
+        <aside class="desktop-sidebar desktop-sidebar-left" id="desktop-sidebar-left" aria-label="Navigation principale">
+            <div class="desktop-brand">
+                <span class="desktop-brand-name">Drakonym</span>
+                <span class="desktop-brand-sub">Compagnon</span>
+            </div>
+            <nav class="desktop-nav" role="tablist">
+                <button class="desktop-nav-btn active" type="button" data-desktop-tab="fiche">
+                    <span class="desktop-nav-glyph" aria-hidden="true">⚜</span>
+                    <span class="desktop-nav-label">Fiche</span>
+                </button>
+                <button class="desktop-nav-btn" type="button" data-desktop-tab="capacites">
+                    <span class="desktop-nav-glyph" aria-hidden="true">✦</span>
+                    <span class="desktop-nav-label">Capacités</span>
+                </button>
+                <button class="desktop-nav-btn" type="button" data-desktop-tab="equipement">
+                    <span class="desktop-nav-glyph" aria-hidden="true">⚔</span>
+                    <span class="desktop-nav-label">Équipement</span>
+                </button>
+                <button class="desktop-nav-btn" type="button" data-desktop-tab="dragon">
+                    <span class="desktop-nav-glyph" aria-hidden="true">🐉</span>
+                    <span class="desktop-nav-label">Dragon</span>
+                </button>
+                <button class="desktop-nav-btn" type="button" data-desktop-tab="plus">
+                    <span class="desktop-nav-glyph" aria-hidden="true">⋯</span>
+                    <span class="desktop-nav-label">Plus</span>
+                </button>
+            </nav>
+            <button class="desktop-dice-btn" type="button" id="desktop-dice-btn">
+                <span class="desktop-dice-icon" aria-hidden="true">⚂</span>
+                <span class="desktop-dice-label">Lancer dés</span>
+            </button>
+        </aside>
+
+        <div class="app-shell">
 
         <!-- ════════════════════════════════════════════════
              VITAL BAR — toujours visible en haut
@@ -698,7 +736,7 @@
                     <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.10.0 (Desktop polish)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.11.0 (Layout 3 zones)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>
@@ -752,6 +790,40 @@
                 <span class="tab-label">Plus</span>
             </button>
         </nav>
+
+        </div>
+
+        <!-- ════════════════════════════════════════════════
+             SIDEBAR DROITE (desktop uniquement)
+             ════════════════════════════════════════════════ -->
+        <aside class="desktop-sidebar desktop-sidebar-right" id="desktop-sidebar-right" aria-label="Panneau de jeu">
+
+            <!-- Persona switcher -->
+            <div class="desktop-side-block">
+                <div class="desktop-side-label">Personnage actif</div>
+                <button type="button" class="desktop-persona-btn" id="desktop-persona-btn">
+                    <span class="desktop-persona-name" id="desktop-persona-name">—</span>
+                    <span class="desktop-persona-arrow" aria-hidden="true">▾</span>
+                </button>
+            </div>
+
+            <!-- Équipé (Vague B) -->
+            <div class="desktop-side-block">
+                <div class="desktop-side-label">Équipé</div>
+                <div class="desktop-side-content" id="desktop-equipped">
+                    <p class="desktop-side-empty">À venir (Vague B)</p>
+                </div>
+            </div>
+
+            <!-- Derniers jets (Vague C) -->
+            <div class="desktop-side-block desktop-side-block-grow">
+                <div class="desktop-side-label">Derniers jets</div>
+                <div class="desktop-side-content" id="desktop-rolls-log">
+                    <p class="desktop-side-empty">À venir (Vague C)</p>
+                </div>
+            </div>
+
+        </aside>
 
     </div>
 
