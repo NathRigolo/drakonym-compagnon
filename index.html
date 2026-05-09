@@ -175,7 +175,7 @@
                                 <input type="number" id="cfg-grit-max" class="config-input" min="0" max="50">
                             </div>
                             <div class="config-field">
-                                <label class="config-label">Defense max</label>
+                                <label class="config-label">Défense max</label>
                                 <input type="number" id="cfg-defense-max" class="config-input" min="0" max="50">
                             </div>
                             <div class="config-field">
@@ -183,7 +183,7 @@
                                 <input type="number" id="cfg-armure" class="config-input" min="0" max="10">
                             </div>
                             <div class="config-field">
-                                <label class="config-label">Spell Bonus</label>
+                                <label class="config-label">Bonus magique</label>
                                 <input type="number" id="cfg-spell-bonus" class="config-input" min="0" max="5">
                             </div>
                         </div>
@@ -192,15 +192,15 @@
                         <p class="config-hint-small">Ex: <strong>Loyal to the Last</strong> = +1 box par tier. <strong>Loyal Heart</strong>, etc.</p>
                         <div class="config-grid-3">
                             <div class="config-field">
-                                <label class="config-label">Light max</label>
+                                <label class="config-label">Légères max</label>
                                 <input type="number" id="cfg-light-max" class="config-input" min="1" max="10">
                             </div>
                             <div class="config-field">
-                                <label class="config-label">Heavy max</label>
+                                <label class="config-label">Graves max</label>
                                 <input type="number" id="cfg-heavy-max" class="config-input" min="1" max="10">
                             </div>
                             <div class="config-field">
-                                <label class="config-label">Deadly max</label>
+                                <label class="config-label">Mortelles max</label>
                                 <input type="number" id="cfg-deadly-max" class="config-input" min="1" max="10">
                             </div>
                         </div>
@@ -431,11 +431,11 @@
                             <option value="Half-Dragon">Half-Dragon</option>
                         </select>
                         <select id="dragon-stage" class="dragon-id-select">
-                            <option value="Hatchling">Hatchling (Lvl 1, BP 6)</option>
-                            <option value="Juvenile">Juvenile (Lvl 2, BP 9)</option>
-                            <option value="Mature">Mature (Lvl 4, BP 12)</option>
-                            <option value="Elder">Elder (Lvl 6, BP 15)</option>
-                            <option value="Mythic">Mythic (Lvl 8, BP 18)</option>
+                            <option value="Hatchling">Hatchling (Lvl 1, PL 6)</option>
+                            <option value="Juvenile">Juvenile (Lvl 2, PL 9)</option>
+                            <option value="Mature">Mature (Lvl 4, PL 12)</option>
+                            <option value="Elder">Elder (Lvl 6, PL 15)</option>
+                            <option value="Mythic">Mythic (Lvl 8, PL 18)</option>
                         </select>
                     </div>
                 </div>
@@ -444,7 +444,7 @@
                 <details class="config-block">
                     <summary class="config-summary">⚙️ Configuration du dragon</summary>
                     <div class="config-content">
-                        <p class="config-hint">📝 Modifie ici toutes les valeurs du dragon : attributs, BP max, vitesse, armure, breath weapon.</p>
+                        <p class="config-hint">📝 Modifie ici toutes les valeurs du dragon : attributs, PL max, vitesse, armure, breath weapon.</p>
 
                         <h4 class="config-subtitle">Attributs (0-6)</h4>
                         <div class="config-grid-3">
@@ -462,14 +462,14 @@
                             </div>
                         </div>
 
-                        <h4 class="config-subtitle">Bond Points &amp; vitesse</h4>
+                        <h4 class="config-subtitle">Points de Lien &amp; vitesse</h4>
                         <div class="config-grid-3">
                             <div class="config-field">
-                                <label class="config-label">BP actuel</label>
+                                <label class="config-label">PL actuel</label>
                                 <input type="number" id="cfg-d-bp-cur" class="config-input" min="0" max="50">
                             </div>
                             <div class="config-field">
-                                <label class="config-label">BP max</label>
+                                <label class="config-label">PL max</label>
                                 <input type="number" id="cfg-d-bp-max" class="config-input" min="0" max="50">
                             </div>
                             <div class="config-field">
@@ -479,7 +479,7 @@
                         </div>
                         <p class="config-hint-small">Cap suggéré par stage : Hatchling=6 · Juvenile=9 · Mature=12 · Elder=15 · Mythic=18</p>
 
-                        <h4 class="config-subtitle">Armure (bonus pour les Defense Slots)</h4>
+                        <h4 class="config-subtitle">Armure (bonus pour les Défense)</h4>
                         <div class="config-grid-3">
                             <div class="config-field">
                                 <label class="config-label">Armure (bonus)</label>
@@ -526,12 +526,12 @@
                         </button>
                     </div>
 
-                    <!-- Bond Points + Defense Slots calculé -->
+                    <!-- Points de Lien + Défense calculé -->
                     <div class="dragon-resources-grid">
                         <button type="button" class="resource-card" id="dragon-bp-card">
                             <span class="resource-icon">🔗</span>
                             <span class="resource-text">
-                                <span class="resource-label">Bond Points</span>
+                                <span class="resource-label">Points de Lien</span>
                                 <span class="resource-value">
                                     <span id="dragon-bp-current">0</span>
                                     <span class="resource-sep">/</span>
@@ -542,7 +542,7 @@
                         <div class="resource-card resource-readonly">
                             <span class="resource-icon">🛡</span>
                             <span class="resource-text">
-                                <span class="resource-label">Defense Slots</span>
+                                <span class="resource-label">Défense</span>
                                 <span class="resource-value" id="dragon-ds-value">0</span>
                             </span>
                             <span class="resource-formula" id="dragon-ds-formula">Armure + Body + ½ Niv</span>
@@ -682,7 +682,7 @@
                     <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.9.1 (Traduction complète)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.9.2 (Traduction finale)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>

@@ -66,16 +66,16 @@ const FICHE_DEMO = {
 const STATUSES_CATALOG = [
     { id: 'blinded',     nomFr: 'Aveuglé',     emoji: '🙈', hasIntensity: false, color: 'shadow',  description: "Tous tes jets d'attaque subissent un Fardeau." },
     { id: 'bloodied',    nomFr: 'Ensanglanté', emoji: '🩸', hasIntensity: false, color: 'crimson', description: "Si tu prends une Blessure supplémentaire, tu meurs (drapeau narratif)." },
-    { id: 'burning',     nomFr: 'En feu',      emoji: '🔥', hasIntensity: true,  color: 'crimson', description: "En début de tour, subis X Blessures Légères. Tes dégâts physiques sont divisés par 2. Coût : 1 AP/BP pour étouffer." },
+    { id: 'burning',     nomFr: 'En feu',      emoji: '🔥', hasIntensity: true,  color: 'crimson', description: "En début de tour, subis X Blessures Légères. Tes dégâts physiques sont divisés par 2. Coût : 1 AP/PL pour étouffer." },
     { id: 'charmed',     nomFr: 'Charmé',      emoji: '💞', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas cibler le charmeur. L'effet se termine si lui ou ses alliés te blessent." },
     { id: 'confused',    nomFr: 'Confus',      emoji: '😵\u200d💫', hasIntensity: false, color: 'shadow',  description: "En début de tour, lance 1d6. 1-3 = agis erratiquement (le Herald décide), 4-6 = normal." },
-    { id: 'dazed',       nomFr: 'Hébété',      emoji: '😶\u200d🌫️', hasIntensity: false, color: 'shadow',  description: "Pool d'AP réduit de 1, BP du dragon réduit de 2. Tes interruptions subissent un Fardeau." },
+    { id: 'dazed',       nomFr: 'Hébété',      emoji: '😶\u200d🌫️', hasIntensity: false, color: 'shadow',  description: "Pool d'AP réduit de 1, PL du dragon réduit de 2. Tes interruptions subissent un Fardeau." },
     { id: 'frightened',  nomFr: 'Effrayé',     emoji: '😱', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas cibler la source de la peur. Tant qu'elle est en vue, Fardeau sur tous tes jets." },
     { id: 'frozen',      nomFr: 'Gelé',        emoji: '🧊', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas bouger. Toute attaque physique te fait moitié des dégâts en plus." },
-    { id: 'knocked_down',nomFr: 'À terre',     emoji: '🤕', hasIntensity: false, color: 'shadow',  description: "Tu es à terre. Coût : 1 AP/BP pour te relever." },
+    { id: 'knocked_down',nomFr: 'À terre',     emoji: '🤕', hasIntensity: false, color: 'shadow',  description: "Tu es à terre. Coût : 1 AP/PL pour te relever." },
     { id: 'poisoned',    nomFr: 'Empoisonné',  emoji: '🧪', hasIntensity: true,  color: 'crimson', description: "À la fin de chaque round, subis X Blessures Légères. Double à chaque round non traité. Coût : 1 AP pour traiter ou utiliser un antidote." },
-    { id: 'rooted',      nomFr: 'Enraciné',    emoji: '🌿', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas bouger. Tu ne peux pas dépenser de Defense Slots pour bloquer." },
-    { id: 'silenced',    nomFr: 'Bâillonné',   emoji: '🤐', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas parler ni lancer de sort, sauf via une capacité de type Subtle Cast." },
+    { id: 'rooted',      nomFr: 'Enraciné',    emoji: '🌿', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas bouger. Tu ne peux pas dépenser de la Défense pour bloquer." },
+    { id: 'silenced',    nomFr: 'Bâillonné',   emoji: '🤐', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas parler ni lancer de sort, sauf via une capacité de type Incantation silencieuse." },
     { id: 'slowed',      nomFr: 'Ralenti',     emoji: '🐢', hasIntensity: false, color: 'shadow',  description: "Mouvement divisé par 2." },
     { id: 'stunned',     nomFr: 'Sonné',       emoji: '⚡', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas utiliser d'interruptions." },
     { id: 'unseen',      nomFr: 'Invisible',   emoji: '👻', hasIntensity: false, color: 'shadow',  description: "Tant que tu n'es pas détecté, tu ne peux pas être ciblé. Tes attaques gagnent une Faveur." },
@@ -104,7 +104,7 @@ function addWound(startTier) {
             saveFiche();
             renderVitalBar(currentFiche);
             if (i > startIdx) {
-                const niceName = { light: 'Light', heavy: 'Heavy', deadly: 'Deadly' };
+                const niceName = { light: 'Légères', heavy: 'Graves', deadly: 'Mortelles' };
                 showToast(`Track ${niceName[startTier]} pleine → +1 ${niceName[t]}`);
             }
             return true;
@@ -617,7 +617,7 @@ function openHeroPointsSheet() {
 
 /* ─── Sheet : Blessures (3 tracks indépendants avec overflow) ─── */
 function openWoundsSheet() {
-    const tierLabels = { light: 'Light', heavy: 'Heavy', deadly: 'Deadly' };
+    const tierLabels = { light: 'Légères', heavy: 'Graves', deadly: 'Mortelles' };
 
     function buildHtml() {
         let html = '<div class="wounds-sheet">';
@@ -1102,7 +1102,7 @@ function castSpell(item) {
 
     // Si Primary défini, ouvre le dice roller pré-rempli pour le spellcasting check
     if (primary && currentFiche.attributs[primary] != null) {
-        // Pool spellcasting = Primary + Spell Bonus (mode attaque, sans doublement)
+        // Pool spellcasting = Primary + Bonus magique (mode attaque, sans doublement)
         openDiceRoller([primary], {
             modifier: spellBonus,
             attackMode: true,
@@ -1363,16 +1363,16 @@ const WEAPON_PRESETS = [
     // Moyennes (+2d6, Min Body 2)
     { nom: 'Hache de bataille', type: 'medium', bonus_dice: 2, damage_tiers: [3,4,5,6,8], damage_type: 'Tranchants',  range: 1, min_body: 2, perk: 'Couperet : si tu mets un ennemi à terre, fais une attaque rapide gratuite contre un ennemi adjacent.', draviks: 50 },
     { nom: 'Épée longue',    type: 'medium', bonus_dice: 2, damage_tiers: [3,4,5,6,7], damage_type: 'Tranchants',  range: 1, min_body: 2, perk: 'Polyvalente : à deux mains, augmente les dégâts d\'1 Tier (max Tier 5).', draviks: 60 },
-    { nom: 'Masse',          type: 'medium', bonus_dice: 2, damage_tiers: [3,4,5,5,6], damage_type: 'Contondants', range: 1, min_body: 2, perk: 'Briser : quand tu infliges des dégâts, retire 1 Defense Slot à la cible (1 fois par tour).', draviks: 40 },
+    { nom: 'Masse',          type: 'medium', bonus_dice: 2, damage_tiers: [3,4,5,5,6], damage_type: 'Contondants', range: 1, min_body: 2, perk: 'Briser : quand tu infliges des dégâts, retire 1 Défense à la cible (1 fois par tour).', draviks: 40 },
     { nom: 'Lance',          type: 'medium', bonus_dice: 2, damage_tiers: [3,4,4,5,6], damage_type: 'Perforants',  range: 2, min_body: 2, perk: 'Allonge : cible des ennemis jusqu\'à 2 cases de distance.', draviks: 30 },
     // Lourdes (Min Body 3)
-    { nom: 'Grande hache',   type: 'heavy',  bonus_dice: 3, damage_tiers: [4,5,7,8,9], damage_type: 'Tranchants',  range: 1, min_body: 3, perk: 'Brise-armure : si tu touches au Tier 3+, les ennemis doivent dépenser le double de Defense Slots pour réduire les dégâts.', draviks: 100 },
+    { nom: 'Grande hache',   type: 'heavy',  bonus_dice: 3, damage_tiers: [4,5,7,8,9], damage_type: 'Tranchants',  range: 1, min_body: 3, perk: 'Brise-armure : si tu touches au Tier 3+, les ennemis doivent dépenser le double de Défense pour réduire les dégâts.', draviks: 100 },
     { nom: 'Espadon',        type: 'heavy',  bonus_dice: 3, damage_tiers: [4,5,6,7,8], damage_type: 'Tranchants',  range: 1, min_body: 3, perk: 'Fendoir : si une cible est mise à terre, transfère les Blessures restantes à une autre cible dans 1 case.', draviks: 90 },
     { nom: 'Hallebarde',     type: 'heavy',  bonus_dice: 2, damage_tiers: [4,5,6,7,9], damage_type: 'Perforants',  range: 2, min_body: 3, perk: 'Crochet : quand tu touches, attire la cible d\'1 case vers toi.', draviks: 85 },
     { nom: 'Maillet',        type: 'heavy',  bonus_dice: 2, damage_tiers: [4,6,7,8,9], damage_type: 'Contondants', range: 1, min_body: 3, perk: 'Écrasant : si tu infliges Tier 4+ de dégâts, la cible est Mise à terre.', draviks: 75 },
     // Distance
     { nom: 'Arbalète',       type: 'ranged', bonus_dice: 2, damage_tiers: [4,5,6,7,7], damage_type: 'Perforants',  range: 10, min_body: 2, perk: 'Perçant : sur les cibles armurées, augmente les dégâts d\'1 Tier (max Tier 5).', draviks: 60 },
-    { nom: 'Arc long',       type: 'ranged', bonus_dice: 2, damage_tiers: [4,5,6,7,8], damage_type: 'Perforants',  range: 12, min_body: 3, perk: 'Transperçant : la première attaque de chaque round ne peut pas être réduite avec des Defense Slots.', draviks: 55 },
+    { nom: 'Arc long',       type: 'ranged', bonus_dice: 2, damage_tiers: [4,5,6,7,8], damage_type: 'Perforants',  range: 12, min_body: 3, perk: 'Transperçant : la première attaque de chaque round ne peut pas être réduite avec de la Défense.', draviks: 55 },
     { nom: 'Revolver',       type: 'ranged', bonus_dice: 2, damage_tiers: [4,5,6,7,8], damage_type: 'Perforants',  range: 8,  min_body: 2, perk: 'Ricochet : une fois par scène, en touchant tu peux toucher un second ennemi dans 2 cases (2 Blessures à la nouvelle cible).', draviks: 75 },
     { nom: 'Arc court',      type: 'ranged', bonus_dice: 2, damage_tiers: [3,4,5,5,6], damage_type: 'Perforants',  range: 10, min_body: 1, perk: 'Tir rapide : une fois par scène, tire deux fois dans le même tour.', draviks: 35 },
     { nom: 'Fronde',         type: 'ranged', bonus_dice: 1, damage_tiers: [3,3,4,4,5], damage_type: 'Contondants', range: 8,  min_body: 1, perk: 'Étourdir : sur dégâts max, la cible est Sonnée 1.', draviks: 10 },
@@ -1756,7 +1756,7 @@ function openWeaponForm(existing) {
                 </div>
             </div>
             <div class="form-row">
-                <label class="form-row-label">Damage Tiers (T1 / T2 / T3 / T4 / T5)</label>
+                <label class="form-row-label">Dégâts par Tier (T1 / T2 / T3 / T4 / T5)</label>
                 <div class="form-row-grid" style="grid-template-columns: repeat(5, 1fr); gap: 4px;">
                     <input type="number" class="form-row-input" id="form-t1" min="0" max="20" value="${tiers[0]}" style="text-align:center;">
                     <input type="number" class="form-row-input" id="form-t2" min="0" max="20" value="${tiers[1]}" style="text-align:center;">
@@ -1770,19 +1770,27 @@ function openWeaponForm(existing) {
                     <label class="form-row-label">Type de dégâts</label>
                     <select class="form-row-select" id="form-dmg-type">
                         <option value="">— Aucun —</option>
-                        <option value="Slashing"${e.damage_type === 'Slashing' ? ' selected' : ''}>Slashing</option>
-                        <option value="Bludgeoning"${e.damage_type === 'Bludgeoning' ? ' selected' : ''}>Bludgeoning</option>
-                        <option value="Piercing"${e.damage_type === 'Piercing' ? ' selected' : ''}>Piercing</option>
+                        <option value="Tranchants"${e.damage_type === 'Tranchants' ? ' selected' : ''}>Tranchants</option>
+                        <option value="Contondants"${e.damage_type === 'Contondants' ? ' selected' : ''}>Contondants</option>
+                        <option value="Perforants"${e.damage_type === 'Perforants' ? ' selected' : ''}>Perforants</option>
+                        <option value="Acide"${e.damage_type === 'Acide' ? ' selected' : ''}>Acide</option>
+                        <option value="Feu"${e.damage_type === 'Feu' ? ' selected' : ''}>Feu</option>
+                        <option value="Froid"${e.damage_type === 'Froid' ? ' selected' : ''}>Froid</option>
+                        <option value="Foudre"${e.damage_type === 'Foudre' ? ' selected' : ''}>Foudre</option>
+                        <option value="Nécrotiques"${e.damage_type === 'Nécrotiques' ? ' selected' : ''}>Nécrotiques</option>
+                        <option value="Poison"${e.damage_type === 'Poison' ? ' selected' : ''}>Poison</option>
+                        <option value="Psychiques"${e.damage_type === 'Psychiques' ? ' selected' : ''}>Psychiques</option>
+                        <option value="Radiants"${e.damage_type === 'Radiants' ? ' selected' : ''}>Radiants</option>
                     </select>
                 </div>
                 <div class="form-row">
-                    <label class="form-row-label">Range (1 = mêlée)</label>
+                    <label class="form-row-label">Portée (1 = mêlée)</label>
                     <input type="number" class="form-row-input" id="form-range" min="0" max="20" value="${e.range ?? 1}">
                 </div>
             </div>
             <div class="form-row-grid">
                 <div class="form-row">
-                    <label class="form-row-label">Min Body</label>
+                    <label class="form-row-label">Body min.</label>
                     <input type="number" class="form-row-input" id="form-min-body" min="0" max="6" value="${e.min_body ?? 1}">
                 </div>
                 <div class="form-row">
@@ -2044,14 +2052,14 @@ function openToolForm(existing) {
 
 /* ═══════════════════════════════════════════════════════════════
    DRAGON — Vague 6
-   Identité, Attributs, Bond Points, Breath Weapon, Pillars,
+   Identité, Attributs, Points de Lien, Breath Weapon, Pillars,
    Bond Perks, Équipement (armes + armures avec presets officiels)
    ═══════════════════════════════════════════════════════════════ */
 
 /* Familles officielles (rulebook chapter 4) */
 const DRAGON_FAMILIES = ['Astral', 'Aura', 'Mirror', 'Moon', 'Pyre', 'Shard', 'Storm', 'Sun', 'Half-Dragon'];
 
-/* Stages avec BP Cap (rulebook page 240) */
+/* Stages avec PL Cap (rulebook page 240) */
 const DRAGON_STAGES = ['Hatchling', 'Juvenile', 'Mature', 'Elder', 'Mythic'];
 const DRAGON_BP_CAP_BY_STAGE = {
     Hatchling: 6, Juvenile: 9, Mature: 12, Elder: 15, Mythic: 18,
@@ -2129,11 +2137,11 @@ function renderDragon() {
         if (el) el.textContent = (d.attributs && d.attributs[k]) || 0;
     });
 
-    // BP
+    // PL
     document.getElementById('dragon-bp-current').textContent = d.bp_current || 0;
     document.getElementById('dragon-bp-max').textContent = d.bp_max || dragonBpCap(d.stage);
 
-    // Defense Slots (calculé)
+    // Défense (calculé)
     const ds = dragonDefenseSlots(d);
     document.getElementById('dragon-ds-value').textContent = ds;
     const playerLvl = currentFiche.niveau || 1;
@@ -2309,7 +2317,7 @@ function bindDragonActions() {
         if (d.bp_current > newCap) d.bp_current = newCap;
         saveFiche();
         renderDragon();
-        showToast(`Stage : ${d.stage} · BP cap suggéré ${newCap}`);
+        showToast(`Stage : ${d.stage} · PL cap suggéré ${newCap}`);
     });
 
     // Speed
@@ -2356,7 +2364,7 @@ function bindDragonActions() {
         cell.addEventListener('click', () => openDragonAttributEditor(cell.dataset.dattr));
     });
 
-    // BP card
+    // PL card
     const bpCard = document.getElementById('dragon-bp-card');
     if (bpCard) bpCard.addEventListener('click', openDragonBpEditor);
 
@@ -2544,7 +2552,7 @@ function openDragonAttributEditor(attr) {
 }
 
 
-/* ─── Bottom sheet : éditer Bond Points ──────────────── */
+/* ─── Bottom sheet : éditer Points de Lien ──────────────── */
 function openDragonBpEditor() {
     const d = currentFiche.dragon;
     const html = `
@@ -2561,7 +2569,7 @@ function openDragonBpEditor() {
             </div>
             <p style="font-size: 12px; color: var(--text-muted); font-style: italic;">
                 Cap suggéré selon stage : Hatchling=6 · Juvenile=9 · Mature=12 · Elder=15 · Mythic=18.<br>
-                Regain : 1 BP + ½ niv au début du Hero Round, +2 BP via Pillars/RP, ½ max au Repos court, full au Downtime.
+                Regain : 1 PL + ½ niv au début du Hero Round, +2 PL via Pillars/RP, ½ max au Repos court, full au Downtime.
             </p>
             <div class="form-row-grid">
                 <button type="button" class="form-btn cancel" data-action="m1">−1</button>
@@ -2577,7 +2585,7 @@ function openDragonBpEditor() {
             </div>
         </div>
     `;
-    openBottomSheet('Bond Points', html, (root) => {
+    openBottomSheet('Points de Lien', html, (root) => {
         const curInput = root.querySelector('#form-bp-cur');
         const maxInput = root.querySelector('#form-bp-max');
         const adjust = (delta) => {
@@ -2622,7 +2630,7 @@ function openBreathEditor() {
             </p>
             <div class="form-row">
                 <label class="form-row-label">Élément</label>
-                <input type="text" class="form-row-input" id="form-element" placeholder="Lightning, Fire, Cold, Necrotic, Radiance, Acid, Poison…" value="${escapeHtml(b.element || '')}">
+                <input type="text" class="form-row-input" id="form-element" placeholder="Foudre, Feu, Froid, Nécrotique, Radiant, Acide, Poison…" value="${escapeHtml(b.element || '')}">
             </div>
             <div class="form-row">
                 <label class="form-row-label">Shape</label>
@@ -2725,7 +2733,7 @@ function openDragonPerkForm(itemId) {
             ${buildColorPickerHtml(e.color)}
             <div class="form-row">
                 <label class="form-row-label">Description</label>
-                <textarea class="form-row-textarea" id="form-description" placeholder="Effet du perk, coût en BP, conditions…">${escapeHtml(e.description || '')}</textarea>
+                <textarea class="form-row-textarea" id="form-description" placeholder="Effet du perk, coût en PL, conditions…">${escapeHtml(e.description || '')}</textarea>
             </div>
             <div class="form-actions">
                 <button type="button" class="form-btn cancel" data-action="cancel">Annuler</button>
@@ -2784,9 +2792,9 @@ function openDragonWeaponForm(itemId) {
                 <div class="form-row">
                     <label class="form-row-label">Catégorie</label>
                     <select class="form-row-select" id="form-type">
-                        <option value="light"${e.type === 'light' ? ' selected' : ''}>Light</option>
-                        <option value="medium"${e.type === 'medium' ? ' selected' : ''}>Medium</option>
-                        <option value="heavy"${e.type === 'heavy' ? ' selected' : ''}>Heavy</option>
+                        <option value="light"${e.type === 'light' ? ' selected' : ''}>Légère</option>
+                        <option value="medium"${e.type === 'medium' ? ' selected' : ''}>Moyenne</option>
+                        <option value="heavy"${e.type === 'heavy' ? ' selected' : ''}>Lourde</option>
                     </select>
                 </div>
                 <div class="form-row">
