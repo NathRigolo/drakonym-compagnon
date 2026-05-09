@@ -97,6 +97,114 @@
                     </div>
                 </div>
 
+                <!-- CONFIGURATION DU PERSONNAGE (création / level up / perks qui étendent) -->
+                <details class="config-block">
+                    <summary class="config-summary">⚙️ Configuration du personnage</summary>
+                    <div class="config-content">
+                        <p class="config-hint">📝 Modifie ici les valeurs qui changent rarement : à la création, au level up, ou quand un perk étend tes capacités.</p>
+
+                        <h4 class="config-subtitle">Identité</h4>
+                        <div class="config-grid-2">
+                            <div class="config-field">
+                                <label class="config-label">Nom</label>
+                                <input type="text" id="cfg-nom" class="config-input" maxlength="40">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Niveau</label>
+                                <input type="number" id="cfg-niveau" class="config-input" min="1" max="20">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Kin</label>
+                                <input type="text" id="cfg-kin" class="config-input" maxlength="30" placeholder="Ex: Drakari, Elf">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Classe</label>
+                                <input type="text" id="cfg-classe" class="config-input" maxlength="30" placeholder="Ex: Mage, Fighter">
+                            </div>
+                            <div class="config-field config-field-wide">
+                                <label class="config-label">Attribut Primary</label>
+                                <select id="cfg-primary" class="config-select">
+                                    <option value="Body">Body</option>
+                                    <option value="Mind">Mind</option>
+                                    <option value="Soul">Soul</option>
+                                    <option value="Shadow">Shadow</option>
+                                    <option value="Gods">Gods</option>
+                                    <option value="World">World</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h4 class="config-subtitle">Attributs (0-6)</h4>
+                        <div class="config-grid-3">
+                            <div class="config-field">
+                                <label class="config-label">Body</label>
+                                <input type="number" id="cfg-attr-Body" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Mind</label>
+                                <input type="number" id="cfg-attr-Mind" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Soul</label>
+                                <input type="number" id="cfg-attr-Soul" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Shadow</label>
+                                <input type="number" id="cfg-attr-Shadow" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Gods</label>
+                                <input type="number" id="cfg-attr-Gods" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">World</label>
+                                <input type="number" id="cfg-attr-World" class="config-input" min="0" max="10">
+                            </div>
+                        </div>
+
+                        <h4 class="config-subtitle">Pools maximum</h4>
+                        <div class="config-grid-3">
+                            <div class="config-field">
+                                <label class="config-label">Mana max</label>
+                                <input type="number" id="cfg-mana-max" class="config-input" min="0" max="50">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Grit max</label>
+                                <input type="number" id="cfg-grit-max" class="config-input" min="0" max="50">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Defense max</label>
+                                <input type="number" id="cfg-defense-max" class="config-input" min="0" max="50">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Armure (bonus)</label>
+                                <input type="number" id="cfg-armure" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Spell Bonus</label>
+                                <input type="number" id="cfg-spell-bonus" class="config-input" min="0" max="5">
+                            </div>
+                        </div>
+
+                        <h4 class="config-subtitle">Wound Tracks (extensibles via Perks)</h4>
+                        <p class="config-hint-small">Ex: <strong>Loyal to the Last</strong> = +1 box par tier. <strong>Loyal Heart</strong>, etc.</p>
+                        <div class="config-grid-3">
+                            <div class="config-field">
+                                <label class="config-label">Light max</label>
+                                <input type="number" id="cfg-light-max" class="config-input" min="1" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Heavy max</label>
+                                <input type="number" id="cfg-heavy-max" class="config-input" min="1" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Deadly max</label>
+                                <input type="number" id="cfg-deadly-max" class="config-input" min="1" max="10">
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
                 <!-- ATTRIBUTS -->
                 <div class="block">
                     <h3 class="block-title">Attributs</h3>
@@ -522,7 +630,7 @@
                     <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.7.0 (Vague 7)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.7.1 (Vague 7)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>

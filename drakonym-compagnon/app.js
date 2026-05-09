@@ -380,6 +380,7 @@ function renderAll() {
     renderCapacites();
     renderEquipement();
     renderDragon();
+    renderConfigFields();
     renderHistoireFields();
 }
 
@@ -3655,6 +3656,120 @@ function escapeHtml(s) {
    VAGUE 7 — Multi-fiches, Histoire, Import/Export JSON
    ═══════════════════════════════════════════════════════════════ */
 
+/* ─── Bind des champs Configuration (auto-save) ──────── */
+function bindConfigFields() {
+    // Identité
+    const bindText = (id, key) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('change', () => {
+            currentFiche[key] = el.value.trim();
+            saveFiche();
+            renderVitalBar(currentFiche);
+            renderFiche(currentFiche);
+        });
+    };
+    const bindNumber = (id, key, max, callback) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('change', () => {
+            let v = parseInt(el.value, 10);
+            if (isNaN(v)) v = 0;
+            v = Math.max(0, max != null ? Math.min(max, v) : v);
+            currentFiche[key] = v;
+            el.value = v;
+            saveFiche();
+            if (callback) callback();
+            renderVitalBar(currentFiche);
+            renderFiche(currentFiche);
+        });
+    };
+    bindText('cfg-nom', 'nom');
+    bindText('cfg-kin', 'kin');
+    bindText('cfg-classe', 'classe');
+    bindNumber('cfg-niveau', 'niveau', 20);
+
+    // Primary
+    const cfgPrimary = document.getElementById('cfg-primary');
+    if (cfgPrimary) {
+        cfgPrimary.addEventListener('change', () => {
+            currentFiche.primary = cfgPrimary.value;
+            saveFiche();
+            renderFiche(currentFiche);
+        });
+    }
+
+    // Attributs : 6 inputs
+    ['Body', 'Mind', 'Soul', 'Shadow', 'Gods', 'World'].forEach(name => {
+        const el = document.getElementById(`cfg-attr-${name}`);
+        if (!el) return;
+        el.addEventListener('change', () => {
+            let v = parseInt(el.value, 10);
+            if (isNaN(v)) v = 0;
+            v = Math.max(0, Math.min(10, v));
+            currentFiche.attributs[name] = v;
+            el.value = v;
+            saveFiche();
+            renderFiche(currentFiche);
+        });
+    });
+
+    // Pools max + bonuses
+    bindNumber('cfg-mana-max', 'mana_max', 50, () => {
+        if (currentFiche.mana_current > currentFiche.mana_max) currentFiche.mana_current = currentFiche.mana_max;
+    });
+    bindNumber('cfg-grit-max', 'grit_max', 50, () => {
+        if (currentFiche.grit_current > currentFiche.grit_max) currentFiche.grit_current = currentFiche.grit_max;
+    });
+    bindNumber('cfg-defense-max', 'defense_max', 50, () => {
+        if (currentFiche.defense_current > currentFiche.defense_max) currentFiche.defense_current = currentFiche.defense_max;
+    });
+    bindNumber('cfg-armure', 'armure_bonus', 10);
+    bindNumber('cfg-spell-bonus', 'spell_bonus', 5);
+
+    // Wound tracks max
+    ['light', 'heavy', 'deadly'].forEach(tier => {
+        const el = document.getElementById(`cfg-${tier}-max`);
+        if (!el) return;
+        el.addEventListener('change', () => {
+            let v = parseInt(el.value, 10);
+            if (isNaN(v) || v < 1) v = 1;
+            v = Math.min(10, v);
+            currentFiche.wounds[`${tier}_max`] = v;
+            // Si le current dépasse le nouveau max, on cap
+            if (currentFiche.wounds[tier] > v) currentFiche.wounds[tier] = v;
+            el.value = v;
+            saveFiche();
+            renderVitalBar(currentFiche);
+        });
+    });
+}
+
+function renderConfigFields() {
+    const f = currentFiche;
+    const setVal = (id, value) => {
+        const el = document.getElementById(id);
+        if (el && document.activeElement !== el) el.value = value;
+    };
+    setVal('cfg-nom', f.nom || '');
+    setVal('cfg-niveau', f.niveau || 1);
+    setVal('cfg-kin', f.kin || '');
+    setVal('cfg-classe', f.classe || '');
+    setVal('cfg-primary', f.primary || 'Body');
+    ['Body', 'Mind', 'Soul', 'Shadow', 'Gods', 'World'].forEach(name => {
+        setVal(`cfg-attr-${name}`, (f.attributs && f.attributs[name]) || 0);
+    });
+    setVal('cfg-mana-max', f.mana_max || 0);
+    setVal('cfg-grit-max', f.grit_max || 0);
+    setVal('cfg-defense-max', f.defense_max || 0);
+    setVal('cfg-armure', f.armure_bonus || 0);
+    setVal('cfg-spell-bonus', f.spell_bonus || 0);
+    setVal('cfg-light-max', (f.wounds && f.wounds.light_max) || 3);
+    setVal('cfg-heavy-max', (f.wounds && f.wounds.heavy_max) || 3);
+    setVal('cfg-deadly-max', (f.wounds && f.wounds.deadly_max) || 3);
+}
+
+
 /* ─── Bind des champs Histoire (auto-save sur blur) ───── */
 function bindHistoireFields() {
     const fields = ['apparence', 'histoire', 'liens', 'notes'];
@@ -4191,6 +4306,7 @@ function init() {
     bindCapacitesActions();
     bindEquipementActions();
     bindDragonActions();
+    bindConfigFields();
     bindHistoireFields();
     bindPlusActions();
     bindFab();
