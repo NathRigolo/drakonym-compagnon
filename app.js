@@ -3034,11 +3034,20 @@ function saveDicePresets() {
 
 function saveCurrentRollAsPreset() {
     if (!currentRoll) return;
+    // Capturer un snapshot maintenant — currentRoll peut devenir null si la modal se ferme
+    const snapshot = {
+        attrs: currentRoll.attrs.slice(),
+        modifier: currentRoll.modifier || 0,
+        attackMode: !!currentRoll.attackMode,
+        difficulty: currentRoll.difficulty || 0,
+        useShadow: !!currentRoll.useShadow,
+        label: currentRoll.label || '',
+    };
     const html = `
         <div class="capacite-form">
             <div class="form-row">
                 <label class="form-row-label">Nom du preset *</label>
-                <input type="text" class="form-row-input" id="form-preset-nom" placeholder="Ex: Attaque Longsword, Sneak attack…" maxlength="40" autofocus>
+                <input type="text" class="form-row-input" id="form-preset-nom" placeholder="Ex: Attaque Longsword, Sneak attack…" maxlength="40">
             </div>
             <p style="font-size: 12px; color: var(--text-muted); font-style: italic;">
                 Le preset enregistre les attributs sélectionnés, le modificateur, la difficulté et le mode (attaque ou normal).
@@ -3051,9 +3060,9 @@ function saveCurrentRollAsPreset() {
     `;
     openBottomSheet('Sauver le jet', html, (root) => {
         const input = root.querySelector('#form-preset-nom');
-        setTimeout(() => input.focus(), 100);
         // Pré-rempli avec le label si dispo
-        if (currentRoll.label) input.value = currentRoll.label;
+        if (snapshot.label) input.value = snapshot.label;
+        setTimeout(() => input.focus(), 200);
 
         root.querySelector('[data-action="cancel"]').addEventListener('click', closeBottomSheet);
         root.querySelector('[data-action="save"]').addEventListener('click', () => {
@@ -3062,12 +3071,12 @@ function saveCurrentRollAsPreset() {
             dicePresets.push({
                 id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
                 nom,
-                attrs: currentRoll.attrs.slice(),
-                modifier: currentRoll.modifier || 0,
-                attackMode: !!currentRoll.attackMode,
-                difficulty: currentRoll.difficulty || 0,
-                useShadow: !!currentRoll.useShadow,
-                label: currentRoll.label || nom,
+                attrs: snapshot.attrs,
+                modifier: snapshot.modifier,
+                attackMode: snapshot.attackMode,
+                difficulty: snapshot.difficulty,
+                useShadow: snapshot.useShadow,
+                label: snapshot.label || nom,
             });
             saveDicePresets();
             closeBottomSheet();
@@ -4185,7 +4194,7 @@ function renderFichesList() {
             f.dragonNom ? `🐉 ${f.dragonNom}` : '',
         ].filter(Boolean).join(' · ');
         return `
-            <button type="button" class="fiche-item${f.isActive ? ' active' : ''}" data-id="${f.id}">
+            <div class="fiche-item${f.isActive ? ' active' : ''}" data-id="${f.id}" role="button" tabindex="0">
                 <span class="fiche-item-text">
                     <p class="fiche-item-name">${escapeHtml(f.nom)}</p>
                     <p class="fiche-item-meta">${escapeHtml(meta) || '— pas encore rempli —'}</p>
@@ -4195,7 +4204,7 @@ function renderFichesList() {
                     <button type="button" class="fiche-action-mini" data-action="rename" data-id="${f.id}" aria-label="Renommer">✎</button>
                     <button type="button" class="fiche-action-mini danger" data-action="delete" data-id="${f.id}" aria-label="Supprimer">🗑</button>
                 </span>
-            </button>
+            </div>
         `;
     }).join('');
 
