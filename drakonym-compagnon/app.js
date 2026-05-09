@@ -10,119 +10,50 @@
 
 const STORAGE_KEY = 'drakonym_compagnon_v1';
 
-/* Fiche de démonstration utilisée au premier lancement */
+/* Structure de défaut utilisée par mergeFicheDefaults pour garantir l'existence des champs.
+   Plus aucune donnée démo : à la première ouverture, createBlankFiche() crée une fiche vierge. */
 const FICHE_DEMO = {
-    nom: 'Tharion',
-    niveau: 5,
-    kin: 'Drakari',
-    classe: 'Dragonbound',
-    primary: 'Soul',
-    attributs: { Body: 3, Mind: 2, Soul: 4, Shadow: 1, Gods: 2, World: 3 },
-    hp_current: 2,
+    nom: '',
+    niveau: 1,
+    kin: '',
+    classe: '',
+    primary: 'Body',
+    attributs: { Body: 1, Mind: 1, Soul: 1, Shadow: 1, Gods: 1, World: 1 },
+    hp_current: 1,
     hp_max: 3,
     wounds: {
-        light: 1, heavy: 0, deadly: 0,
-        light_max: 3, heavy_max: 3, deadly_max: 3, // extensibles via Perks
+        light: 0, heavy: 0, deadly: 0,
+        light_max: 3, heavy_max: 3, deadly_max: 3,
     },
-    ap_current: 4,
-    defense_current: 14,
-    defense_max: 14,
-    armure_bonus: 1,
-    mana_current: 8,
-    mana_max: 12,
-    grit_current: 4,
-    grit_max: 6,
+    ap_current: 0,
+    defense_current: 0,
+    defense_max: 0,
+    armure_bonus: 0,
+    mana_current: 0,
+    mana_max: 0,
+    grit_current: 0,
+    grit_max: 0,
     short_rests_used: 0,
-    spell_bonus: 1,
-    statuses: [
-        { id: 'bloodied', value: 0 },
-        { id: 'burning', value: 2 },
-    ],
-    perks: [
-        { id: 'p1', titre: 'Ascendant Bloodline', color: 'crimson', description: "Once per Downtime, for 3 rounds, your spells ignore Defense and resistances." },
-        { id: 'p2', titre: 'Aspect Affinity (Inheric)', color: 'blue', description: "Reduce the Mana cost of spells with the Inheric tag by 1 (min 1)." },
-    ],
-    sorts: [
-        { id: 's1', titre: 'Bolt', aspect: 'Inheric', mana_cost: 2, ap_cost: 1, color: 'blue', description: "A surge of inheric energy targets a creature.\nThe target suffers 3 Wounds." },
-        { id: 's2', titre: 'Ward', aspect: 'Inheric', mana_cost: 2, ap_cost: 1, color: 'blue', description: "You cloak an ally in protective will.\nUntil end of next round, target gains +2 Defense Slots." },
-    ],
+    spell_bonus: 0,
+    statuses: [],
+    perks: [],
+    sorts: [],
     techniques: [],
-    wild_perks: [
-        { id: 'w1', titre: 'The Maker', color: 'gold', description: "For the rest of the scene, all your 4s now count as two successes.", used: false },
-    ],
-    draviks: 145,
-    weapons: [
-        {
-            id: 'wp1', nom: 'Longsword', type: 'medium',
-            bonus_dice: 2, damage_tiers: [3, 4, 5, 6, 7], damage_type: 'Slashing',
-            range: 1, min_body: 2,
-            perk: 'Versatile : When two-handed, escalate damage by 1 Tier (max Tier 5).',
-            draviks: 60, equipped: true, color: 'gold'
-        },
-    ],
-    armors: [
-        {
-            id: 'ar1', nom: 'Medium Armor', type: 'armor',
-            armor_bonus: 2, min_body: 2, speed_penalty: -1,
-            perk: '',
-            draviks: 60, equipped: true, color: 'gold'
-        },
-    ],
-    tools: [
-        {
-            id: 'tl1', nom: 'Lockpick Set',
-            attribute: 'Shadow',
-            description: '+2d6 sur les checks Shadow pour crocheter une serrure ou désamorcer un piège silencieusement.',
-            draviks: 40, quantity: 1, color: 'gold'
-        },
-    ],
+    wild_perks: [],
+    draviks: 0,
+    weapons: [],
+    armors: [],
+    tools: [],
     dragon: {
-        nom: 'Stormfang',
-        family: 'Storm',
-        stage: 'Juvenile',
-        speed: 8,
-        pillars: {
-            love: 'Voler dans les orages, sentir le tonnerre vibrer dans ses ailes.',
-            fear: "L'isolement et le silence après la tempête.",
-            instinct: 'Charger droit sur l\'ennemi le plus dangereux du champ de bataille.',
-        },
-        attributs: { Body: 2, Mind: 1, Soul: 3 },
-        bp_current: 5,
-        bp_max: 9,
-        armor_bonus: 2,
-        breath: {
-            element: 'Lightning',
-            shape: 'Cone',
-            description: "Une décharge de foudre concentrée jaillit de la gueule de Stormfang, illuminant tout sur son passage.",
-            effect: 'Stunned 1 (sur 1+ succès)',
-            charges_current: 2,
-            charges_max: 2,
-        },
-        perks: [
-            { id: 'dp1', nom: 'Storm Affinity', source: 'Family Core', color: 'purple',
-              description: 'Le dragon ignore le terrain difficile lié aux orages, à la pluie, et aux vents violents. Ses attaques avec le tag Lightning gagnent un Faveur.',
-              used: false },
-            { id: 'dp2', nom: 'Bond Sense', source: 'Bond', color: 'gold',
-              description: "Tu sais toujours l'état émotionnel et la position générale de ton dragon, même séparés. Once per scene, demande au Herald une question oui/non sur ce que ton dragon voit ou entend.",
-              used: false },
-        ],
-        weapons: [
-            {
-                id: 'dw1', nom: 'Fang Caps', type: 'light',
-                bonus_dice: 1, damage_tiers: [2, 4, 6, 8, 10], damage_type: 'Bite',
-                range: 1, min_body: 2,
-                perk: 'On 2+ successes, target suffers Weakened 1.',
-                draviks: 50, equipped: true, color: 'gold',
-            },
-        ],
-        armors: [
-            {
-                id: 'da1', nom: 'Leather Barding',
-                armor_bonus: 2, min_body: 2,
-                draviks: 75, equipped: true, color: 'gold',
-            },
-        ],
+        nom: '', family: '', stage: 'Hatchling', speed: 6,
+        pillars: { love: '', fear: '', instinct: '' },
+        attributs: { Body: 1, Mind: 1, Soul: 1 },
+        bp_current: 0, bp_max: 6,
+        armor_bonus: 0,
+        breath: { element: '', shape: 'Cône', description: '', effect: '', charges_current: 0, charges_max: 1 },
+        perks: [], weapons: [], armors: [],
     },
+    apparence: '', histoire: '', liens: '', notes: '',
 };
 
 /* Les 16 statuses officiels du Core Rulebook (effets côté joueur)
@@ -133,22 +64,22 @@ const FICHE_DEMO = {
    - color : 'crimson' (sévère) ou 'shadow' (mental/contrôle)
    - description : effet en jeu, formulé en mes propres mots */
 const STATUSES_CATALOG = [
-    { id: 'blinded',     nomFr: 'Aveuglé',     emoji: '🙈', hasIntensity: false, color: 'shadow',  description: "Tous tes checks d'attaque subissent un Fardeau." },
-    { id: 'bloodied',    nomFr: 'Ensanglanté', emoji: '🩸', hasIntensity: false, color: 'crimson', description: "Si tu prends une Wound supplémentaire, tu meurs (drapeau narratif)." },
-    { id: 'burning',     nomFr: 'En feu',      emoji: '🔥', hasIntensity: true,  color: 'crimson', description: "En début de tour, subis X Light Wounds. Tes dégâts physiques sont divisés par 2. Coût : 1 AP/BP pour étouffer." },
-    { id: 'charmed',     nomFr: 'Charmé',      emoji: '💞', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas cibler le charmeur. Termine si lui ou ses alliés te blessent." },
-    { id: 'confused',    nomFr: 'Confus',      emoji: '😵\u200d💫', hasIntensity: false, color: 'shadow',  description: "En début de tour, lance 1d6. 1-3 = agis erratiquement (Herald décide), 4-6 = normal." },
-    { id: 'dazed',       nomFr: 'Hébété',      emoji: '😶\u200d🌫️', hasIntensity: false, color: 'shadow',  description: "Pool d'AP réduit de 1, BP du dragon réduit de 2. Interruptions subissent un Fardeau." },
-    { id: 'frightened',  nomFr: 'Effrayé',     emoji: '😱', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas cibler la source de la peur. Tant qu'elle est en vue, Fardeau sur tous tes checks." },
+    { id: 'blinded',     nomFr: 'Aveuglé',     emoji: '🙈', hasIntensity: false, color: 'shadow',  description: "Tous tes jets d'attaque subissent un Fardeau." },
+    { id: 'bloodied',    nomFr: 'Ensanglanté', emoji: '🩸', hasIntensity: false, color: 'crimson', description: "Si tu prends une Blessure supplémentaire, tu meurs (drapeau narratif)." },
+    { id: 'burning',     nomFr: 'En feu',      emoji: '🔥', hasIntensity: true,  color: 'crimson', description: "En début de tour, subis X Blessures Légères. Tes dégâts physiques sont divisés par 2. Coût : 1 AP/BP pour étouffer." },
+    { id: 'charmed',     nomFr: 'Charmé',      emoji: '💞', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas cibler le charmeur. L'effet se termine si lui ou ses alliés te blessent." },
+    { id: 'confused',    nomFr: 'Confus',      emoji: '😵\u200d💫', hasIntensity: false, color: 'shadow',  description: "En début de tour, lance 1d6. 1-3 = agis erratiquement (le Herald décide), 4-6 = normal." },
+    { id: 'dazed',       nomFr: 'Hébété',      emoji: '😶\u200d🌫️', hasIntensity: false, color: 'shadow',  description: "Pool d'AP réduit de 1, BP du dragon réduit de 2. Tes interruptions subissent un Fardeau." },
+    { id: 'frightened',  nomFr: 'Effrayé',     emoji: '😱', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas cibler la source de la peur. Tant qu'elle est en vue, Fardeau sur tous tes jets." },
     { id: 'frozen',      nomFr: 'Gelé',        emoji: '🧊', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas bouger. Toute attaque physique te fait moitié des dégâts en plus." },
-    { id: 'knocked_down',nomFr: 'À terre',     emoji: '🤕', hasIntensity: false, color: 'shadow',  description: "Tu es à terre (Prone). Coût : 1 AP/BP pour te relever." },
-    { id: 'poisoned',    nomFr: 'Empoisonné',  emoji: '🧪', hasIntensity: true,  color: 'crimson', description: "À la fin de chaque round, subis X Light Wounds. Double chaque round non traité. Coût : 1 AP pour traiter ou utiliser un antidote." },
+    { id: 'knocked_down',nomFr: 'À terre',     emoji: '🤕', hasIntensity: false, color: 'shadow',  description: "Tu es à terre. Coût : 1 AP/BP pour te relever." },
+    { id: 'poisoned',    nomFr: 'Empoisonné',  emoji: '🧪', hasIntensity: true,  color: 'crimson', description: "À la fin de chaque round, subis X Blessures Légères. Double à chaque round non traité. Coût : 1 AP pour traiter ou utiliser un antidote." },
     { id: 'rooted',      nomFr: 'Enraciné',    emoji: '🌿', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas bouger. Tu ne peux pas dépenser de Defense Slots pour bloquer." },
-    { id: 'silenced',    nomFr: 'Bâillonné',   emoji: '🤐', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas parler ni lancer de sort, sauf via Subtle Cast ou capacité similaire." },
+    { id: 'silenced',    nomFr: 'Bâillonné',   emoji: '🤐', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas parler ni lancer de sort, sauf via une capacité de type Subtle Cast." },
     { id: 'slowed',      nomFr: 'Ralenti',     emoji: '🐢', hasIntensity: false, color: 'shadow',  description: "Mouvement divisé par 2." },
     { id: 'stunned',     nomFr: 'Sonné',       emoji: '⚡', hasIntensity: false, color: 'shadow',  description: "Tu ne peux pas utiliser d'interruptions." },
-    { id: 'unseen',      nomFr: 'Invisible',   emoji: '👻', hasIntensity: false, color: 'shadow',  description: "Tant que tu n'es pas détecté, tu ne peux pas être ciblé. Tes attaques gagnent un Faveur." },
-    { id: 'weakened',    nomFr: 'Affaibli',    emoji: '💪', hasIntensity: false, color: 'shadow',  description: "Tes checks d'attaque subissent Fardeau 2." },
+    { id: 'unseen',      nomFr: 'Invisible',   emoji: '👻', hasIntensity: false, color: 'shadow',  description: "Tant que tu n'es pas détecté, tu ne peux pas être ciblé. Tes attaques gagnent une Faveur." },
+    { id: 'weakened',    nomFr: 'Affaibli',    emoji: '💪', hasIntensity: false, color: 'shadow',  description: "Tes jets d'attaque subissent Fardeau 2." },
 ];
 
 
@@ -181,7 +112,7 @@ function addWound(startTier) {
         i++;
     }
     // Toutes les tracks sont pleines, y compris Deadly
-    showToast('💀 Wounds overflow — la mort possible !');
+    showToast('💀 Blessures overflow — la mort possible !');
     return false;
 }
 
@@ -236,12 +167,12 @@ function mergeFicheDefaults(fiche) {
         attributs: { Body: 1, Mind: 1, Soul: 1 },
         bp_current: 0, bp_max: 6,
         armor_bonus: 0,
-        breath: { element: '', shape: 'Cone', description: '', effect: '', charges_current: 0, charges_max: 1 },
+        breath: { element: '', shape: 'Cône', description: '', effect: '', charges_current: 0, charges_max: 1 },
         perks: [], weapons: [], armors: [],
     }, merged.dragon || {});
     merged.dragon.pillars = Object.assign({ love: '', fear: '', instinct: '' }, merged.dragon.pillars || {});
     merged.dragon.attributs = Object.assign({ Body: 1, Mind: 1, Soul: 1 }, merged.dragon.attributs || {});
-    merged.dragon.breath = Object.assign({ element: '', shape: 'Cone', description: '', effect: '', charges_current: 0, charges_max: 1 }, merged.dragon.breath || {});
+    merged.dragon.breath = Object.assign({ element: '', shape: 'Cône', description: '', effect: '', charges_current: 0, charges_max: 1 }, merged.dragon.breath || {});
     if (!Array.isArray(merged.dragon.perks)) merged.dragon.perks = [];
     if (!Array.isArray(merged.dragon.weapons)) merged.dragon.weapons = [];
     if (!Array.isArray(merged.dragon.armors)) merged.dragon.armors = [];
@@ -294,12 +225,12 @@ function loadFiche() {
     if (store.activeId && store.fiches[store.activeId]) {
         return mergeFicheDefaults(store.fiches[store.activeId]);
     }
-    // Aucune fiche : crée une démo et la rend active
-    const demo = mergeFicheDefaults(JSON.parse(JSON.stringify(FICHE_DEMO)));
-    store.activeId = demo._fiche_id;
-    store.fiches[demo._fiche_id] = demo;
+    // Aucune fiche : crée une fiche vierge et la rend active
+    const blank = createBlankFiche('Nouveau personnage');
+    store.activeId = blank._fiche_id;
+    store.fiches[blank._fiche_id] = blank;
     saveStore(store);
-    return demo;
+    return blank;
 }
 
 function saveFiche() {
@@ -398,7 +329,7 @@ function renderVitalBar(f) {
         hpDisplay.appendChild(pip);
     }
 
-    // Wounds : un pip par tier, rempli s'il y a au moins 1 wound à ce tier
+    // Blessures : un pip par tier, rempli s'il y a au moins 1 wound à ce tier
     const woundsDisplay = document.getElementById('vital-wounds-display');
     woundsDisplay.innerHTML = '';
     ['light', 'heavy', 'deadly'].forEach(tier => {
@@ -646,7 +577,7 @@ function openGritSheet() {
 
 function openApSheet() {
     openCounterSheet({
-        title: 'Action Points',
+        title: "Points d'Action",
         current: currentFiche.ap_current,
         max: null,
         onChange: (v) => {
@@ -659,7 +590,7 @@ function openApSheet() {
 
 function openDefenseSheet() {
     openCounterSheet({
-        title: 'Defense',
+        title: 'Défense',
         current: currentFiche.defense_current,
         max: currentFiche.defense_max,
         onChange: (v) => {
@@ -684,7 +615,7 @@ function openHeroPointsSheet() {
 }
 
 
-/* ─── Sheet : Wounds (3 tracks indépendants avec overflow) ─── */
+/* ─── Sheet : Blessures (3 tracks indépendants avec overflow) ─── */
 function openWoundsSheet() {
     const tierLabels = { light: 'Light', heavy: 'Heavy', deadly: 'Deadly' };
 
@@ -731,7 +662,7 @@ function openWoundsSheet() {
         contentEl.querySelector(`#wt-count-${tier}`).textContent = `${count} / ${max}`;
     }
 
-    openBottomSheet('Wounds', buildHtml(), (contentEl) => {
+    openBottomSheet('Blessures', buildHtml(), (contentEl) => {
         contentEl.querySelectorAll('.wound-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const tier = btn.dataset.tier;
@@ -767,7 +698,7 @@ function openStatusPickerSheet() {
     }
     html += '</div>';
 
-    openBottomSheet('Statuses · ajouter ou retirer', html, (contentEl) => {
+    openBottomSheet('Statuts · ajouter ou retirer', html, (contentEl) => {
         contentEl.querySelectorAll('.status-pick-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = btn.dataset.id;
@@ -856,7 +787,7 @@ function openStatusEditSheet(statusId) {
    ═══════════════════════════════════════════════════════════════ */
 function confirmShortRest() {
     if (currentFiche.short_rests_used >= 3) {
-        showToast("3 Short Rests déjà utilisés aujourd'hui");
+        showToast("3 Repos courts déjà utilisés aujourd'hui");
         return;
     }
 
@@ -865,7 +796,7 @@ function confirmShortRest() {
         <div class="confirm-sheet">
             <p class="confirm-message">
                 <strong>Repos court</strong> appliquera&nbsp;:<br><br>
-                ▸ Wounds&nbsp;: Heavy → Light, Light → 0<br>
+                ▸ Blessures&nbsp;: Heavy → Light, Light → 0<br>
                 ▸ Mana et Grit&nbsp;: +${refillAmount} chacun<br>
                 ▸ Compteur&nbsp;: ${currentFiche.short_rests_used + 1} / 3
             </p>
@@ -879,7 +810,7 @@ function confirmShortRest() {
     openBottomSheet('Repos court', html, (contentEl) => {
         contentEl.querySelector('[data-action="cancel"]').addEventListener('click', closeBottomSheet);
         contentEl.querySelector('[data-action="confirm"]').addEventListener('click', () => {
-            // Wounds : Heavy → Light (transfert), Light → 0. Deadly inchangé (règle officielle).
+            // Blessures : Heavy → Light (transfert), Light → 0. Deadly inchangé (règle officielle).
             // Plafonné au light_max courant.
             const oldHeavy = currentFiche.wounds.heavy || 0;
             const lightMax = currentFiche.wounds.light_max || 3;
@@ -1424,45 +1355,45 @@ function openCapaciteForm(type, itemId) {
 
 /* Presets officiels d'armes (rulebook page 130) — données strictement vérifiées */
 const WEAPON_PRESETS = [
-    // Light (+1d6, Min Body 1)
-    { nom: 'Club',       type: 'light',  bonus_dice: 1, damage_tiers: [3,3,4,5,5], damage_type: 'Bludgeoning', range: 1, min_body: 1, perk: 'Bruising : Enemies damaged lose 1 Speed on their next turn.', draviks: 5 },
-    { nom: 'Dagger',     type: 'light',  bonus_dice: 1, damage_tiers: [3,3,4,4,5], damage_type: 'Slashing',    range: 1, min_body: 1, perk: 'Thrown : May be thrown up to 5 sq.', draviks: 10 },
-    { nom: 'Hand Axe',   type: 'light',  bonus_dice: 1, damage_tiers: [3,4,4,5,6], damage_type: 'Slashing',    range: 1, min_body: 1, perk: 'Thrown : May be thrown up to 5 sq.', draviks: 15 },
-    { nom: 'Shortsword', type: 'light',  bonus_dice: 1, damage_tiers: [3,4,5,6,7], damage_type: 'Slashing',    range: 1, min_body: 1, perk: 'Swift : Once per round, after hitting, move 1 square for free.', draviks: 20 },
-    // Medium (+2d6, Min Body 2)
-    { nom: 'Battleaxe',  type: 'medium', bonus_dice: 2, damage_tiers: [3,4,5,6,8], damage_type: 'Slashing',    range: 1, min_body: 2, perk: 'Chop : If you down an enemy, make a free Quick Attack against an adjacent enemy.', draviks: 50 },
-    { nom: 'Longsword',  type: 'medium', bonus_dice: 2, damage_tiers: [3,4,5,6,7], damage_type: 'Slashing',    range: 1, min_body: 2, perk: 'Versatile : When two-handed, escalate damage by 1 Tier (max Tier 5).', draviks: 60 },
-    { nom: 'Mace',       type: 'medium', bonus_dice: 2, damage_tiers: [3,4,5,5,6], damage_type: 'Bludgeoning', range: 1, min_body: 2, perk: 'Shatter : When you deal damage, remove 1 Defense Slot from the target (1/turn).', draviks: 40 },
-    { nom: 'Spear',      type: 'medium', bonus_dice: 2, damage_tiers: [3,4,4,5,6], damage_type: 'Piercing',    range: 2, min_body: 2, perk: 'Reach : Target enemies up to 2 sqs away.', draviks: 30 },
-    // Heavy (Min Body 3)
-    { nom: 'Greataxe',   type: 'heavy',  bonus_dice: 3, damage_tiers: [4,5,7,8,9], damage_type: 'Slashing',    range: 1, min_body: 3, perk: 'Broken : If you hit with Tier 3+, enemies must spend double the Defense Slots to reduce the damage.', draviks: 100 },
-    { nom: 'Greatsword', type: 'heavy',  bonus_dice: 3, damage_tiers: [4,5,6,7,8], damage_type: 'Slashing',    range: 1, min_body: 3, perk: 'Cleave : If a target is downed, deal remaining Wounds to another target within 1 square.', draviks: 90 },
-    { nom: 'Halberd',    type: 'heavy',  bonus_dice: 2, damage_tiers: [4,5,6,7,9], damage_type: 'Piercing',    range: 2, min_body: 3, perk: 'Hook : When you hit, pull the target 1 square closer.', draviks: 85 },
-    { nom: 'Maul',       type: 'heavy',  bonus_dice: 2, damage_tiers: [4,6,7,8,9], damage_type: 'Bludgeoning', range: 1, min_body: 3, perk: 'Crushing : If you deal Tier 4+ damage, the target is Knocked Down.', draviks: 75 },
-    // Ranged
-    { nom: 'Crossbow',   type: 'ranged', bonus_dice: 2, damage_tiers: [4,5,6,7,7], damage_type: 'Piercing',    range: 10, min_body: 2, perk: 'Pierce : On armored targets, escalate damage by 1 Tier (max Tier 5).', draviks: 60 },
-    { nom: 'Longbow',    type: 'ranged', bonus_dice: 2, damage_tiers: [4,5,6,7,8], damage_type: 'Piercing',    range: 12, min_body: 3, perk: 'Piercing : The first attack each round cannot be reduced using Defense Slots.', draviks: 55 },
-    { nom: 'Revolver',   type: 'ranged', bonus_dice: 2, damage_tiers: [4,5,6,7,8], damage_type: 'Piercing',    range: 8,  min_body: 2, perk: 'Ricochet : Once per scene, when you hit, you may target a second enemy within 2 squares (2 Wounds to the new target).', draviks: 75 },
-    { nom: 'Shortbow',   type: 'ranged', bonus_dice: 2, damage_tiers: [3,4,5,5,6], damage_type: 'Piercing',    range: 10, min_body: 1, perk: 'Quick Nock : Once per scene, fire twice in the same turn.', draviks: 35 },
-    { nom: 'Sling',      type: 'ranged', bonus_dice: 1, damage_tiers: [3,3,4,4,5], damage_type: 'Bludgeoning', range: 8,  min_body: 1, perk: 'Rattle : On max damage, the target is Stunned 1.', draviks: 10 },
-    // Spell Focuses
-    { nom: 'Orb',        type: 'focus',  bonus_dice: 2, damage_tiers: [0,0,0,0,0], damage_type: '',            range: 0, min_body: 0, perk: 'Adaptable : Can be embedded into another item (weapon or shield).', draviks: 70 },
-    { nom: 'Staff',      type: 'focus',  bonus_dice: 1, damage_tiers: [3,4,4,5,5], damage_type: 'Bludgeoning', range: 1, min_body: 1, perk: 'Weapon : May be used as a melee weapon.', draviks: 25 },
-    { nom: 'Tome',       type: 'focus',  bonus_dice: 1, damage_tiers: [0,0,0,0,0], damage_type: '',            range: 0, min_body: 0, perk: 'Insight : Once per scene, reroll one failed spellcasting check.', draviks: 50 },
-    { nom: 'Wand',       type: 'focus',  bonus_dice: 1, damage_tiers: [0,0,0,0,0], damage_type: '',            range: 0, min_body: 0, perk: 'Overcharge : Once per scene, spells you cast gain a Faveur.', draviks: 40 },
+    // Légères (+1d6, Min Body 1)
+    { nom: 'Massue',         type: 'light',  bonus_dice: 1, damage_tiers: [3,3,4,5,5], damage_type: 'Contondants', range: 1, min_body: 1, perk: 'Meurtri : les ennemis blessés perdent 1 Vitesse à leur prochain tour.', draviks: 5 },
+    { nom: 'Dague',          type: 'light',  bonus_dice: 1, damage_tiers: [3,3,4,4,5], damage_type: 'Tranchants',  range: 1, min_body: 1, perk: 'Lancer : peut être lancée jusqu\'à 5 cases.', draviks: 10 },
+    { nom: 'Hachette',       type: 'light',  bonus_dice: 1, damage_tiers: [3,4,4,5,6], damage_type: 'Tranchants',  range: 1, min_body: 1, perk: 'Lancer : peut être lancée jusqu\'à 5 cases.', draviks: 15 },
+    { nom: 'Épée courte',    type: 'light',  bonus_dice: 1, damage_tiers: [3,4,5,6,7], damage_type: 'Tranchants',  range: 1, min_body: 1, perk: 'Vif : une fois par round, après avoir touché, déplace-toi d\'1 case gratuitement.', draviks: 20 },
+    // Moyennes (+2d6, Min Body 2)
+    { nom: 'Hache de bataille', type: 'medium', bonus_dice: 2, damage_tiers: [3,4,5,6,8], damage_type: 'Tranchants',  range: 1, min_body: 2, perk: 'Couperet : si tu mets un ennemi à terre, fais une attaque rapide gratuite contre un ennemi adjacent.', draviks: 50 },
+    { nom: 'Épée longue',    type: 'medium', bonus_dice: 2, damage_tiers: [3,4,5,6,7], damage_type: 'Tranchants',  range: 1, min_body: 2, perk: 'Polyvalente : à deux mains, augmente les dégâts d\'1 Tier (max Tier 5).', draviks: 60 },
+    { nom: 'Masse',          type: 'medium', bonus_dice: 2, damage_tiers: [3,4,5,5,6], damage_type: 'Contondants', range: 1, min_body: 2, perk: 'Briser : quand tu infliges des dégâts, retire 1 Defense Slot à la cible (1 fois par tour).', draviks: 40 },
+    { nom: 'Lance',          type: 'medium', bonus_dice: 2, damage_tiers: [3,4,4,5,6], damage_type: 'Perforants',  range: 2, min_body: 2, perk: 'Allonge : cible des ennemis jusqu\'à 2 cases de distance.', draviks: 30 },
+    // Lourdes (Min Body 3)
+    { nom: 'Grande hache',   type: 'heavy',  bonus_dice: 3, damage_tiers: [4,5,7,8,9], damage_type: 'Tranchants',  range: 1, min_body: 3, perk: 'Brise-armure : si tu touches au Tier 3+, les ennemis doivent dépenser le double de Defense Slots pour réduire les dégâts.', draviks: 100 },
+    { nom: 'Espadon',        type: 'heavy',  bonus_dice: 3, damage_tiers: [4,5,6,7,8], damage_type: 'Tranchants',  range: 1, min_body: 3, perk: 'Fendoir : si une cible est mise à terre, transfère les Blessures restantes à une autre cible dans 1 case.', draviks: 90 },
+    { nom: 'Hallebarde',     type: 'heavy',  bonus_dice: 2, damage_tiers: [4,5,6,7,9], damage_type: 'Perforants',  range: 2, min_body: 3, perk: 'Crochet : quand tu touches, attire la cible d\'1 case vers toi.', draviks: 85 },
+    { nom: 'Maillet',        type: 'heavy',  bonus_dice: 2, damage_tiers: [4,6,7,8,9], damage_type: 'Contondants', range: 1, min_body: 3, perk: 'Écrasant : si tu infliges Tier 4+ de dégâts, la cible est Mise à terre.', draviks: 75 },
+    // Distance
+    { nom: 'Arbalète',       type: 'ranged', bonus_dice: 2, damage_tiers: [4,5,6,7,7], damage_type: 'Perforants',  range: 10, min_body: 2, perk: 'Perçant : sur les cibles armurées, augmente les dégâts d\'1 Tier (max Tier 5).', draviks: 60 },
+    { nom: 'Arc long',       type: 'ranged', bonus_dice: 2, damage_tiers: [4,5,6,7,8], damage_type: 'Perforants',  range: 12, min_body: 3, perk: 'Transperçant : la première attaque de chaque round ne peut pas être réduite avec des Defense Slots.', draviks: 55 },
+    { nom: 'Revolver',       type: 'ranged', bonus_dice: 2, damage_tiers: [4,5,6,7,8], damage_type: 'Perforants',  range: 8,  min_body: 2, perk: 'Ricochet : une fois par scène, en touchant tu peux toucher un second ennemi dans 2 cases (2 Blessures à la nouvelle cible).', draviks: 75 },
+    { nom: 'Arc court',      type: 'ranged', bonus_dice: 2, damage_tiers: [3,4,5,5,6], damage_type: 'Perforants',  range: 10, min_body: 1, perk: 'Tir rapide : une fois par scène, tire deux fois dans le même tour.', draviks: 35 },
+    { nom: 'Fronde',         type: 'ranged', bonus_dice: 1, damage_tiers: [3,3,4,4,5], damage_type: 'Contondants', range: 8,  min_body: 1, perk: 'Étourdir : sur dégâts max, la cible est Sonnée 1.', draviks: 10 },
+    // Focus magique
+    { nom: 'Orbe',           type: 'focus',  bonus_dice: 2, damage_tiers: [0,0,0,0,0], damage_type: '',            range: 0, min_body: 0, perk: 'Adaptable : peut être enchâssée dans un autre objet (arme ou bouclier).', draviks: 70 },
+    { nom: 'Bâton',          type: 'focus',  bonus_dice: 1, damage_tiers: [3,4,4,5,5], damage_type: 'Contondants', range: 1, min_body: 1, perk: 'Arme : peut servir d\'arme de mêlée.', draviks: 25 },
+    { nom: 'Grimoire',       type: 'focus',  bonus_dice: 1, damage_tiers: [0,0,0,0,0], damage_type: '',            range: 0, min_body: 0, perk: 'Intuition : une fois par scène, relance un jet de spellcasting raté.', draviks: 50 },
+    { nom: 'Baguette',       type: 'focus',  bonus_dice: 1, damage_tiers: [0,0,0,0,0], damage_type: '',            range: 0, min_body: 0, perk: 'Surcharge : une fois par scène, tes sorts gagnent une Faveur.', draviks: 40 },
 ];
 
 /* Presets officiels d'armures (rulebook page 131) */
 const ARMOR_PRESETS = [
-    { nom: 'Light Armor',  type: 'armor',  armor_bonus: 1, min_body: 1, speed_penalty: 0,  draviks: 25 },
-    { nom: 'Medium Armor', type: 'armor',  armor_bonus: 2, min_body: 2, speed_penalty: -1, draviks: 60 },
-    { nom: 'Heavy Armor',  type: 'armor',  armor_bonus: 3, min_body: 3, speed_penalty: -2, draviks: 90 },
-    { nom: 'Buckler',      type: 'shield', armor_bonus: 1, min_body: 1, speed_penalty: 0,  draviks: 20 },
-    { nom: 'Kite Shield',  type: 'shield', armor_bonus: 2, min_body: 2, speed_penalty: -1, draviks: 40 },
-    { nom: 'Tower Shield', type: 'shield', armor_bonus: 3, min_body: 3, speed_penalty: -2, draviks: 70 },
+    { nom: 'Armure légère',  type: 'armor',  armor_bonus: 1, min_body: 1, speed_penalty: 0,  draviks: 25 },
+    { nom: 'Armure moyenne', type: 'armor',  armor_bonus: 2, min_body: 2, speed_penalty: -1, draviks: 60 },
+    { nom: 'Armure lourde',  type: 'armor',  armor_bonus: 3, min_body: 3, speed_penalty: -2, draviks: 90 },
+    { nom: 'Petit bouclier', type: 'shield', armor_bonus: 1, min_body: 1, speed_penalty: 0,  draviks: 20 },
+    { nom: 'Bouclier ovale', type: 'shield', armor_bonus: 2, min_body: 2, speed_penalty: -1, draviks: 40 },
+    { nom: 'Pavois',         type: 'shield', armor_bonus: 3, min_body: 3, speed_penalty: -2, draviks: 70 },
 ];
 
-const WEAPON_TYPE_LABELS = { light: 'Light', medium: 'Medium', heavy: 'Heavy', ranged: 'Ranged', focus: 'Focus' };
+const WEAPON_TYPE_LABELS = { light: 'Légère', medium: 'Moyenne', heavy: 'Lourde', ranged: 'Distance', focus: 'Focus magique' };
 const ARMOR_TYPE_LABELS = { armor: 'Armure', shield: 'Bouclier' };
 const TOOL_ATTRIBUTES = ['Body', 'Mind', 'Soul', 'Shadow', 'Gods', 'World'];
 
@@ -1812,7 +1743,7 @@ function openWeaponForm(existing) {
             ` : ''}
             <div class="form-row">
                 <label class="form-row-label">Nom *</label>
-                <input type="text" class="form-row-input" id="form-nom" placeholder="Ex: Longsword" value="${escapeHtml(e.nom || '')}" maxlength="60">
+                <input type="text" class="form-row-input" id="form-nom" placeholder="Ex: Épée longue" value="${escapeHtml(e.nom || '')}" maxlength="60">
             </div>
             <div class="form-row-grid">
                 <div class="form-row">
@@ -2127,43 +2058,43 @@ const DRAGON_BP_CAP_BY_STAGE = {
 };
 
 /* Shapes officielles du Breath Weapon (rulebook page 19) */
-const BREATH_SHAPES = ['Cone', 'Line', 'Sphere'];
+const BREATH_SHAPES = ['Cône', 'Ligne', 'Sphère'];
 
 /* Sources possibles d'un perk dragon (pour organisation) */
-const DRAGON_PERK_SOURCES = ['Bond', 'Family Core', 'Family Minor', 'Family Major', 'Other'];
+const DRAGON_PERK_SOURCES = ['Lien', 'Famille (Core)', 'Famille (Minor)', 'Famille (Major)', 'Autre'];
 
 /* Strike types (zones d'impact des armes naturelles du dragon) */
-const DRAGON_STRIKE_TYPES = ['Bite', 'Claw', 'Tail', 'Wing'];
+const DRAGON_STRIKE_TYPES = ['Morsure', 'Griffe', 'Queue', 'Aile'];
 
 /* Presets officiels d'armes dragon (rulebook page 188) */
 const DRAGON_WEAPON_PRESETS = [
-    // Light (+1 bonus, +2 damage per Tier)
-    { nom: 'Fang Caps',    type: 'light',  bonus_dice: 1, damage_tiers: [2,4,6,8,10],   damage_type: 'Bite',  range: 1, min_body: 2, perk: 'On 2+ successes, target suffers Weakened 1.', draviks: 50 },
-    { nom: 'Claw Sheaths', type: 'light',  bonus_dice: 1, damage_tiers: [2,4,6,8,10],   damage_type: 'Claw',  range: 1, min_body: 2, perk: 'Strike two adjacent targets with one Claw attack.', draviks: 50 },
-    { nom: 'Tail Rings',   type: 'light',  bonus_dice: 1, damage_tiers: [2,4,6,8,10],   damage_type: 'Tail',  range: 1, min_body: 2, perk: 'On 3+ successes, push target 1 square.', draviks: 75 },
-    // Medium (+2 bonus, +4 damage per Tier)
-    { nom: 'Iron Fangs',   type: 'medium', bonus_dice: 2, damage_tiers: [4,8,12,16,20], damage_type: 'Bite',  range: 1, min_body: 3, perk: 'On 3+ successes, target is Weakened 1.', draviks: 150 },
-    { nom: 'Razor Claws',  type: 'medium', bonus_dice: 2, damage_tiers: [4,8,12,16,20], damage_type: 'Claw',  range: 1, min_body: 3, perk: 'On 2+ successes, target is Dazed 1.', draviks: 150 },
-    { nom: 'Spiked Tail',  type: 'medium', bonus_dice: 2, damage_tiers: [4,8,12,16,20], damage_type: 'Tail',  range: 2, min_body: 4, perk: 'On 3+ successes, all targets hit are Knocked Down. (Range : 2-square line)', draviks: 200 },
-    { nom: 'Wing Blades',  type: 'medium', bonus_dice: 2, damage_tiers: [4,8,12,16,20], damage_type: 'Wing',  range: 1, min_body: 4, perk: 'On 2+ successes, push target 2 squares. (Adjacent only)', draviks: 200 },
-    // Heavy (+3 bonus, +6 damage per Tier)
-    { nom: 'Obsidian Fangs', type: 'heavy', bonus_dice: 3, damage_tiers: [6,12,18,24,30], damage_type: 'Bite', range: 1, min_body: 5, perk: 'On 3+ successes, deal 3 extra Wounds directly.', draviks: 500 },
-    { nom: 'Adamant Claws',  type: 'heavy', bonus_dice: 3, damage_tiers: [6,12,18,24,30], damage_type: 'Claw', range: 1, min_body: 5, perk: 'On 3+ successes, target is Stunned 1.', draviks: 500 },
-    { nom: 'Barbed Tail',    type: 'heavy', bonus_dice: 3, damage_tiers: [6,12,18,24,30], damage_type: 'Tail', range: 3, min_body: 6, perk: 'On 2+ successes, targets also suffer Weakened 1. (Range : 3-square line)', draviks: 600 },
-    { nom: 'Storm Wings',    type: 'heavy', bonus_dice: 3, damage_tiers: [6,12,18,24,30], damage_type: 'Wing', range: 1, min_body: 6, perk: 'On 2+ successes, all adjacent targets are pushed 2 squares.', draviks: 600 },
+    // Légères (+1 bonus, +2 dégâts par Tier)
+    { nom: 'Capes de crocs',     type: 'light',  bonus_dice: 1, damage_tiers: [2,4,6,8,10],   damage_type: 'Morsure',     range: 1, min_body: 2, perk: 'Sur 2+ succès, la cible est Affaiblie 1.', draviks: 50 },
+    { nom: 'Fourreaux de griffes', type: 'light',  bonus_dice: 1, damage_tiers: [2,4,6,8,10],   damage_type: 'Griffe',      range: 1, min_body: 2, perk: 'Frappe deux cibles adjacentes avec une seule attaque de griffe.', draviks: 50 },
+    { nom: 'Anneaux de queue',   type: 'light',  bonus_dice: 1, damage_tiers: [2,4,6,8,10],   damage_type: 'Queue',       range: 1, min_body: 2, perk: 'Sur 3+ succès, repousse la cible d\'1 case.', draviks: 75 },
+    // Moyennes (+2 bonus, +4 dégâts par Tier)
+    { nom: 'Crocs de fer',       type: 'medium', bonus_dice: 2, damage_tiers: [4,8,12,16,20], damage_type: 'Morsure',     range: 1, min_body: 3, perk: 'Sur 3+ succès, la cible est Affaiblie 1.', draviks: 150 },
+    { nom: 'Griffes-rasoirs',    type: 'medium', bonus_dice: 2, damage_tiers: [4,8,12,16,20], damage_type: 'Griffe',      range: 1, min_body: 3, perk: 'Sur 2+ succès, la cible est Hébétée 1.', draviks: 150 },
+    { nom: 'Queue cloutée',      type: 'medium', bonus_dice: 2, damage_tiers: [4,8,12,16,20], damage_type: 'Queue',       range: 2, min_body: 4, perk: 'Sur 3+ succès, toutes les cibles touchées sont Mises à terre. (Portée : ligne de 2 cases)', draviks: 200 },
+    { nom: 'Lames d\'ailes',     type: 'medium', bonus_dice: 2, damage_tiers: [4,8,12,16,20], damage_type: 'Aile',        range: 1, min_body: 4, perk: 'Sur 2+ succès, repousse la cible de 2 cases. (Adjacent uniquement)', draviks: 200 },
+    // Lourdes (+3 bonus, +6 dégâts par Tier)
+    { nom: 'Crocs d\'obsidienne',type: 'heavy',  bonus_dice: 3, damage_tiers: [6,12,18,24,30], damage_type: 'Morsure',    range: 1, min_body: 5, perk: 'Sur 3+ succès, inflige 3 Blessures supplémentaires directement.', draviks: 500 },
+    { nom: 'Griffes d\'adamantium', type: 'heavy', bonus_dice: 3, damage_tiers: [6,12,18,24,30], damage_type: 'Griffe',   range: 1, min_body: 5, perk: 'Sur 3+ succès, la cible est Sonnée 1.', draviks: 500 },
+    { nom: 'Queue à pointes',    type: 'heavy',  bonus_dice: 3, damage_tiers: [6,12,18,24,30], damage_type: 'Queue',      range: 3, min_body: 6, perk: 'Sur 2+ succès, les cibles subissent aussi Affaiblie 1. (Portée : ligne de 3 cases)', draviks: 600 },
+    { nom: 'Ailes d\'orage',     type: 'heavy',  bonus_dice: 3, damage_tiers: [6,12,18,24,30], damage_type: 'Aile',       range: 1, min_body: 6, perk: 'Sur 2+ succès, toutes les cibles adjacentes sont repoussées de 2 cases.', draviks: 600 },
 ];
 
 /* Presets officiels d'armures dragon (rulebook page 188) */
 const DRAGON_ARMOR_PRESETS = [
-    { nom: 'Scale Wraps',     armor_bonus: 2, min_body: 2, draviks: 50  },
-    { nom: 'Leather Barding', armor_bonus: 2, min_body: 2, draviks: 75  },
-    { nom: 'Bronze Plating',  armor_bonus: 2, min_body: 3, draviks: 100 },
-    { nom: 'Iron Barding',    armor_bonus: 3, min_body: 3, draviks: 200 },
-    { nom: 'Runed Plating',   armor_bonus: 3, min_body: 4, draviks: 250 },
-    { nom: 'Steel Harness',   armor_bonus: 3, min_body: 4, draviks: 300 },
-    { nom: 'Mithril Plating', armor_bonus: 4, min_body: 5, draviks: 500 },
-    { nom: 'Adamant Harness', armor_bonus: 4, min_body: 6, draviks: 600 },
-    { nom: 'Sunsteel Barding',armor_bonus: 4, min_body: 6, draviks: 750 },
+    { nom: 'Bandelettes d\'écailles', armor_bonus: 2, min_body: 2, draviks: 50  },
+    { nom: 'Caparaçon de cuir',       armor_bonus: 2, min_body: 2, draviks: 75  },
+    { nom: 'Plaques de bronze',       armor_bonus: 2, min_body: 3, draviks: 100 },
+    { nom: 'Caparaçon de fer',        armor_bonus: 3, min_body: 3, draviks: 200 },
+    { nom: 'Plaques runiques',        armor_bonus: 3, min_body: 4, draviks: 250 },
+    { nom: 'Harnais d\'acier',        armor_bonus: 3, min_body: 4, draviks: 300 },
+    { nom: 'Plaques de mithril',      armor_bonus: 4, min_body: 5, draviks: 500 },
+    { nom: 'Harnais d\'adamantium',   armor_bonus: 4, min_body: 6, draviks: 600 },
+    { nom: 'Caparaçon d\'acier solaire', armor_bonus: 4, min_body: 6, draviks: 750 },
 ];
 
 
@@ -2216,7 +2147,7 @@ function renderDragon() {
     // Breath
     const b = d.breath || {};
     document.getElementById('breath-element-display').textContent = b.element ? b.element : '— Aucun élément —';
-    document.getElementById('breath-shape-display').textContent = b.shape || 'Cone';
+    document.getElementById('breath-shape-display').textContent = b.shape || 'Cône';
     document.getElementById('breath-charges-current').textContent = b.charges_current || 0;
     document.getElementById('breath-charges-max').textContent = b.charges_max || dragonBreathChargesMax(d.attributs.Soul);
     document.getElementById('breath-description-display').textContent = b.description || '— Tap pour configurer —';
@@ -2260,7 +2191,7 @@ function renderDragonList(type) {
     if (items.length === 0) {
         const labels = {
             dperks: "Aucun Bond/Family Perk. Ajoute ceux de ta famille de dragon.",
-            dweapons: "Aucune arme dragon. 12 presets officiels disponibles (Fang Caps, Iron Fangs, etc.).",
+            dweapons: "Aucune arme dragon. 12 presets officiels disponibles (Capes de crocs, Crocs de fer, etc.).",
             darmors: "Aucune armure. 9 presets officiels disponibles (Scale Wraps → Sunsteel Barding).",
         };
         listEl.innerHTML = `<div class="capacites-empty">${labels[type]}<br><br>Tape « + Ajouter ».</div>`;
@@ -2539,7 +2470,7 @@ function performBreathAttack() {
     renderDragon();
 
     // Pool = Player Primary + Dragon Soul (mode attaque, sans doublement)
-    const label = b.element ? `🐉 Souffle (${b.element}, ${b.shape || 'Cone'})` : `🐉 Souffle de ${d.nom || 'dragon'}`;
+    const label = b.element ? `🐉 Souffle (${b.element}, ${b.shape || 'Cône'})` : `🐉 Souffle de ${d.nom || 'dragon'}`;
     openDiceRoller([primary], {
         modifier: dragonSoul,
         attackMode: true,
@@ -2724,7 +2655,7 @@ function openBreathEditor() {
             </div>
         </div>
     `;
-    openBottomSheet('Breath Weapon', html, (root) => {
+    openBottomSheet('Souffle du dragon', html, (root) => {
         root.querySelector('[data-action="cancel"]').addEventListener('click', closeBottomSheet);
         root.querySelector('[data-action="save"]').addEventListener('click', () => {
             b.element = root.querySelector('#form-element').value.trim();
@@ -2736,7 +2667,7 @@ function openBreathEditor() {
             saveFiche();
             renderDragon();
             closeBottomSheet();
-            showToast('Breath Weapon mis à jour');
+            showToast('Souffle mis à jour');
         });
     });
 }
@@ -3092,7 +3023,7 @@ function saveCurrentRollAsPreset() {
         <div class="capacite-form">
             <div class="form-row">
                 <label class="form-row-label">Nom du preset *</label>
-                <input type="text" class="form-row-input" id="form-preset-nom" placeholder="Ex: Attaque Longsword, Sneak attack…" maxlength="40">
+                <input type="text" class="form-row-input" id="form-preset-nom" placeholder="Ex: Attaque arme, Charme, Sortilège…" maxlength="40">
             </div>
             <p style="font-size: 12px; color: var(--text-muted); font-style: italic;">
                 Le preset enregistre les attributs sélectionnés, le modificateur, la difficulté et le mode (attaque ou normal).
@@ -4011,7 +3942,7 @@ function bindConfigFields() {
     bindNumber('cfg-armure', 'armure_bonus', 10);
     bindNumber('cfg-spell-bonus', 'spell_bonus', 5);
 
-    // Wound tracks max
+    // Blessure tracks max
     ['light', 'heavy', 'deadly'].forEach(tier => {
         const el = document.getElementById(`cfg-${tier}-max`);
         if (!el) return;
@@ -4117,7 +4048,7 @@ function createBlankFiche(nom) {
         classe: '',
         primary: 'Body',
         attributs: { Body: 1, Mind: 1, Soul: 1, Shadow: 1, Gods: 1, World: 1 },
-        hp_current: 0, hp_max: 0,
+        hp_current: 1, hp_max: 3,
         mana_current: 0, mana_max: 0,
         grit_current: 0, grit_max: 0,
         defense_current: 0, defense_max: 0,
@@ -4135,7 +4066,7 @@ function createBlankFiche(nom) {
             attributs: { Body: 1, Mind: 1, Soul: 1 },
             bp_current: 0, bp_max: 6,
             armor_bonus: 0,
-            breath: { element: '', shape: 'Cone', description: '', effect: '', charges_current: 0, charges_max: 1 },
+            breath: { element: '', shape: 'Cône', description: '', effect: '', charges_current: 0, charges_max: 1 },
             perks: [], weapons: [], armors: [],
         },
         apparence: '', histoire: '', liens: '', notes: '',
