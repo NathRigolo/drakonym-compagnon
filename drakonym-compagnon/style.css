@@ -3321,6 +3321,10 @@ a:hover, a:focus { color: var(--gold-bright); }
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
 }
+/* Sur écrans étroits, passe à 2 colonnes pour respirer */
+@media (max-width: 480px) {
+    .config-grid-3 { grid-template-columns: 1fr 1fr; }
+}
 .config-field {
     display: flex;
     flex-direction: column;
