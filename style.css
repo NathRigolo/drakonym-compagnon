@@ -35,7 +35,10 @@
     --on-gold:      #2a1810;
 
     /* Voile par-dessus l'image de fond (Parchemin : voile clair, dragon discret) */
-    --bg-overlay:   rgba(247, 238, 209, 0.92);
+    --bg-overlay:   rgba(247, 238, 209, 0.80);
+
+    /* Version semi-transparente du fond Vital pour laisser passer le dragon (desktop) */
+    --bg-vital-translucent: rgba(237, 224, 184, 0.88);
 }
 
 /* ─── VARIABLES : MODE NUIT (sombre) ─────────────────────────── */
@@ -63,7 +66,10 @@
     --on-gold:      #1f1812;
 
     /* Voile sombre : dragon plus visible dans les zones vides */
-    --bg-overlay:   rgba(31, 24, 18, 0.78);
+    --bg-overlay:   rgba(31, 24, 18, 0.50);
+
+    /* Version semi-transparente du fond Vital pour laisser passer le dragon (desktop) */
+    --bg-vital-translucent: rgba(21, 16, 11, 0.78);
 }
 
 /* ─── MODE AUTO : suit le système si data-theme="auto" ──────── */
@@ -86,7 +92,8 @@
         --border:       rgba(212, 160, 23, 0.3);
         --border-strong: rgba(212, 160, 23, 0.5);
         --on-gold:      #1f1812;
-        --bg-overlay:   rgba(31, 24, 18, 0.78);
+        --bg-overlay:   rgba(31, 24, 18, 0.50);
+        --bg-vital-translucent: rgba(21, 16, 11, 0.78);
     }
 }
 
@@ -3554,7 +3561,9 @@ a:hover, a:focus { color: var(--gold-bright); }
     .desktop-sidebar {
         display: flex;
         flex-direction: column;
-        background: var(--bg-vital);
+        background: var(--bg-vital-translucent);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         border-right: 1px solid var(--border);
         position: sticky;
         top: 0;
@@ -3565,6 +3574,13 @@ a:hover, a:focus { color: var(--gold-bright); }
     .desktop-sidebar-right {
         border-right: none;
         border-left: 1px solid var(--border);
+    }
+
+    /* Vital bar également translucide pour laisser transparaître le dragon */
+    .vital-bar {
+        background: var(--bg-vital-translucent);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
     }
 
     /* ─── Sidebar GAUCHE ─── */
