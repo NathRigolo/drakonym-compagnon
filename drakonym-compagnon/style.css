@@ -3325,6 +3325,42 @@ a:hover, a:focus { color: var(--gold-bright); }
 @media (max-width: 480px) {
     .config-grid-3 { grid-template-columns: 1fr 1fr; }
 }
+
+/* Champ avec son hint juste en dessous (pas dans la grille) */
+.config-field-with-hint {
+    background: var(--bg-card-alt);
+    border: 1px dashed var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.config-field-with-hint .config-field {
+    max-width: 50%;
+}
+@media (max-width: 480px) {
+    .config-field-with-hint .config-field { max-width: 100%; }
+}
+.config-input-hint {
+    font-family: 'EB Garamond', serif;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin: 0;
+    font-style: italic;
+}
+.config-input-hint strong {
+    color: var(--gold);
+    font-style: normal;
+    font-weight: 500;
+}
+.config-input-hint em {
+    color: var(--text);
+    font-style: italic;
+}
 .config-field {
     display: flex;
     flex-direction: column;
