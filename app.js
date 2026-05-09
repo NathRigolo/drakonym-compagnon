@@ -322,6 +322,7 @@ function renderAll() {
     renderConfigFields();
     renderHistoireFields();
     refreshDesktopPersona();
+    renderDesktopEquipped();
 }
 
 function renderVitalBar(f) {
@@ -1583,6 +1584,7 @@ function toggleEquip(type, item) {
     item.equipped = !item.equipped;
     saveFiche();
     renderEquipementList(type);
+    renderDesktopEquipped();
     showToast(item.equipped ? `⦿ ${item.nom} équipé` : `${item.nom} déséquipé`);
 }
 
@@ -1596,17 +1598,16 @@ function performWeaponAttack(item) {
     }
     const bodyValue = currentFiche.attributs.Body || 0;
     const meetsMin = bodyValue >= (item.min_body || 0);
-    const bonusDice = meetsMin ? (item.bonus_dice || 0) : 0;
+    const weaponBonus = item.bonus_dice || 0;
 
     openDiceRoller([primary], {
-        modifier: bonusDice,
         attackMode: true,
         label: `Attaque · ${item.nom}`,
+        weaponName: item.nom,
+        weaponBonus: weaponBonus,
+        weaponMinBody: item.min_body || 0,
+        weaponMinBodyOk: meetsMin,
     });
-
-    if (!meetsMin && item.bonus_dice > 0) {
-        setTimeout(() => showToast(`⚠️ Min Body ${item.min_body} non atteint — pas de bonus arme`), 200);
-    }
 }
 
 
@@ -3179,6 +3180,11 @@ function openDiceRoller(presetAttrs, options) {
         difficulty: options.difficulty || 0,
         label: options.label || '',
         attackMode: options.attackMode === true,
+        // Bonus d'arme dédié (séparé du modifier pour affichage explicite)
+        weaponName: options.weaponName || null,
+        weaponBonus: options.weaponBonus || 0,
+        weaponMinBody: options.weaponMinBody || 0,
+        weaponMinBodyOk: options.weaponMinBodyOk !== false,
         // rempli après le jet :
         dice: null,
         shadowValue: null,
@@ -3299,7 +3305,9 @@ function computePoolSize() {
     } else if (attrs.length >= 2) {
         base = (f.attributs[attrs[0]] || 0) + (f.attributs[attrs[1]] || 0);
     }
-    return Math.max(0, base + currentRoll.modifier);
+    // Bonus d'arme uniquement si min_body atteint
+    const wBonus = currentRoll.weaponMinBodyOk ? (currentRoll.weaponBonus || 0) : 0;
+    return Math.max(0, base + currentRoll.modifier + wBonus);
 }
 
 function getPoolModeLabel() {
@@ -3308,7 +3316,20 @@ function getPoolModeLabel() {
     if (currentRoll.attackMode) {
         const total = attrs.reduce((sum, a) => sum + (currentFiche.attributs[a] || 0), 0);
         const detail = attrs.map(a => `<em>${a}</em> (${currentFiche.attributs[a] || 0})`).join(' + ');
-        return { html: `${detail} → ${total} dés (mode attaque, sans doublement)`, empty: false };
+        // Bonus d'arme (visible explicitement)
+        const wBonus = currentRoll.weaponBonus || 0;
+        const wOk = currentRoll.weaponMinBodyOk;
+        let bonusPart = '';
+        let totalWithBonus = total;
+        if (wBonus > 0) {
+            if (wOk) {
+                bonusPart = ` + <em>Bonus arme</em> (+${wBonus})`;
+                totalWithBonus = total + wBonus;
+            } else {
+                bonusPart = ` <span style="color: var(--crimson); text-decoration: line-through;">+ Bonus arme (+${wBonus})</span> <small style="color: var(--crimson);">⚠ Min Body ${currentRoll.weaponMinBody} non atteint</small>`;
+            }
+        }
+        return { html: `${detail}${bonusPart} → ${totalWithBonus} dés (mode attaque, sans doublement)`, empty: false };
     }
     if (attrs.length === 1) {
         const v = currentFiche.attributs[attrs[0]] || 0;
@@ -4649,6 +4670,100 @@ function refreshDesktopPersona() {
     if (!nameEl) return;
     const f = currentFiche;
     nameEl.textContent = (f && f.nom) ? f.nom : '— Nouveau personnage —';
+}
+
+function renderDesktopEquipped() {
+    const container = document.getElementById('desktop-equipped');
+    if (!container) return;
+    const f = currentFiche;
+    if (!f) {
+        container.innerHTML = '<p class="desktop-side-empty">Aucun personnage</p>';
+        return;
+    }
+
+    const weapons = (f.weapons || []).filter(w => w.equipped && w.type !== 'focus');
+    const focuses = (f.weapons || []).filter(w => w.equipped && w.type === 'focus');
+    const armors = (f.armors || []).filter(a => a.equipped);
+
+    if (weapons.length === 0 && focuses.length === 0 && armors.length === 0) {
+        container.innerHTML = `<p class="desktop-side-empty">Rien d'équipé.<br><small>Utilise les onglets Équipement pour équiper.</small></p>`;
+        return;
+    }
+
+    let html = '';
+
+    // ─── Armes (cliquable → attaque) ───
+    if (weapons.length > 0) {
+        html += '<div class="desktop-equip-group"><div class="desktop-equip-group-label">Armes</div>';
+        weapons.forEach(w => {
+            const bodyValue = f.attributs.Body || 0;
+            const meetsMin = bodyValue >= (w.min_body || 0);
+            const bonus = meetsMin ? (w.bonus_dice || 0) : 0;
+            const minWarn = !meetsMin && w.bonus_dice > 0
+                ? `<span class="desktop-equip-warn" title="Min Body ${w.min_body} non atteint">⚠</span>`
+                : '';
+            html += `
+                <button type="button" class="desktop-equip-item desktop-equip-weapon" data-equip-weapon="${w.id}">
+                    <span class="desktop-equip-icon">⚔️</span>
+                    <span class="desktop-equip-info">
+                        <span class="desktop-equip-name">${escapeHtml(w.nom)}</span>
+                        <span class="desktop-equip-meta">+${bonus} dés${w.range > 1 ? ` · portée ${w.range}` : ''} ${minWarn}</span>
+                    </span>
+                    <span class="desktop-equip-cta">Attaquer</span>
+                </button>
+            `;
+        });
+        html += '</div>';
+    }
+
+    // ─── Armures ───
+    if (armors.length > 0) {
+        const totalArmor = armors.reduce((s, a) => s + (a.armor_bonus || 0), 0);
+        html += '<div class="desktop-equip-group"><div class="desktop-equip-group-label">Armures</div>';
+        armors.forEach(a => {
+            html += `
+                <div class="desktop-equip-item">
+                    <span class="desktop-equip-icon">🛡</span>
+                    <span class="desktop-equip-info">
+                        <span class="desktop-equip-name">${escapeHtml(a.nom)}</span>
+                        <span class="desktop-equip-meta">Armor +${a.armor_bonus || 0}</span>
+                    </span>
+                </div>
+            `;
+        });
+        html += `<div class="desktop-equip-total">Total Armure : <strong>+${totalArmor}</strong></div>`;
+        html += '</div>';
+    }
+
+    // ─── Focus magique ───
+    if (focuses.length > 0) {
+        const totalSpell = focuses.reduce((s, f2) => s + (f2.bonus_dice || 0), 0);
+        html += '<div class="desktop-equip-group"><div class="desktop-equip-group-label">Focus magique</div>';
+        focuses.forEach(fo => {
+            html += `
+                <div class="desktop-equip-item">
+                    <span class="desktop-equip-icon">🔮</span>
+                    <span class="desktop-equip-info">
+                        <span class="desktop-equip-name">${escapeHtml(fo.nom)}</span>
+                        <span class="desktop-equip-meta">Spell Bonus +${fo.bonus_dice || 0}</span>
+                    </span>
+                </div>
+            `;
+        });
+        html += `<div class="desktop-equip-total">Bonus magique total : <strong>+${totalSpell}</strong></div>`;
+        html += '</div>';
+    }
+
+    container.innerHTML = html;
+
+    // Bind click sur armes équipées → attaque directe
+    container.querySelectorAll('[data-equip-weapon]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.equipWeapon;
+            const w = (currentFiche.weapons || []).find(x => x.id === id);
+            if (w) performWeaponAttack(w);
+        });
+    });
 }
 
 if (document.readyState === 'loading') {
