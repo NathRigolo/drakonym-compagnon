@@ -3895,10 +3895,17 @@ a:hover, a:focus { color: var(--gold-bright); }
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 12px;
+        align-items: start;
     }
     .capacites-list:empty,
     .equipement-list:empty {
         display: block;
+    }
+    /* Item déplié : prend toute la largeur pour ne pas tirer son voisin
+       et permet aux autres items de rester compactes en dessous */
+    .capacites-list .capacite-item.expanded,
+    .equipement-list .capacite-item.expanded {
+        grid-column: 1 / -1;
     }
 
     /* === Bottom sheets → modals centrés sur desktop === */
