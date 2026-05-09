@@ -3514,10 +3514,10 @@ a:hover, a:focus { color: var(--gold-bright); }
 
     .app-layout {
         display: grid;
-        grid-template-columns: 160px minmax(0, 1fr) 280px;
+        grid-template-columns: 180px minmax(0, 1fr) 320px;
         min-height: 100vh;
         min-height: 100dvh;
-        max-width: 1600px;
+        max-width: 1800px;
         margin: 0 auto;
     }
 
@@ -3741,15 +3741,15 @@ a:hover, a:focus { color: var(--gold-bright); }
     .placeholder { padding: 80px 24px; }
 
     /* === Onglet FICHE : 2 colonnes pour les blocs denses === */
-    #section-fiche {
+    #section-fiche.active {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 18px;
         align-items: start;
     }
-    #section-fiche > .identity-card,
-    #section-fiche > .config-block,
-    #section-fiche > .histoire-block {
+    #section-fiche.active > .identity-card,
+    #section-fiche.active > .config-block,
+    #section-fiche.active > .histoire-block {
         grid-column: 1 / -1;
     }
 
