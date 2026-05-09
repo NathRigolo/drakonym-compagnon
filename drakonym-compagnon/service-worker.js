@@ -5,7 +5,7 @@
    pour forcer la mise à jour côté utilisateur.
    ═══════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'drakonym-v1.11.1';
+const CACHE_NAME = 'drakonym-v1.10.3';
 
 // Fichiers à mettre en cache au premier chargement
 const APP_SHELL = [
@@ -14,6 +14,7 @@ const APP_SHELL = [
     './style.css',
     './app.js',
     './manifest.json',
+    './assets/dragon-bg.webp',
     './icons/icon-72.png',
     './icons/icon-96.png',
     './icons/icon-128.png',

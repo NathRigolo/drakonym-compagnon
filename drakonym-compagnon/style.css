@@ -33,6 +33,9 @@
 
     /* Inversions pour textes sur fond doré */
     --on-gold:      #2a1810;
+
+    /* Voile par-dessus l'image de fond (Parchemin : voile clair, dragon discret) */
+    --bg-overlay:   rgba(247, 238, 209, 0.92);
 }
 
 /* ─── VARIABLES : MODE NUIT (sombre) ─────────────────────────── */
@@ -58,6 +61,9 @@
     --border-strong: rgba(212, 160, 23, 0.5);
 
     --on-gold:      #1f1812;
+
+    /* Voile sombre : dragon plus visible dans les zones vides */
+    --bg-overlay:   rgba(31, 24, 18, 0.78);
 }
 
 /* ─── MODE AUTO : suit le système si data-theme="auto" ──────── */
@@ -80,6 +86,7 @@
         --border:       rgba(212, 160, 23, 0.3);
         --border-strong: rgba(212, 160, 23, 0.5);
         --on-gold:      #1f1812;
+        --bg-overlay:   rgba(31, 24, 18, 0.78);
     }
 }
 
@@ -97,16 +104,38 @@ html, body {
 }
 
 body {
-    background: var(--bg);
+    background-color: var(--bg);
+    background-image: url('assets/dragon-bg.webp');
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
     color: var(--text);
     font-family: 'EB Garamond', Georgia, serif;
     font-size: 16px;
     line-height: 1.5;
     transition: background-color 200ms ease, color 200ms ease;
+    position: relative;
 
     /* Safe area pour iPhone X+ (notch) */
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Voile semi-transparent par-dessus l'image, sous tout le contenu */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: var(--bg-overlay);
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Tous les contenus visibles passent au-dessus de l'overlay */
+.app-layout, .dice-modal, .bottom-sheet-backdrop, .modal-overlay {
+    position: relative;
+    z-index: 1;
 }
 
 button {
