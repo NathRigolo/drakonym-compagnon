@@ -35,10 +35,10 @@
     --on-gold:      #2a1810;
 
     /* Voile par-dessus l'image de fond (Parchemin : l'image étant sombre, on laisse plus de visibilité) */
-    --bg-overlay:   rgba(247, 238, 209, 0.78);
+    --bg-overlay:   rgba(247, 238, 209, 0.62);
 
     /* Version semi-transparente du fond Vital pour laisser passer le dragon (desktop) */
-    --bg-vital-translucent: rgba(237, 224, 184, 0.86);
+    --bg-vital-translucent: rgba(237, 224, 184, 0.74);
 }
 
 /* ─── VARIABLES : MODE NUIT (sombre) ─────────────────────────── */
