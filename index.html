@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1f1812" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f0e3c2" media="(prefers-color-scheme: light)">
+    <meta name="description" content="Compagnon mobile pour gérer ta fiche de personnage Drakonym en pleine session.">
+
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Drakonym">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icons/icon-128.png">
+    <link rel="apple-touch-icon" href="icons/icon-152.png">
+
+    <!-- Polices -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Spectral:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <title>Drakonym Compagnon</title>
+</head>
+<body>
+
+    <div class="app-layout">
+
+        <!-- ════════════════════════════════════════════════
+             SIDEBAR GAUCHE (desktop uniquement)
+             ════════════════════════════════════════════════ -->
+        <aside class="desktop-sidebar desktop-sidebar-left" id="desktop-sidebar-left" aria-label="Navigation principale">
+            <div class="desktop-brand">
+                <span class="desktop-brand-name">Drakonym</span>
+                <span class="desktop-brand-sub">Compagnon</span>
+            </div>
+            <nav class="desktop-nav" role="tablist">
+                <button class="desktop-nav-btn active" type="button" data-desktop-tab="fiche">
+                    <span class="desktop-nav-glyph" aria-hidden="true">⚜</span>
+                    <span class="desktop-nav-label">Fiche</span>
+                </button>
+                <button class="desktop-nav-btn" type="button" data-desktop-tab="capacites">
+                    <span class="desktop-nav-glyph" aria-hidden="true">✦</span>
+                    <span class="desktop-nav-label">Capacités</span>
+                </button>
+                <button class="desktop-nav-btn" type="button" data-desktop-tab="equipement">
+                    <span class="desktop-nav-glyph" aria-hidden="true">⚔</span>
+                    <span class="desktop-nav-label">Équipement</span>
+                </button>
+                <button class="desktop-nav-btn" type="button" data-desktop-tab="dragon">
+                    <span class="desktop-nav-glyph" aria-hidden="true">🐉</span>
+                    <span class="desktop-nav-label">Dragon</span>
+                </button>
+                <button class="desktop-nav-btn" type="button" data-desktop-tab="plus">
+                    <span class="desktop-nav-glyph" aria-hidden="true">⋯</span>
+                    <span class="desktop-nav-label">Plus</span>
+                </button>
+            </nav>
+            <button class="desktop-dice-btn" type="button" id="desktop-dice-btn">
+                <span class="desktop-dice-icon" aria-hidden="true">⚂</span>
+                <span class="desktop-dice-label">Lancer dés</span>
+            </button>
+        </aside>
+
+        <div class="app-shell">
+
+        <!-- ════════════════════════════════════════════════
+             VITAL BAR — toujours visible en haut
+             ════════════════════════════════════════════════ -->
+        <header class="vital-bar" id="vital-bar">
+            <div class="vital-identity">
+                <div class="vital-name" id="vital-name">—</div>
+                <div class="vital-subtitle" id="vital-subtitle">—</div>
+            </div>
+            <div class="vital-level">
+                <span class="vital-level-label">NIVEAU</span>
+                <span class="vital-level-value" id="vital-level">5</span>
+            </div>
+
+            <div class="vital-stats">
+                <button class="vital-stat" data-action="hp" type="button" aria-label="Modifier les Points de Héros">
+                    <span class="vital-stat-label">HP</span>
+                    <span class="vital-stat-icons" id="vital-hp-display">
+                        <span class="hp-pip filled"></span>
+                        <span class="hp-pip filled"></span>
+                        <span class="hp-pip"></span>
+                    </span>
+                </button>
+
+                <button class="vital-stat" data-action="wounds" type="button" aria-label="Modifier les Blessures">
+                    <span class="vital-stat-label">BLESSURES</span>
+                    <span class="vital-stat-icons" id="vital-wounds-display">
+                        <span class="wound-pip filled" data-tier="light"></span>
+                        <span class="wound-pip" data-tier="heavy"></span>
+                        <span class="wound-pip" data-tier="deadly"></span>
+                    </span>
+                </button>
+
+                <button class="vital-stat" data-action="ap" type="button" aria-label="Modifier les Action Points">
+                    <span class="vital-stat-label">AP</span>
+                    <span class="vital-stat-value">
+                        <i class="vital-ico" aria-hidden="true">⚡</i>
+                        <span id="vital-ap">4</span>
+                    </span>
+                </button>
+
+                <button class="vital-stat" data-action="defense" type="button" aria-label="Modifier la Défense">
+                    <span class="vital-stat-label">DEF</span>
+                    <span class="vital-stat-value">
+                        <i class="vital-ico" aria-hidden="true">🛡</i>
+                        <span id="vital-defense">14</span>
+                    </span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ════════════════════════════════════════════════
+             CONTENU PRINCIPAL — sections, une visible à la fois
+             ════════════════════════════════════════════════ -->
+        <main class="content" id="content">
+
+            <!-- Onglet : FICHE -->
+            <section class="tab-section active" id="section-fiche" data-tab="fiche">
+
+                <!-- IDENTITÉ -->
+                <div class="card identity-card">
+                    <div class="identity-tags" id="identity-tags">
+                        <!-- généré par JS -->
+                    </div>
+                </div>
+
+                <!-- CONFIGURATION DU PERSONNAGE (création / level up / perks qui étendent) -->
+                <details class="config-block">
+                    <summary class="config-summary">⚙️ Configuration du personnage</summary>
+                    <div class="config-content">
+                        <p class="config-hint">📝 Modifie ici les valeurs qui changent rarement : à la création, au level up, ou quand un perk étend tes capacités.</p>
+
+                        <h4 class="config-subtitle">Identité</h4>
+                        <div class="config-grid-2">
+                            <div class="config-field">
+                                <label class="config-label">Nom</label>
+                                <input type="text" id="cfg-nom" class="config-input" maxlength="40">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Niveau</label>
+                                <input type="number" id="cfg-niveau" class="config-input" min="1" max="20">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Kin</label>
+                                <input type="text" id="cfg-kin" class="config-input" maxlength="30" placeholder="Ex: Drakari, Elf">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Classe</label>
+                                <input type="text" id="cfg-classe" class="config-input" maxlength="30" placeholder="Ex: Mage, Fighter">
+                            </div>
+                            <div class="config-field config-field-wide">
+                                <label class="config-label">Attribut Principal</label>
+                                <select id="cfg-primary" class="config-select">
+                                    <option value="Body">Body</option>
+                                    <option value="Mind">Mind</option>
+                                    <option value="Soul">Soul</option>
+                                    <option value="Shadow">Shadow</option>
+                                    <option value="Gods">Gods</option>
+                                    <option value="World">World</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h4 class="config-subtitle">Attributs (1-5)</h4>
+                        <div class="config-grid-3">
+                            <div class="config-field">
+                                <label class="config-label">Body</label>
+                                <input type="number" id="cfg-attr-Body" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Mind</label>
+                                <input type="number" id="cfg-attr-Mind" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Soul</label>
+                                <input type="number" id="cfg-attr-Soul" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Shadow</label>
+                                <input type="number" id="cfg-attr-Shadow" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Gods</label>
+                                <input type="number" id="cfg-attr-Gods" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">World</label>
+                                <input type="number" id="cfg-attr-World" class="config-input" min="0" max="10">
+                            </div>
+                        </div>
+
+                        <h4 class="config-subtitle">Pools maximum</h4>
+
+                        <!-- HP max + son hint -->
+                        <div class="config-field-with-hint">
+                            <div class="config-field">
+                                <label class="config-label">HP max</label>
+                                <input type="number" id="cfg-hp-max" class="config-input" min="1" max="10">
+                            </div>
+                            <p class="config-input-hint">💡 <strong>HP</strong> : démarre à 1 par session, max 3 (rulebook page 15). Extensible via le Perk <em>Deep Reserves</em>.</p>
+                        </div>
+
+                        <!-- Mana / Grit / Défense / Armure -->
+                        <div class="config-grid-2">
+                            <div class="config-field">
+                                <label class="config-label">Mana max</label>
+                                <input type="number" id="cfg-mana-max" class="config-input" min="0" max="50">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Grit max</label>
+                                <input type="number" id="cfg-grit-max" class="config-input" min="0" max="50">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Défense max</label>
+                                <input type="number" id="cfg-defense-max" class="config-input" min="0" max="50">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Armure (bonus)</label>
+                                <input type="number" id="cfg-armure" class="config-input" min="0" max="10">
+                            </div>
+                        </div>
+
+                        <!-- Bonus magique + son hint -->
+                        <div class="config-field-with-hint">
+                            <div class="config-field">
+                                <label class="config-label">Bonus magique</label>
+                                <input type="number" id="cfg-spell-bonus" class="config-input" min="0" max="5">
+                            </div>
+                            <p class="config-input-hint">💡 <strong>Bonus magique</strong> : vient de ton Focus magique équipé (Orbe = +2, Bâton/Grimoire/Baguette = +1, sans focus = 0). Ajoute aussi les bonus permanents de tes Perks (ex : <em>Aspect Affinity</em>).</p>
+                        </div>
+
+                        <h4 class="config-subtitle">Niveaux de Blessures (extensibles via Perks)</h4>
+                        <p class="config-hint-small">Ex : le Perk <em>Loyal to the Last</em> = +1 case par tier (donc 4/4/4 au lieu de 3/3/3).</p>
+                        <div class="config-grid-3">
+                            <div class="config-field">
+                                <label class="config-label">Légères max</label>
+                                <input type="number" id="cfg-light-max" class="config-input" min="1" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Graves max</label>
+                                <input type="number" id="cfg-heavy-max" class="config-input" min="1" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Mortelles max</label>
+                                <input type="number" id="cfg-deadly-max" class="config-input" min="1" max="10">
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- ATTRIBUTS -->
+                <div class="block">
+                    <h3 class="block-title">Attributs</h3>
+                    <div class="attributes-grid" id="attributes-grid">
+                        <!-- généré par JS -->
+                    </div>
+                </div>
+
+                <!-- RESSOURCES (Mana + Grit) -->
+                <div class="block">
+                    <h3 class="block-title">Ressources</h3>
+                    <div class="resources-row">
+                        <button class="resource-card" id="resource-mana" type="button" aria-label="Modifier le Mana">
+                            <div class="resource-header">
+                                <span class="resource-label">Mana</span>
+                                <span class="resource-value">
+                                    <span class="resource-current mana" id="mana-current">8</span><span class="resource-sep">/</span><span class="resource-max" id="mana-max">12</span>
+                                </span>
+                            </div>
+                            <div class="resource-bar">
+                                <div class="resource-bar-fill mana" id="mana-bar"></div>
+                            </div>
+                        </button>
+                        <button class="resource-card" id="resource-grit" type="button" aria-label="Modifier le Grit">
+                            <div class="resource-header">
+                                <span class="resource-label">Grit</span>
+                                <span class="resource-value">
+                                    <span class="resource-current grit" id="grit-current">4</span><span class="resource-sep">/</span><span class="resource-max" id="grit-max">6</span>
+                                </span>
+                            </div>
+                            <div class="resource-bar">
+                                <div class="resource-bar-fill grit" id="grit-bar"></div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STATUSES -->
+                <div class="block">
+                    <h3 class="block-title">Statuts</h3>
+                    <div class="statuses-chips" id="statuses-chips">
+                        <!-- généré par JS, avec bouton "+ ajouter" à la fin -->
+                    </div>
+                </div>
+
+                <!-- ACTIONS RAPIDES (Repos court) -->
+                <div class="block">
+                    <button class="action-button short-rest-btn" id="btn-short-rest" type="button">
+                        <span class="action-icon" aria-hidden="true">☾</span>
+                        <span class="action-text">
+                            <span class="action-title">Repos court</span>
+                            <span class="action-subtitle" id="short-rests-info">0 / 3 utilisés aujourd'hui</span>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- HISTOIRE & NOTES (collapsible) -->
+                <details class="histoire-block">
+                    <summary class="histoire-summary">📜 Histoire &amp; Notes</summary>
+                    <div class="histoire-content">
+                        <div class="histoire-row">
+                            <label class="histoire-label">👁 Apparence</label>
+                            <textarea id="fiche-apparence" class="histoire-input" rows="3" placeholder="Apparence physique, vêtements, traits distinctifs…"></textarea>
+                        </div>
+                        <div class="histoire-row">
+                            <label class="histoire-label">📖 Histoire / Background</label>
+                            <textarea id="fiche-histoire" class="histoire-input" rows="5" placeholder="D'où vient ton perso, ce qui l'a façonné, ses motivations…"></textarea>
+                        </div>
+                        <div class="histoire-row">
+                            <label class="histoire-label">🤝 Liens &amp; relations</label>
+                            <textarea id="fiche-liens" class="histoire-input" rows="3" placeholder="Alliés, ennemis, famille, contacts…"></textarea>
+                        </div>
+                        <div class="histoire-row">
+                            <label class="histoire-label">📝 Notes libres</label>
+                            <textarea id="fiche-notes" class="histoire-input" rows="4" placeholder="Tout ce que tu veux retenir : journal de session, idées RP, plans futurs…"></textarea>
+                        </div>
+                    </div>
+                </details>
+
+            </section>
+
+            <!-- Onglet : CAPACITÉS -->
+            <section class="tab-section" id="section-capacites" data-tab="capacites">
+                <!-- Barre de sous-onglets (Perks / Sorts / Techniques / Wild) -->
+                <div class="subtabs-bar" role="tablist" data-scope="capacites">
+                    <button class="subtab active" type="button" data-subtab="perks" aria-selected="true">
+                        <span class="subtab-icon">💪</span>
+                        <span class="subtab-text">Perks</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="sorts" aria-selected="false">
+                        <span class="subtab-icon">✨</span>
+                        <span class="subtab-text">Sorts</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="techniques" aria-selected="false">
+                        <span class="subtab-icon">⚔️</span>
+                        <span class="subtab-text">Tech.</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="wild_perks" aria-selected="false">
+                        <span class="subtab-icon">⚡</span>
+                        <span class="subtab-text">Wild</span>
+                    </button>
+                </div>
+
+                <!-- Sous-section : PERKS -->
+                <div class="subtab-section active" id="subsection-perks" data-subtab="perks">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Perks &amp; Capacités · <span id="count-perks">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="perks">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-perks"></div>
+                </div>
+
+                <!-- Sous-section : SORTS -->
+                <div class="subtab-section" id="subsection-sorts" data-subtab="sorts">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Sorts (Mana) · <span id="count-sorts">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="sorts">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-sorts"></div>
+                </div>
+
+                <!-- Sous-section : TECHNIQUES -->
+                <div class="subtab-section" id="subsection-techniques" data-subtab="techniques">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Techniques Martiales (Grit) · <span id="count-techniques">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="techniques">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-techniques"></div>
+                </div>
+
+                <!-- Sous-section : WILD PERKS -->
+                <div class="subtab-section" id="subsection-wild_perks" data-subtab="wild_perks">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Wild Perks · <span id="count-wild_perks">0</span></p>
+                        <div class="capacites-header-actions">
+                            <button class="btn-restore-wild" type="button" id="btn-restore-wild" title="Restaurer toutes les Wild Perks">↻</button>
+                            <button class="btn-add-capacite" type="button" data-list="wild_perks">+ Ajouter</button>
+                        </div>
+                    </div>
+                    <p class="capacites-hint">⚡ Bursts uniques donnés par le Herald, à utiliser pour des moments épiques. Une fois utilisée, l'effet disparaît (sauf si le Herald décide autrement).</p>
+                    <div class="capacites-list" id="list-wild_perks"></div>
+                </div>
+            </section>
+
+            <!-- Onglet : ÉQUIPEMENT -->
+            <section class="tab-section" id="section-equipement" data-tab="equipement">
+
+                <!-- Compteur Draviks (la monnaie) -->
+                <button class="draviks-card" id="draviks-card" type="button">
+                    <span class="draviks-icon">◈</span>
+                    <span class="draviks-text">
+                        <span class="draviks-label">Draviks</span>
+                        <span class="draviks-value" id="draviks-value">0</span>
+                    </span>
+                    <span class="draviks-edit-hint">tap pour modifier</span>
+                </button>
+
+                <!-- Barre de sous-onglets (Armes / Armures / Outils) -->
+                <div class="subtabs-bar" role="tablist" data-scope="equipement">
+                    <button class="subtab active" type="button" data-subtab="weapons" aria-selected="true">
+                        <span class="subtab-icon">⚔️</span>
+                        <span class="subtab-text">Armes</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="armors" aria-selected="false">
+                        <span class="subtab-icon">🛡️</span>
+                        <span class="subtab-text">Armures</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="tools" aria-selected="false">
+                        <span class="subtab-icon">🎒</span>
+                        <span class="subtab-text">Outils</span>
+                    </button>
+                </div>
+
+                <!-- Sous-section : ARMES -->
+                <div class="subtab-section active" id="subsection-weapons" data-subtab="weapons">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Armes &amp; Focuses · <span id="count-weapons">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="weapons">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-weapons"></div>
+                </div>
+
+                <!-- Sous-section : ARMURES -->
+                <div class="subtab-section" id="subsection-armors" data-subtab="armors">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Armures &amp; Boucliers · <span id="count-armors">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="armors">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-armors"></div>
+                </div>
+
+                <!-- Sous-section : OUTILS -->
+                <div class="subtab-section" id="subsection-tools" data-subtab="tools">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Outils &amp; Items · <span id="count-tools">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="tools">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-tools"></div>
+                </div>
+
+            </section>
+
+            <!-- Onglet : DRAGON -->
+            <section class="tab-section" id="section-dragon" data-tab="dragon">
+
+                <!-- Carte d'identité du dragon (toujours visible) -->
+                <div class="dragon-identity-card">
+                    <div class="dragon-id-row dragon-id-name-row">
+                        <input type="text" id="dragon-nom" class="dragon-id-name" placeholder="Nom du dragon" maxlength="30">
+                    </div>
+                    <div class="dragon-id-row dragon-id-meta">
+                        <select id="dragon-family" class="dragon-id-select">
+                            <option value="">Famille…</option>
+                            <option value="Astral">Astral</option>
+                            <option value="Aura">Aura</option>
+                            <option value="Mirror">Mirror</option>
+                            <option value="Moon">Moon</option>
+                            <option value="Pyre">Pyre</option>
+                            <option value="Shard">Shard</option>
+                            <option value="Storm">Storm</option>
+                            <option value="Sun">Sun</option>
+                            <option value="Half-Dragon">Half-Dragon</option>
+                        </select>
+                        <select id="dragon-stage" class="dragon-id-select">
+                            <option value="Hatchling">Hatchling (Lvl 1, PL 6)</option>
+                            <option value="Juvenile">Juvenile (Lvl 2, PL 9)</option>
+                            <option value="Mature">Mature (Lvl 4, PL 12)</option>
+                            <option value="Elder">Elder (Lvl 6, PL 15)</option>
+                            <option value="Mythic">Mythic (Lvl 8, PL 18)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- CONFIGURATION DU DRAGON (création / level up / changements) -->
+                <details class="config-block">
+                    <summary class="config-summary">⚙️ Configuration du dragon</summary>
+                    <div class="config-content">
+                        <p class="config-hint">📝 Modifie ici toutes les valeurs du dragon : attributs, PL max, vitesse, armure, breath weapon.</p>
+
+                        <h4 class="config-subtitle">Attributs (1-5)</h4>
+                        <div class="config-grid-3">
+                            <div class="config-field">
+                                <label class="config-label">Body</label>
+                                <input type="number" id="cfg-d-body" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Mind</label>
+                                <input type="number" id="cfg-d-mind" class="config-input" min="0" max="10">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Soul</label>
+                                <input type="number" id="cfg-d-soul" class="config-input" min="0" max="10">
+                            </div>
+                        </div>
+
+                        <h4 class="config-subtitle">Points de Lien &amp; vitesse</h4>
+                        <div class="config-grid-3">
+                            <div class="config-field">
+                                <label class="config-label">PL actuel</label>
+                                <input type="number" id="cfg-d-bp-cur" class="config-input" min="0" max="50">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">PL max</label>
+                                <input type="number" id="cfg-d-bp-max" class="config-input" min="0" max="50">
+                            </div>
+                            <div class="config-field">
+                                <label class="config-label">Vitesse</label>
+                                <input type="number" id="cfg-d-speed" class="config-input" min="0" max="20">
+                            </div>
+                        </div>
+                        <p class="config-hint-small">Cap suggéré par stage : Hatchling=6 · Juvenile=9 · Mature=12 · Elder=15 · Mythic=18</p>
+
+                        <h4 class="config-subtitle">Armure (bonus pour les Défense)</h4>
+                        <div class="config-grid-3">
+                            <div class="config-field">
+                                <label class="config-label">Armure (bonus)</label>
+                                <input type="number" id="cfg-d-armor" class="config-input" min="0" max="10">
+                            </div>
+                        </div>
+                        <p class="config-hint-small">Bonus d'armure additionnel (en plus des armures équipées). DS = Armures + Body + ½ niveau joueur.</p>
+                    </div>
+                </details>
+
+                <!-- Sous-onglets : Stats / Capacités / Équipement -->
+                <div class="subtabs-bar" role="tablist" data-scope="dragon">
+                    <button class="subtab active" type="button" data-subtab="dstats" aria-selected="true">
+                        <span class="subtab-icon">📊</span>
+                        <span class="subtab-text">Stats</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="dperks" aria-selected="false">
+                        <span class="subtab-icon">🔗</span>
+                        <span class="subtab-text">Bond Perks</span>
+                    </button>
+                    <button class="subtab" type="button" data-subtab="dgear" aria-selected="false">
+                        <span class="subtab-icon">⚔️</span>
+                        <span class="subtab-text">Équipement</span>
+                    </button>
+                </div>
+
+                <!-- Sous-section : STATS -->
+                <div class="subtab-section active" id="subsection-dstats" data-subtab="dstats">
+
+                    <!-- Attributs Body / Mind / Soul -->
+                    <h3 class="dragon-section-title">⚜ Attributs</h3>
+                    <div class="dragon-attrs-grid">
+                        <button type="button" class="attribute-cell" data-dattr="Body">
+                            <span class="attribute-name">Body</span>
+                            <span class="attribute-value" id="dragon-attr-Body">1</span>
+                        </button>
+                        <button type="button" class="attribute-cell" data-dattr="Mind">
+                            <span class="attribute-name">Mind</span>
+                            <span class="attribute-value" id="dragon-attr-Mind">1</span>
+                        </button>
+                        <button type="button" class="attribute-cell" data-dattr="Soul">
+                            <span class="attribute-name">Soul</span>
+                            <span class="attribute-value" id="dragon-attr-Soul">1</span>
+                        </button>
+                    </div>
+
+                    <!-- Points de Lien + Défense calculé -->
+                    <div class="dragon-resources-grid">
+                        <button type="button" class="resource-card" id="dragon-bp-card">
+                            <span class="resource-icon">🔗</span>
+                            <span class="resource-text">
+                                <span class="resource-label">Points de Lien</span>
+                                <span class="resource-value">
+                                    <span id="dragon-bp-current">0</span>
+                                    <span class="resource-sep">/</span>
+                                    <span id="dragon-bp-max">6</span>
+                                </span>
+                            </span>
+                        </button>
+                        <div class="resource-card resource-readonly">
+                            <span class="resource-icon">🛡</span>
+                            <span class="resource-text">
+                                <span class="resource-label">Défense</span>
+                                <span class="resource-value" id="dragon-ds-value">0</span>
+                            </span>
+                            <span class="resource-formula" id="dragon-ds-formula">Armure + Body + ½ Niv</span>
+                        </div>
+                    </div>
+
+                    <!-- Vitesse -->
+                    <div class="dragon-speed-row">
+                        <label class="dragon-speed-label">⚡ Vitesse</label>
+                        <input type="number" id="dragon-speed" class="dragon-speed-input" min="0" max="20" value="6">
+                        <span class="dragon-speed-hint">cases / round</span>
+                    </div>
+
+                    <!-- Breath Weapon -->
+                    <h3 class="dragon-section-title">🔥 Breath Weapon</h3>
+                    <button type="button" class="breath-card" id="breath-card">
+                        <div class="breath-card-header">
+                            <span class="breath-element" id="breath-element-display">— Aucun —</span>
+                            <span class="breath-shape" id="breath-shape-display">Cône</span>
+                            <span class="breath-charges-pill">
+                                <span id="breath-charges-current">0</span>/<span id="breath-charges-max">1</span>
+                            </span>
+                        </div>
+                        <div class="breath-card-body">
+                            <p class="breath-description" id="breath-description-display">— Tap pour configurer —</p>
+                            <p class="breath-effect" id="breath-effect-display"></p>
+                            <p class="breath-formula">Pool : Dragon Soul + Player Primary</p>
+                        </div>
+                    </button>
+                    <div class="breath-actions">
+                        <button type="button" class="capacite-action-btn primary" id="btn-breath-launch">🐉 Lancer le souffle</button>
+                        <button type="button" class="capacite-action-btn" id="btn-breath-recharge">↻ Recharger</button>
+                    </div>
+
+                    <!-- Pillars -->
+                    <h3 class="dragon-section-title">💞 Pillars</h3>
+                    <div class="pillars-grid">
+                        <div class="pillar-row">
+                            <label class="pillar-label">❤️ Love</label>
+                            <textarea id="dragon-love" class="pillar-input" rows="2" placeholder="Ce qui apaise ou réjouit ton dragon"></textarea>
+                        </div>
+                        <div class="pillar-row">
+                            <label class="pillar-label">😨 Fear</label>
+                            <textarea id="dragon-fear" class="pillar-input" rows="2" placeholder="Ce qui le tourmente ou l'effraie"></textarea>
+                        </div>
+                        <div class="pillar-row">
+                            <label class="pillar-label">⚡ Instinct</label>
+                            <textarea id="dragon-instinct" class="pillar-input" rows="2" placeholder="Ce qu'il fait sans réfléchir"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Sous-section : BOND PERKS -->
+                <div class="subtab-section" id="subsection-dperks" data-subtab="dperks">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Bond Perks &amp; Family Perks · <span id="count-dperks">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="dperks">+ Ajouter</button>
+                    </div>
+                    <p class="capacites-hint">🔗 Ajoute ici les Bond Perks (génériques) et les Family Perks (Core/Minor/Major) propres à la famille de ton dragon. Tu peux marquer les "once per scene" comme utilisées.</p>
+                    <div class="capacites-list" id="list-dperks"></div>
+                </div>
+
+                <!-- Sous-section : ÉQUIPEMENT DRAGON -->
+                <div class="subtab-section" id="subsection-dgear" data-subtab="dgear">
+                    <div class="capacites-header">
+                        <p class="capacites-count">Armes du dragon · <span id="count-dweapons">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="dweapons">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-dweapons"></div>
+
+                    <div class="capacites-header" style="margin-top: 16px;">
+                        <p class="capacites-count">Armures du dragon · <span id="count-darmors">0</span></p>
+                        <button class="btn-add-capacite" type="button" data-list="darmors">+ Ajouter</button>
+                    </div>
+                    <div class="capacites-list" id="list-darmors"></div>
+                </div>
+
+            </section>
+
+            <!-- Onglet : PLUS -->
+            <section class="tab-section" id="section-plus" data-tab="plus">
+                <div class="plus-tab-content">
+                    <h2 class="placeholder-title">Plus</h2>
+
+                    <div class="settings-block">
+                        <h3 class="settings-block-title">Apparence</h3>
+                        <div class="setting-row">
+                            <span class="setting-label">Thème</span>
+                            <div class="theme-toggle" role="group" aria-label="Sélection du thème">
+                                <button type="button" class="theme-btn" data-theme="light">Parchemin</button>
+                                <button type="button" class="theme-btn active" data-theme="dark">Nuit</button>
+                                <button type="button" class="theme-btn" data-theme="auto">Auto</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-block">
+                        <h3 class="settings-block-title">Installation</h3>
+                        <p class="settings-info" id="install-status-hint">Vérification de la possibilité d'installer&hellip;</p>
+                        <button id="btn-install" type="button" class="install-btn" hidden>
+                            <span aria-hidden="true">⤓</span>
+                            <span>Installer Drakonym Compagnon</span>
+                        </button>
+                        <details class="install-details">
+                            <summary>Comment installer manuellement&nbsp;?</summary>
+                            <div class="install-instructions">
+                                <p><strong>iPhone / iPad (Safari)</strong>&nbsp;: tap le bouton Partager <span class="kbd">⤴</span> en bas, puis fais défiler et choisis <em>«&nbsp;Sur l'écran d'accueil&nbsp;»</em>.</p>
+                                <p><strong>Android (Chrome)</strong>&nbsp;: menu <span class="kbd">⋮</span> en haut à droite, puis <em>«&nbsp;Installer l'application&nbsp;»</em> ou <em>«&nbsp;Ajouter à l'écran d'accueil&nbsp;»</em>.</p>
+                                <p><strong>PC (Chrome / Edge)</strong>&nbsp;: petite icône <span class="kbd">⊕</span> dans la barre d'adresse, à droite de l'URL. Si invisible, menu <span class="kbd">⋮</span> → <em>«&nbsp;Installer Drakonym Compagnon&nbsp;»</em>.</p>
+                                <p><strong>Firefox</strong>&nbsp;: pas de support PWA natif, juste un raccourci possible.</p>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="settings-block">
+                        <h3 class="settings-block-title">📋 Mes fiches</h3>
+                        <p class="settings-info">Gère plusieurs personnages. La fiche active est en doré.</p>
+                        <div class="fiches-list" id="fiches-list"></div>
+                        <div class="fiches-actions">
+                            <button type="button" class="settings-btn" id="btn-fiche-new">+ Nouvelle fiche</button>
+                            <button type="button" class="settings-btn" id="btn-fiche-duplicate">⎘ Dupliquer la fiche active</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-block">
+                        <h3 class="settings-block-title">💾 Sauvegarde &amp; transfert</h3>
+                        <p class="settings-info">Exporte ta fiche en JSON pour la sauvegarder ou la transférer entre PC et téléphone.</p>
+                        <div class="fiches-actions">
+                            <button type="button" class="settings-btn" id="btn-export-active">⇩ Exporter la fiche active</button>
+                            <button type="button" class="settings-btn" id="btn-export-all">⇩ Exporter toutes les fiches</button>
+                            <button type="button" class="settings-btn" id="btn-import">⇧ Importer un fichier JSON</button>
+                            <input type="file" id="import-file-input" accept=".json,application/json" hidden>
+                        </div>
+                    </div>
+
+                    <div class="settings-block">
+                        <h3 class="settings-block-title">À propos</h3>
+                        <p class="settings-info">
+                            <strong>Drakonym Compagnon</strong> — v1.10.4 (Fix path image)<br>
+                            <span class="muted-small">Indépendant, publié sous DCL.</span>
+                        </p>
+                    </div>
+
+                    <div class="settings-block">
+                        <h3 class="settings-block-title">Crédits</h3>
+                        <p class="settings-info">
+                            Image de fond : <em>Black Dragon</em> par <strong>mythologyart</strong>, gracieusement mise à disposition via <a href="https://pixabay.com/illustrations/mythology-art-black-dragon-8808267/" target="_blank" rel="noopener noreferrer">Pixabay</a> sous licence libre d'utilisation.
+                        </p>
+                    </div>
+
+                    <footer class="legal-footer">
+                        <p>
+                            Drakonym Compagnon is an independent product published under the
+                            <a href="https://www.crossedpaths.co.uk/drakonym-creator" target="_blank" rel="noopener noreferrer">Drakonym Creator License (DCL)</a>
+                            and is not affiliated with or endorsed by Crossed Paths Press.
+                            Drakonym™, Akeroth™, and the Runebinder™ System are © 2025 Crossed Paths Press.
+                        </p>
+                        <p>
+                            <a href="https://crossedpaths.itch.io/drakonym" target="_blank" rel="noopener noreferrer">Acheter le Core Rulebook</a> ·
+                            <a href="https://sanctum.crossedpaths.co.uk/drakonym/" target="_blank" rel="noopener noreferrer">Compendium officiel</a>
+                        </p>
+                    </footer>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ════════════════════════════════════════════════
+             FAB — bouton flottant lanceur de dés
+             ════════════════════════════════════════════════ -->
+        <button class="fab" id="fab-dice" type="button" aria-label="Lancer les dés">
+            <span class="fab-glyph" aria-hidden="true">⚂</span>
+        </button>
+
+        <!-- ════════════════════════════════════════════════
+             TABS — navigation 5 onglets en bas
+             ════════════════════════════════════════════════ -->
+        <nav class="tabs" role="tablist" aria-label="Navigation principale">
+            <button type="button" class="tab active" data-tab="fiche" role="tab" aria-selected="true">
+                <span class="tab-glyph" aria-hidden="true">▣</span>
+                <span class="tab-label">Fiche</span>
+            </button>
+            <button type="button" class="tab" data-tab="capacites" role="tab" aria-selected="false">
+                <span class="tab-glyph" aria-hidden="true">✦</span>
+                <span class="tab-label">Capacités</span>
+            </button>
+            <button type="button" class="tab" data-tab="equipement" role="tab" aria-selected="false">
+                <span class="tab-glyph" aria-hidden="true">⚔</span>
+                <span class="tab-label">Équip.</span>
+            </button>
+            <button type="button" class="tab" data-tab="dragon" role="tab" aria-selected="false">
+                <span class="tab-glyph" aria-hidden="true">🜂</span>
+                <span class="tab-label">Dragon</span>
+            </button>
+            <button type="button" class="tab" data-tab="plus" role="tab" aria-selected="false">
+                <span class="tab-glyph" aria-hidden="true">⋯</span>
+                <span class="tab-label">Plus</span>
+            </button>
+        </nav>
+
+        </div>
+
+        <!-- ════════════════════════════════════════════════
+             SIDEBAR DROITE (desktop uniquement)
+             ════════════════════════════════════════════════ -->
+        <aside class="desktop-sidebar desktop-sidebar-right" id="desktop-sidebar-right" aria-label="Panneau de jeu">
+
+            <!-- Persona switcher -->
+            <div class="desktop-side-block">
+                <div class="desktop-side-label">Personnage actif</div>
+                <button type="button" class="desktop-persona-btn" id="desktop-persona-btn">
+                    <span class="desktop-persona-name" id="desktop-persona-name">—</span>
+                    <span class="desktop-persona-arrow" aria-hidden="true">▾</span>
+                </button>
+            </div>
+
+            <!-- Équipé (Vague B) -->
+            <div class="desktop-side-block">
+                <div class="desktop-side-label">Équipé</div>
+                <div class="desktop-side-content" id="desktop-equipped">
+                    <p class="desktop-side-empty">À venir (Vague B)</p>
+                </div>
+            </div>
+
+            <!-- Derniers jets (Vague C) -->
+            <div class="desktop-side-block desktop-side-block-grow">
+                <div class="desktop-side-label">Derniers jets</div>
+                <div class="desktop-side-content" id="desktop-rolls-log">
+                    <p class="desktop-side-empty">À venir (Vague C)</p>
+                </div>
+            </div>
+
+        </aside>
+
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         DICE MODAL — lanceur de dés plein écran
+         ════════════════════════════════════════════════ -->
+    <div class="dice-modal" id="dice-modal" hidden>
+        <header class="dice-modal-header">
+            <button class="dice-modal-icon-btn" id="dice-modal-close" type="button" aria-label="Fermer">✕</button>
+            <h2 class="dice-modal-title" id="dice-modal-title">Lancer de dés</h2>
+            <button class="dice-modal-icon-btn" id="dice-modal-history-btn" type="button" aria-label="Historique">⟳</button>
+        </header>
+
+        <div class="dice-modal-body" id="dice-modal-body">
+            <!-- Vue config OU résultat OU historique injectée par JS -->
+        </div>
+
+        <footer class="dice-modal-footer" id="dice-modal-footer">
+            <!-- Bouton "Lancer" injecté par JS quand on est sur la vue config -->
+        </footer>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         BOTTOM SHEET — modale qui glisse depuis le bas
+         ════════════════════════════════════════════════ -->
+    <div class="bottom-sheet-backdrop" id="bottom-sheet-backdrop" hidden>>
+        <div class="bottom-sheet" id="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="bottom-sheet-title">
+            <div class="bottom-sheet-handle" aria-hidden="true"></div>
+            <div class="bottom-sheet-header">
+                <h3 class="bottom-sheet-title" id="bottom-sheet-title">Titre</h3>
+                <button class="bottom-sheet-close" id="bottom-sheet-close" type="button" aria-label="Fermer">✕</button>
+            </div>
+            <div class="bottom-sheet-content" id="bottom-sheet-content">
+                <!-- contenu injecté dynamiquement par JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         TOAST — petit message éphémère en bas
+         ════════════════════════════════════════════════ -->
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="app.js" defer></script>
+</body>
+</html>
