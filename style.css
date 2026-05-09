@@ -3584,19 +3584,20 @@ a:hover, a:focus { color: var(--gold-bright); }
         pointer-events: none;
     }
 
-    /* Bouton "masquer" dans la sidebar droite */
+    /* Bouton "masquer" : positionné dans son propre slot en haut de la sidebar */
     .desktop-sidebar-toggle {
         position: absolute;
-        top: 12px;
-        left: 8px;
-        width: 26px;
-        height: 26px;
+        top: 10px;
+        left: 10px;
+        width: 24px;
+        height: 24px;
         background: transparent;
         border: 1px solid var(--border);
         border-radius: 50%;
         color: var(--text-muted);
         cursor: pointer;
-        font-size: 14px;
+        font-size: 12px;
+        line-height: 1;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -3607,6 +3608,14 @@ a:hover, a:focus { color: var(--gold-bright); }
         border-color: var(--gold);
         color: var(--gold);
         background: rgba(212, 160, 23, 0.08);
+    }
+
+    /* Padding-top sur la sidebar droite pour laisser de la place au bouton */
+    .desktop-sidebar-right {
+        padding-top: 40px;
+    }
+    .desktop-sidebar-right .desktop-side-block:first-of-type {
+        border-top: 1px solid var(--border);
     }
 
     /* Onglet "afficher" qui apparaît au bord droit quand sidebar cachée */
