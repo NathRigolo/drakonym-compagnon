@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1f1812" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f0e3c2" media="(prefers-color-scheme: light)">
+    <meta name="description" content="Compagnon mobile pour gérer ta fiche de personnage Drakonym en pleine session.">
+
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Drakonym">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Polices -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Spectral:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <title>Drakonym Compagnon</title>
+</head>
+<body>
+
+    <div class="app-shell">
+
+        <!-- ════════════════════════════════════════════════
+             VITAL BAR — toujours visible en haut
+             ════════════════════════════════════════════════ -->
+        <header class="vital-bar" id="vital-bar">
+            <div class="vital-identity">
+                <div class="vital-name" id="vital-name">Tharion</div>
+                <div class="vital-subtitle" id="vital-subtitle">DRAKARI · DRAGONBOUND</div>
+            </div>
+            <div class="vital-level">
+                <span class="vital-level-label">NIVEAU</span>
+                <span class="vital-level-value" id="vital-level">5</span>
+            </div>
+
+            <div class="vital-stats">
+                <button class="vital-stat" data-action="hp" type="button" aria-label="Modifier les Hero Points">
+                    <span class="vital-stat-label">HP</span>
+                    <span class="vital-stat-icons" id="vital-hp-display">
+                        <span class="hp-pip filled"></span>
+                        <span class="hp-pip filled"></span>
+                        <span class="hp-pip"></span>
+                    </span>
+                </button>
+
+                <button class="vital-stat" data-action="wounds" type="button" aria-label="Modifier les Wounds">
+                    <span class="vital-stat-label">WOUNDS</span>
+                    <span class="vital-stat-icons" id="vital-wounds-display">
+                        <span class="wound-pip filled" data-tier="light"></span>
+                        <span class="wound-pip" data-tier="heavy"></span>
+                        <span class="wound-pip" data-tier="deadly"></span>
+                    </span>
+                </button>
+
+                <button class="vital-stat" data-action="ap" type="button" aria-label="Modifier les Action Points">
+                    <span class="vital-stat-label">AP</span>
+                    <span class="vital-stat-value">
+                        <i class="vital-ico" aria-hidden="true">⚡</i>
+                        <span id="vital-ap">4</span>
+                    </span>
+                </button>
+
+                <button class="vital-stat" data-action="defense" type="button" aria-label="Modifier la Défense">
+                    <span class="vital-stat-label">DEF</span>
+                    <span class="vital-stat-value">
+                        <i class="vital-ico" aria-hidden="true">🛡</i>
+                        <span id="vital-defense">14</span>
+                    </span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ════════════════════════════════════════════════
+             CONTENU PRINCIPAL — sections, une visible à la fois
+             ════════════════════════════════════════════════ -->
+        <main class="content" id="content">
+
+            <!-- Onglet : FICHE -->
+            <section class="tab-section active" id="section-fiche" data-tab="fiche">
+                <div class="placeholder">
+                    <div class="placeholder-icon">📜</div>
+                    <h2 class="placeholder-title">Onglet Fiche</h2>
+                    <p class="placeholder-text">Attributs, Mana, Grit, Hero Points et Statuses arriveront en Vague 2.</p>
+                </div>
+            </section>
+
+            <!-- Onglet : CAPACITÉS -->
+            <section class="tab-section" id="section-capacites" data-tab="capacites">
+                <div class="placeholder">
+                    <div class="placeholder-icon">✨</div>
+                    <h2 class="placeholder-title">Onglet Capacités</h2>
+                    <p class="placeholder-text">Perks, Sorts, Techniques Martiales et Wild Perks arriveront en Vague 4.</p>
+                </div>
+            </section>
+
+            <!-- Onglet : ÉQUIPEMENT -->
+            <section class="tab-section" id="section-equipement" data-tab="equipement">
+                <div class="placeholder">
+                    <div class="placeholder-icon">⚔</div>
+                    <h2 class="placeholder-title">Onglet Équipement</h2>
+                    <p class="placeholder-text">Armes, armure, outils et Draviks arriveront en Vague 5.</p>
+                </div>
+            </section>
+
+            <!-- Onglet : DRAGON -->
+            <section class="tab-section" id="section-dragon" data-tab="dragon">
+                <div class="placeholder">
+                    <div class="placeholder-icon">🐉</div>
+                    <h2 class="placeholder-title">Onglet Dragon</h2>
+                    <p class="placeholder-text">Identité, stats, Bond Points, Breath Weapon et Perks arriveront en Vague 6.</p>
+                </div>
+            </section>
+
+            <!-- Onglet : PLUS -->
+            <section class="tab-section" id="section-plus" data-tab="plus">
+                <div class="plus-tab-content">
+                    <h2 class="placeholder-title">Plus</h2>
+
+                    <div class="settings-block">
+                        <h3 class="settings-block-title">Apparence</h3>
+                        <div class="setting-row">
+                            <span class="setting-label">Thème</span>
+                            <div class="theme-toggle" role="group" aria-label="Sélection du thème">
+                                <button type="button" class="theme-btn" data-theme="light">Parchemin</button>
+                                <button type="button" class="theme-btn active" data-theme="dark">Nuit</button>
+                                <button type="button" class="theme-btn" data-theme="auto">Auto</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-block">
+                        <h3 class="settings-block-title">Données</h3>
+                        <p class="settings-info">Histoire du personnage, import/export JSON, gestion multi-fiches : à venir en Vague 7.</p>
+                    </div>
+
+                    <div class="settings-block">
+                        <h3 class="settings-block-title">À propos</h3>
+                        <p class="settings-info">
+                            <strong>Drakonym Compagnon</strong> — Vague 1 (squelette PWA)<br>
+                            <span class="muted-small">Indépendant, publié sous DCL.</span>
+                        </p>
+                    </div>
+
+                    <footer class="legal-footer">
+                        <p>
+                            Drakonym Compagnon is an independent product published under the
+                            <a href="https://www.crossedpaths.co.uk/drakonym-creator" target="_blank" rel="noopener noreferrer">Drakonym Creator License (DCL)</a>
+                            and is not affiliated with or endorsed by Crossed Paths Press.
+                            Drakonym™, Akeroth™, and the Runebinder™ System are © 2025 Crossed Paths Press.
+                        </p>
+                        <p>
+                            <a href="https://crossedpaths.itch.io/drakonym" target="_blank" rel="noopener noreferrer">Acheter le Core Rulebook</a> ·
+                            <a href="https://sanctum.crossedpaths.co.uk/drakonym/" target="_blank" rel="noopener noreferrer">Compendium officiel</a>
+                        </p>
+                    </footer>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ════════════════════════════════════════════════
+             FAB — bouton flottant lanceur de dés
+             ════════════════════════════════════════════════ -->
+        <button class="fab" id="fab-dice" type="button" aria-label="Lancer les dés">
+            <span class="fab-glyph" aria-hidden="true">⚂</span>
+        </button>
+
+        <!-- ════════════════════════════════════════════════
+             TABS — navigation 5 onglets en bas
+             ════════════════════════════════════════════════ -->
+        <nav class="tabs" role="tablist" aria-label="Navigation principale">
+            <button type="button" class="tab active" data-tab="fiche" role="tab" aria-selected="true">
+                <span class="tab-glyph" aria-hidden="true">▣</span>
+                <span class="tab-label">Fiche</span>
+            </button>
+            <button type="button" class="tab" data-tab="capacites" role="tab" aria-selected="false">
+                <span class="tab-glyph" aria-hidden="true">✦</span>
+                <span class="tab-label">Capacités</span>
+            </button>
+            <button type="button" class="tab" data-tab="equipement" role="tab" aria-selected="false">
+                <span class="tab-glyph" aria-hidden="true">⚔</span>
+                <span class="tab-label">Équip.</span>
+            </button>
+            <button type="button" class="tab" data-tab="dragon" role="tab" aria-selected="false">
+                <span class="tab-glyph" aria-hidden="true">🜂</span>
+                <span class="tab-label">Dragon</span>
+            </button>
+            <button type="button" class="tab" data-tab="plus" role="tab" aria-selected="false">
+                <span class="tab-glyph" aria-hidden="true">⋯</span>
+                <span class="tab-label">Plus</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         TOAST — petit message éphémère en bas
+         ════════════════════════════════════════════════ -->
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="app.js" defer></script>
+</body>
+</html>

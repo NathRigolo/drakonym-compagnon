@@ -1,0 +1,545 @@
+/* ═══════════════════════════════════════════════════════════════
+   DRAKONYM COMPAGNON — STYLE
+   Vague 1 : variables, layout, Vital Bar, tabs, FAB, thèmes.
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ─── VARIABLES : MODE PARCHEMIN (clair) ─────────────────────── */
+:root,
+:root[data-theme="light"] {
+    /* Backgrounds */
+    --bg:           #f7eed1;
+    --bg-vital:     #ede0b8;
+    --bg-card:      #fbf4dc;
+    --bg-card-alt:  #f0e3c2;
+    --bg-tabs:      #ede0b8;
+
+    /* Text */
+    --text:         #3d2817;
+    --text-muted:   #7a6340;
+    --text-subtle:  #a89570;
+
+    /* Accents */
+    --gold:         #b8860b;
+    --gold-bright:  #d4a017;
+    --crimson:      #8b2a2a;
+    --crimson-bright: #c4523f;
+    --shadow:       #5a3a6b;
+    --shadow-bright: #8b5fa5;
+
+    /* Bordures */
+    --border:       rgba(184, 134, 11, 0.3);
+    --border-strong: rgba(184, 134, 11, 0.5);
+
+    /* Inversions pour textes sur fond doré */
+    --on-gold:      #2a1810;
+}
+
+/* ─── VARIABLES : MODE NUIT (sombre) ─────────────────────────── */
+:root[data-theme="dark"] {
+    --bg:           #1f1812;
+    --bg-vital:     #15100b;
+    --bg-card:      #2a1f15;
+    --bg-card-alt:  #1a1209;
+    --bg-tabs:      #15100b;
+
+    --text:         #e8d9b0;
+    --text-muted:   #a89570;
+    --text-subtle:  #7a6340;
+
+    --gold:         #d4a017;
+    --gold-bright:  #e8c460;
+    --crimson:      #a83a30;
+    --crimson-bright: #c4523f;
+    --shadow:       #8b5fa5;
+    --shadow-bright: #a575c2;
+
+    --border:       rgba(212, 160, 23, 0.3);
+    --border-strong: rgba(212, 160, 23, 0.5);
+
+    --on-gold:      #1f1812;
+}
+
+/* ─── MODE AUTO : suit le système si data-theme="auto" ──────── */
+@media (prefers-color-scheme: dark) {
+    :root[data-theme="auto"] {
+        --bg:           #1f1812;
+        --bg-vital:     #15100b;
+        --bg-card:      #2a1f15;
+        --bg-card-alt:  #1a1209;
+        --bg-tabs:      #15100b;
+        --text:         #e8d9b0;
+        --text-muted:   #a89570;
+        --text-subtle:  #7a6340;
+        --gold:         #d4a017;
+        --gold-bright:  #e8c460;
+        --crimson:      #a83a30;
+        --crimson-bright: #c4523f;
+        --shadow:       #8b5fa5;
+        --shadow-bright: #a575c2;
+        --border:       rgba(212, 160, 23, 0.3);
+        --border-strong: rgba(212, 160, 23, 0.5);
+        --on-gold:      #1f1812;
+    }
+}
+
+
+/* ─── RESET ET BASE ──────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 16px;
+    line-height: 1.5;
+    transition: background-color 200ms ease, color 200ms ease;
+
+    /* Safe area pour iPhone X+ (notch) */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+button {
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    padding: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+a {
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+}
+a:hover, a:focus { color: var(--gold-bright); }
+
+
+/* ─── APP SHELL : layout principal ───────────────────────────── */
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh; /* dynamic viewport pour mobile */
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   VITAL BAR — toujours visible en haut, identité + 4 stats vitales
+   ═══════════════════════════════════════════════════════════════ */
+.vital-bar {
+    background: var(--bg-vital);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 14px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+        "identity level"
+        "stats stats";
+    gap: 8px 12px;
+
+    transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.vital-identity { grid-area: identity; min-width: 0; }
+.vital-level    { grid-area: level; text-align: right; }
+.vital-stats    { grid-area: stats; }
+
+.vital-name {
+    font-family: 'Cinzel', Georgia, serif;
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+    color: var(--text);
+}
+
+.vital-subtitle {
+    font-family: 'Spectral', sans-serif;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.6px;
+    margin-top: 2px;
+    text-transform: uppercase;
+}
+
+.vital-level-label {
+    display: block;
+    font-family: 'Spectral', sans-serif;
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.6px;
+}
+
+.vital-level-value {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--gold);
+    line-height: 1;
+}
+
+.vital-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 4px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+
+.vital-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 2px;
+    border-radius: 6px;
+    transition: background-color 120ms ease;
+    min-height: 44px; /* tap target */
+}
+.vital-stat:active { background: var(--bg-card-alt); }
+
+.vital-stat-label {
+    font-family: 'Spectral', sans-serif;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+.vital-stat-icons {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+}
+
+.vital-stat-value {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.vital-ico {
+    font-style: normal;
+    font-size: 13px;
+    color: var(--gold-bright);
+}
+
+/* HP pips (étoiles) */
+.hp-pip {
+    width: 14px;
+    height: 14px;
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    transition: background-color 150ms ease;
+}
+.hp-pip.filled { background: var(--gold-bright); }
+
+/* Wound pips (Light/Heavy/Deadly) */
+.wound-pip {
+    width: 11px;
+    height: 11px;
+    background: transparent;
+    border: 1.5px solid var(--crimson);
+    border-radius: 50%;
+    transition: background-color 150ms ease;
+}
+.wound-pip.filled { background: var(--crimson-bright); }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTENT — sections d'onglets, une visible à la fois
+   ═══════════════════════════════════════════════════════════════ */
+.content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 80px; /* place pour les tabs en bas */
+}
+
+.tab-section {
+    display: none;
+    padding: 24px 16px;
+    animation: fadeInUp 200ms ease;
+}
+.tab-section.active { display: block; }
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ─── PLACEHOLDER — pour les onglets vides (Vague 1) ────────── */
+.placeholder {
+    text-align: center;
+    padding: 48px 16px;
+    color: var(--text-muted);
+}
+
+.placeholder-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+}
+
+.placeholder-title {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--gold);
+    margin: 0 0 12px;
+    letter-spacing: 1px;
+}
+
+.placeholder-text {
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+    color: var(--text-muted);
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* ─── ONGLET PLUS : settings, thème, légal ─────────────────── */
+.plus-tab-content { max-width: 480px; margin: 0 auto; }
+
+.settings-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.settings-block-title {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin: 0 0 12px;
+    text-transform: uppercase;
+}
+
+.setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.setting-label {
+    font-family: 'Spectral', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.settings-info {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.muted-small {
+    font-size: 12px;
+    color: var(--text-subtle);
+    font-style: italic;
+}
+
+/* Theme toggle (3 boutons côte à côte) */
+.theme-toggle {
+    display: inline-flex;
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px;
+}
+
+.theme-btn {
+    font-family: 'Spectral', sans-serif;
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: background-color 150ms ease, color 150ms ease;
+    min-height: 36px;
+}
+
+.theme-btn.active {
+    background: var(--gold);
+    color: var(--on-gold);
+    font-weight: 500;
+}
+
+/* Footer légal */
+.legal-footer {
+    margin-top: 24px;
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-subtle);
+    line-height: 1.5;
+    text-align: center;
+}
+.legal-footer p { margin: 0 0 8px; }
+.legal-footer a {
+    color: var(--text-muted);
+    border-bottom-color: transparent;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   FAB — bouton flottant lanceur de dés
+   ═══════════════════════════════════════════════════════════════ */
+.fab {
+    position: fixed;
+    right: 16px;
+    bottom: 78px; /* au-dessus des tabs */
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--on-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    z-index: 60;
+    transition: transform 120ms ease, background-color 200ms ease;
+}
+.fab:active { transform: scale(0.92); }
+
+.fab-glyph {
+    font-size: 28px;
+    line-height: 1;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   TABS — navigation 5 onglets en bas (bottom nav)
+   ═══════════════════════════════════════════════════════════════ */
+.tabs {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 600px;
+    margin: 0 auto;
+    height: 64px;
+    background: var(--bg-tabs);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 4px;
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 55;
+    transition: background-color 200ms ease, border-color 200ms ease;
+}
+
+.tab {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    color: var(--text-muted);
+    transition: color 150ms ease;
+    min-width: 0; /* permet la troncature */
+}
+
+.tab.active { color: var(--gold-bright); }
+
+.tab-glyph {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.tab-label {
+    font-family: 'Spectral', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.tab.active .tab-label { font-weight: 500; }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST — petit message éphémère
+   ═══════════════════════════════════════════════════════════════ */
+.toast {
+    position: fixed;
+    bottom: 96px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-family: 'Spectral', sans-serif;
+    font-size: 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 200ms ease;
+    z-index: 100;
+    max-width: 90vw;
+    text-align: center;
+}
+
+.toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — ajustements pour écrans plus larges (tablette)
+   ═══════════════════════════════════════════════════════════════ */
+@media (min-width: 600px) {
+    .vital-name { font-size: 20px; }
+    .placeholder-icon { font-size: 56px; }
+    .fab { right: 24px; }
+}
