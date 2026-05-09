@@ -3502,15 +3502,16 @@ a:hover, a:focus { color: var(--gold-bright); }
 
 /* ─── TABLETTE LANDSCAPE / DESKTOP (≥ 1024px) ─────────────────── */
 @media (min-width: 1024px) {
-    .app-shell { max-width: 900px; }
+    /* L'app-shell s'étend à 1100px — les tabs restent dedans */
+    .app-shell { max-width: 1100px; }
+    .tabs { max-width: 1100px; }
 
     .vital-bar {
         padding: 16px 32px 18px;
     }
     .vital-name { font-size: 24px; }
 
-    /* Sur grand écran, on peut redistribuer la Vital Bar :
-       identité à gauche, stats inline avec niveau à droite */
+    /* Vital Bar redistribuée : identité à gauche, stats inline à droite */
     .vital-bar {
         grid-template-columns: 1fr auto;
         grid-template-rows: auto;
@@ -3543,7 +3544,7 @@ a:hover, a:focus { color: var(--gold-bright); }
     .vital-stat { flex: 0 0 auto; min-width: 60px; }
 
     /* Plus d'air dans le contenu */
-    .tab-section { padding: 48px 32px; }
+    .tab-section { padding: 32px 24px 100px; }
     .placeholder { padding: 80px 24px; }
 
     /* FAB encore mieux positionné */
@@ -3551,6 +3552,57 @@ a:hover, a:focus { color: var(--gold-bright); }
         right: 32px;
         bottom: 96px;
     }
+
+    /* ═══════════════════════════════════════════════════════════════
+       v1.10.0 — DESKTOP : multi-colonnes pour onglets denses
+       ═══════════════════════════════════════════════════════════════ */
+
+    /* === Onglet FICHE : 2 colonnes pour les blocs denses ===
+       Identité (haut), Configuration (haut), Histoire & Notes (bas) restent pleine largeur
+       Attributs / Ressources / Statuts / Repos court se répartissent en 2 colonnes */
+    #section-fiche {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        align-items: start;
+    }
+    #section-fiche > .identity-card,
+    #section-fiche > .config-block,
+    #section-fiche > .histoire-block {
+        grid-column: 1 / -1;
+    }
+
+    /* === Listes en 2 colonnes (Capacités, Équipement, Dragon) ===
+       Quand il y a beaucoup d'items, on les dispose en 2 colonnes pour utiliser la largeur */
+    .capacites-list,
+    .equipement-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    .capacites-list:empty,
+    .equipement-list:empty {
+        display: block;
+    }
+
+    /* === Bottom sheets → modals centrés sur desktop ===
+       Le backdrop centre maintenant verticalement au lieu d'aligner en bas */
+    .bottom-sheet-backdrop {
+        align-items: center;
+    }
+    .bottom-sheet {
+        max-width: 600px;
+        max-height: 80vh;
+        border-radius: 12px; /* tous les coins arrondis (pas juste le haut) */
+        border-top: 1px solid var(--border-strong);
+        animation: bottomSheetFadeIn 220ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes bottomSheetFadeIn {
+        from { opacity: 0; transform: translateY(-12px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    /* Sur desktop, on peut cacher le handle (peu utile à la souris) */
+    .bottom-sheet-handle { display: none; }
 }
 
 

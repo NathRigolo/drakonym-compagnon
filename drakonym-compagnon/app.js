@@ -4596,12 +4596,62 @@ function init() {
     bindBottomSheetGlobalActions();
     bindDiceModalGlobalActions();
     setupInstallFlow();
+    bindKeyboardShortcuts();
 
     renderAll();
     renderFichesList();
 
     handleStartupAction();
     registerServiceWorker();
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   v2.0.0 — RACCOURCIS CLAVIER (desktop)
+   ═══════════════════════════════════════════════════════════════ */
+function bindKeyboardShortcuts() {
+    document.addEventListener('keydown', (e) => {
+        // Ne pas intercepter quand on est dans un input / textarea / contenteditable
+        const t = e.target;
+        if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable || t.tagName === 'SELECT')) return;
+
+        // Échap : ferme modals et bottom sheets
+        if (e.key === 'Escape') {
+            const diceModal = document.getElementById('dice-modal');
+            const sheet = document.getElementById('bottom-sheet');
+            if (diceModal && !diceModal.hasAttribute('hidden')) {
+                e.preventDefault();
+                closeDiceModal();
+                return;
+            }
+            if (sheet && !sheet.classList.contains('hidden')) {
+                e.preventDefault();
+                closeBottomSheet();
+                return;
+            }
+        }
+
+        // 1-5 : bascule onglet
+        if (['1', '2', '3', '4', '5'].includes(e.key)) {
+            const tabs = ['fiche', 'capacites', 'equipement', 'dragon', 'plus'];
+            const idx = parseInt(e.key, 10) - 1;
+            const tab = tabs[idx];
+            if (tab) {
+                e.preventDefault();
+                switchTab(tab);
+            }
+            return;
+        }
+
+        // Espace ou D : ouvre le lanceur de dés
+        if ((e.key === ' ' || e.key === 'd' || e.key === 'D') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            const diceModal = document.getElementById('dice-modal');
+            if (!diceModal || diceModal.hasAttribute('hidden')) {
+                e.preventDefault();
+                openDiceModal(null);
+            }
+        }
+    });
 }
 
 if (document.readyState === 'loading') {
