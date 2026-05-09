@@ -89,11 +89,81 @@
 
             <!-- Onglet : FICHE -->
             <section class="tab-section active" id="section-fiche" data-tab="fiche">
-                <div class="placeholder">
-                    <div class="placeholder-icon">📜</div>
-                    <h2 class="placeholder-title">Onglet Fiche</h2>
-                    <p class="placeholder-text">Attributs, Mana, Grit, Hero Points et Statuses arriveront en Vague 2.</p>
+
+                <!-- IDENTITÉ -->
+                <div class="card identity-card">
+                    <div class="identity-tags" id="identity-tags">
+                        <!-- généré par JS -->
+                    </div>
                 </div>
+
+                <!-- ATTRIBUTS -->
+                <div class="block">
+                    <h3 class="block-title">Attributs</h3>
+                    <div class="attributes-grid" id="attributes-grid">
+                        <!-- généré par JS -->
+                    </div>
+                </div>
+
+                <!-- RESSOURCES (Mana + Grit) -->
+                <div class="block">
+                    <h3 class="block-title">Ressources</h3>
+                    <div class="resources-row">
+                        <button class="resource-card" id="resource-mana" type="button" aria-label="Modifier le Mana">
+                            <div class="resource-header">
+                                <span class="resource-label">Mana</span>
+                                <span class="resource-value">
+                                    <span class="resource-current mana" id="mana-current">8</span><span class="resource-sep">/</span><span class="resource-max" id="mana-max">12</span>
+                                </span>
+                            </div>
+                            <div class="resource-bar">
+                                <div class="resource-bar-fill mana" id="mana-bar"></div>
+                            </div>
+                        </button>
+                        <button class="resource-card" id="resource-grit" type="button" aria-label="Modifier le Grit">
+                            <div class="resource-header">
+                                <span class="resource-label">Grit</span>
+                                <span class="resource-value">
+                                    <span class="resource-current grit" id="grit-current">4</span><span class="resource-sep">/</span><span class="resource-max" id="grit-max">6</span>
+                                </span>
+                            </div>
+                            <div class="resource-bar">
+                                <div class="resource-bar-fill grit" id="grit-bar"></div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- HERO POINTS -->
+                <div class="block">
+                    <h3 class="block-title">Hero Points</h3>
+                    <button class="hero-points-card" id="hero-points-card" type="button" aria-label="Modifier les Hero Points">
+                        <div class="hp-stars" id="hp-stars">
+                            <!-- généré par JS -->
+                        </div>
+                        <div class="hp-text" id="hp-text">2 / 3 disponibles</div>
+                    </button>
+                </div>
+
+                <!-- STATUSES -->
+                <div class="block">
+                    <h3 class="block-title">Statuses</h3>
+                    <div class="statuses-chips" id="statuses-chips">
+                        <!-- généré par JS, avec bouton "+ ajouter" à la fin -->
+                    </div>
+                </div>
+
+                <!-- ACTIONS RAPIDES (Short Rest) -->
+                <div class="block">
+                    <button class="action-button short-rest-btn" id="btn-short-rest" type="button">
+                        <span class="action-icon" aria-hidden="true">☾</span>
+                        <span class="action-text">
+                            <span class="action-title">Short Rest</span>
+                            <span class="action-subtitle" id="short-rests-info">0 / 3 utilisés aujourd'hui</span>
+                        </span>
+                    </button>
+                </div>
+
             </section>
 
             <!-- Onglet : CAPACITÉS -->
@@ -166,7 +236,7 @@
                     <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.0.1 (Vague 1)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.1.0 (Vague 2)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>
@@ -221,6 +291,22 @@
             </button>
         </nav>
 
+    </div>
+
+    <!-- ════════════════════════════════════════════════
+         BOTTOM SHEET — modale qui glisse depuis le bas
+         ════════════════════════════════════════════════ -->
+    <div class="bottom-sheet-backdrop" id="bottom-sheet-backdrop" hidden>
+        <div class="bottom-sheet" id="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="bottom-sheet-title">
+            <div class="bottom-sheet-handle" aria-hidden="true"></div>
+            <div class="bottom-sheet-header">
+                <h3 class="bottom-sheet-title" id="bottom-sheet-title">Titre</h3>
+                <button class="bottom-sheet-close" id="bottom-sheet-close" type="button" aria-label="Fermer">✕</button>
+            </div>
+            <div class="bottom-sheet-content" id="bottom-sheet-content">
+                <!-- contenu injecté dynamiquement par JS -->
+            </div>
+        </div>
     </div>
 
     <!-- ════════════════════════════════════════════════

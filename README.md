@@ -1,11 +1,13 @@
-# 🐉 Drakonym Compagnon — Vague 1 (v1.0.1)
+# 🐉 Drakonym Compagnon — Vague 2 (v1.1.0)
 
 App mobile-first PWA pour gérer ta fiche Drakonym en pleine session.
 
-## 🆕 Nouveautés v1.0.1
-- ✨ **Bouton "Installer"** intégré dans l'onglet Plus (marche sur Chrome/Edge)
-- 📱 **Détection plateforme** : iOS Safari affiche les instructions adaptées, Android propose le bouton, PC aussi
-- 🖥️ **Adaptation tablette/desktop** : breakpoints à 600px et 1024px, layout plus aéré, Vital Bar redistribuée sur grand écran
+## 🆕 Nouveautés v1.1.0 (Vague 2)
+- 📜 **Onglet Fiche complet** : identité, attributs (Soul mis en valeur Primary), Mana/Grit avec barres, Hero Points, Statuses
+- 📲 **Bottom sheets** : tap sur HP/Wounds/AP/Defense/Mana/Grit/HP → modale glissante avec +/− pour modifier
+- 🏷️ **16 statuses officiels** : Bloodied, Burning(intensité), Frightened(intensité), etc. Bouton "+ ajouter" ouvre un sélecteur
+- 💤 **Short Rest** : bouton dédié qui applique automatiquement la règle officielle (Heavy → Light, Light → 0, refill ressources de 3 + ⌈niveau/2⌉)
+- 💾 **Persistance localStorage** : tous tes changements sont sauvés automatiquement, sous la clé `drakonym_compagnon_v1`
 
 ## 📦 Contenu de la Vague 1
 
