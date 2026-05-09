@@ -3201,24 +3201,60 @@ function closeDiceRoller() {
 function renderDiceModal() {
     const titleEl = document.getElementById('dice-modal-title');
     const bodyEl = document.getElementById('dice-modal-body');
+    const footerEl = document.getElementById('dice-modal-footer');
 
     if (diceModalView === 'log') {
         titleEl.textContent = 'Historique';
         bodyEl.innerHTML = renderDiceLogHtml();
+        if (footerEl) footerEl.innerHTML = '';
         bindDiceLogActions(bodyEl);
     } else if (diceModalView === 'rolling' && currentRoll && currentRoll.dice) {
         titleEl.textContent = 'Lancement…';
         bodyEl.innerHTML = renderDiceRollingHtml();
+        if (footerEl) footerEl.innerHTML = '';
         // Pas de bind, l'animation se gère via JS direct
     } else if (diceModalView === 'result' && currentRoll && currentRoll.dice) {
         titleEl.textContent = 'Résultat';
         bodyEl.innerHTML = renderDiceResultHtml();
+        if (footerEl) footerEl.innerHTML = '';
         bindDiceResultActions(bodyEl);
     } else {
         titleEl.textContent = 'Lancer de dés';
         bodyEl.innerHTML = renderDiceConfigHtml();
+        if (footerEl) footerEl.innerHTML = renderDiceLaunchButtonHtml();
         bindDiceConfigActions(bodyEl);
+        // Le bouton Lancer est dans le footer mais ses listeners sont bindés via bindDiceConfigActions
+        bindDiceLaunchButton(footerEl);
     }
+}
+
+/* Bouton "Lancer" rendu dans le footer fixe */
+function renderDiceLaunchButtonHtml() {
+    const pool = computePoolSize();
+    const netBoon = Math.max(0, (currentRoll.boons || 0) - (currentRoll.banes || 0));
+    const netBane = Math.max(0, (currentRoll.banes || 0) - (currentRoll.boons || 0));
+    const rollLabel = pool === 0
+        ? 'Sélectionne au moins un attribut'
+        : `LANCER ${pool}d6${netBoon > 0 ? ` + ${netBoon} Faveur` : ''}${netBane > 0 ? ` + ${netBane} Fardeau` : ''}${currentRoll.useShadow ? ' + d12' : ''}`;
+    return `
+        <button type="button" class="dice-roll-btn" id="dice-roll-btn"${pool === 0 ? ' disabled' : ''}>
+            <span class="dice-roll-btn-glyph">⚂</span>
+            <span>${rollLabel}</span>
+        </button>
+    `;
+}
+
+function bindDiceLaunchButton(footerEl) {
+    if (!footerEl) return;
+    const btn = footerEl.querySelector('#dice-roll-btn');
+    if (btn) btn.addEventListener('click', performRoll);
+}
+
+function refreshDiceLaunchButton() {
+    const footerEl = document.getElementById('dice-modal-footer');
+    if (!footerEl) return;
+    footerEl.innerHTML = renderDiceLaunchButtonHtml();
+    bindDiceLaunchButton(footerEl);
 }
 
 function renderDiceRollingHtml() {
@@ -3398,11 +3434,6 @@ function renderDiceConfigHtml() {
             </div>
             <div class="dice-presets-list" id="dice-presets-list"></div>
         </div>
-
-        <button type="button" class="dice-roll-btn" id="dice-roll-btn"${pool === 0 ? ' disabled' : ''}>
-            <span class="dice-roll-btn-glyph">⚂</span>
-            <span>${rollLabel}</span>
-        </button>
     `;
 }
 
@@ -3448,12 +3479,6 @@ function bindDiceConfigActions(root) {
             renderDiceModal();
         });
     });
-
-    // Roll button
-    const rollBtn = root.querySelector('#dice-roll-btn');
-    if (rollBtn && !rollBtn.disabled) {
-        rollBtn.addEventListener('click', performRoll);
-    }
 
     // Save preset button
     const savePresetBtn = root.querySelector('[data-action="save-preset"]');
