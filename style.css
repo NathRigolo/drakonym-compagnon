@@ -112,11 +112,6 @@ html, body {
 
 body {
     background-color: var(--bg);
-    background-image: url('dragon-bg.webp');
-    background-size: cover;
-    background-position: center center;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
     color: var(--text);
     font-family: 'EB Garamond', Georgia, serif;
     font-size: 16px;
@@ -129,13 +124,27 @@ body {
     padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Voile semi-transparent par-dessus l'image, sous tout le contenu */
+/* Image de fond en pseudo-element fixed (évite le bug Safari iOS qui saute
+   quand le contenu change de hauteur avec background-attachment: fixed) */
 body::before {
     content: '';
     position: fixed;
     inset: 0;
+    background-image: url('dragon-bg.webp');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    z-index: -2;
+    pointer-events: none;
+}
+
+/* Voile semi-transparent par-dessus l'image, sous tout le contenu */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
     background: var(--bg-overlay);
-    z-index: 0;
+    z-index: -1;
     pointer-events: none;
 }
 
