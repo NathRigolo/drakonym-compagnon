@@ -323,6 +323,7 @@ function renderAll() {
     renderHistoireFields();
     refreshDesktopPersona();
     renderDesktopEquipped();
+    renderDesktopRollsLog();
 }
 
 function renderVitalBar(f) {
@@ -3904,6 +3905,7 @@ function addCurrentRollToLog() {
     if (diceLog.length > MAX_DICE_LOG) diceLog = diceLog.slice(0, MAX_DICE_LOG);
     saveDiceLog();
     currentRoll._logged = true;
+    renderDesktopRollsLog();
 }
 
 
@@ -4680,7 +4682,6 @@ function renderDesktopEquipped() {
         container.innerHTML = '<p class="desktop-side-empty">Aucun personnage</p>';
         return;
     }
-
     const weapons = (f.weapons || []).filter(w => w.equipped && w.type !== 'focus');
     const focuses = (f.weapons || []).filter(w => w.equipped && w.type === 'focus');
     const armors = (f.armors || []).filter(a => a.equipped);
@@ -4764,6 +4765,77 @@ function renderDesktopEquipped() {
             if (w) performWeaponAttack(w);
         });
     });
+}
+
+/* ─── Vague C : Log de dés permanent dans sidebar droite ──── */
+function formatRelativeTime(timestamp) {
+    if (!timestamp) return '';
+    const diff = (Date.now() - timestamp) / 1000;
+    if (diff < 30) return 'à l\'instant';
+    if (diff < 60) return 'il y a ' + Math.floor(diff) + 's';
+    if (diff < 3600) return 'il y a ' + Math.floor(diff / 60) + 'min';
+    if (diff < 86400) return 'il y a ' + Math.floor(diff / 3600) + 'h';
+    return 'il y a ' + Math.floor(diff / 86400) + 'j';
+}
+
+function renderDesktopRollsLog() {
+    const container = document.getElementById('desktop-rolls-log');
+    if (!container) return;
+
+    if (!Array.isArray(diceLog) || diceLog.length === 0) {
+        container.innerHTML = `<p class="desktop-side-empty">Aucun jet pour l'instant.<br><small>Lance les dés pour voir l'historique ici.</small></p>`;
+        return;
+    }
+
+    const recent = diceLog.slice(0, 6);
+    let html = '<div class="desktop-rolls-list">';
+    recent.forEach((entry, idx) => {
+        const cls = entry.entryClass ? ` desktop-roll-${entry.entryClass}` : '';
+        const label = entry.label || 'Jet';
+        const time = formatRelativeTime(entry.time);
+        html += `
+            <button type="button" class="desktop-roll-item${cls}" data-roll-idx="${idx}">
+                <span class="desktop-roll-top">
+                    <span class="desktop-roll-label">${escapeHtml(label)}</span>
+                    <span class="desktop-roll-time">${time}</span>
+                </span>
+                <span class="desktop-roll-result">${entry.result || ''}</span>
+            </button>
+        `;
+    });
+    html += '</div>';
+
+    if (diceLog.length > 6) {
+        html += `<button type="button" class="desktop-rolls-viewall" id="desktop-rolls-viewall">Voir tout l'historique (${diceLog.length})</button>`;
+    }
+
+    container.innerHTML = html;
+
+    // Click sur une entrée → ouvre le dice modal en mode log
+    container.querySelectorAll('[data-roll-idx]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            openDiceLogView();
+        });
+    });
+    const viewAll = container.querySelector('#desktop-rolls-viewall');
+    if (viewAll) viewAll.addEventListener('click', openDiceLogView);
+}
+
+function openDiceLogView() {
+    // Ouvre le dice modal directement sur la vue log
+    if (!currentRoll) {
+        currentRoll = {
+            attrs: [], modifier: 0, boons: 0, banes: 0,
+            useHpBoon: false, useShadow: false, difficulty: 0,
+            label: '', attackMode: false,
+            weaponName: null, weaponBonus: 0, weaponMinBody: 0, weaponMinBodyOk: true,
+            dice: null, shadowValue: null, boonsRemaining: 0,
+            secondWindUsed: [], bonesAfterCancel: 0,
+        };
+    }
+    diceModalView = 'log';
+    document.getElementById('dice-modal').hidden = false;
+    renderDiceModal();
 }
 
 if (document.readyState === 'loading') {

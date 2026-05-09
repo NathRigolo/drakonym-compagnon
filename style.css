@@ -124,32 +124,31 @@ body {
     padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Image de fond en pseudo-element fixed (évite le bug Safari iOS qui saute
-   quand le contenu change de hauteur avec background-attachment: fixed) */
-body::before {
-    content: '';
+/* Background layer : vrais divs HTML (plus fiable que pseudo-elements sur iOS Safari) */
+.bg-fixed-image {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-image: url('dragon-bg.webp');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
     z-index: -2;
     pointer-events: none;
-    /* Force la création d'une compositor layer GPU dédiée → l'image reste
-       vraiment immobile pendant le scroll iOS et ne saute plus aux changements de tab */
     transform: translateZ(0);
     -webkit-transform: translate3d(0, 0, 0);
     will-change: transform;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
 }
-
-/* Voile semi-transparent par-dessus l'image, sous tout le contenu */
-body::after {
-    content: '';
+.bg-fixed-overlay {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: var(--bg-overlay);
     z-index: -1;
     pointer-events: none;
@@ -3807,6 +3806,80 @@ a:hover, a:focus { color: var(--gold-bright); }
     .desktop-equip-total strong {
         color: var(--gold);
         font-style: normal;
+    }
+
+    /* ─── Log de dés (Vague C) ─── */
+    .desktop-rolls-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .desktop-roll-item {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--text-subtle);
+        border-radius: 5px;
+        padding: 7px 10px;
+        cursor: pointer;
+        text-align: left;
+        font-family: 'EB Garamond', serif;
+        color: var(--text);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        transition: border-color 150ms ease;
+    }
+    .desktop-roll-item:hover {
+        border-color: var(--gold);
+    }
+    .desktop-roll-success {
+        border-left-color: #4a8b3f;
+    }
+    .desktop-roll-failure {
+        border-left-color: var(--crimson);
+    }
+    .desktop-roll-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 8px;
+    }
+    .desktop-roll-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--gold);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1;
+    }
+    .desktop-roll-time {
+        font-size: 10px;
+        color: var(--text-subtle);
+        font-style: italic;
+        flex-shrink: 0;
+    }
+    .desktop-roll-result {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+    .desktop-rolls-viewall {
+        margin-top: 10px;
+        padding: 8px 10px;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        font-family: 'EB Garamond', serif;
+        font-size: 11px;
+        color: var(--text-muted);
+        cursor: pointer;
+        text-align: center;
+        width: 100%;
+        transition: border-color 150ms ease, color 150ms ease;
+    }
+    .desktop-rolls-viewall:hover {
+        border-color: var(--gold);
+        color: var(--gold);
     }
     .desktop-persona-btn {
         background: var(--bg-card);
