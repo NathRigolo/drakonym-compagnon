@@ -3632,56 +3632,50 @@ function getAudioCtx() {
     return _audioCtx;
 }
 
-/* Génère un son de dés roulés via WebAudio
-   - Bruit blanc filtré + clicks aléatoires pour simuler les rebonds
-   - Durée et intensité légèrement proportionnelles au nombre de dés */
+/* Génère un son de chime/cloche fine fantasy via WebAudio
+   - 2 oscillateurs sinusoïdaux à fréquences harmoniques de cloche
+   - Enveloppe ADSR avec attaque rapide et decay long
+   - Légère variation de tonalité selon le nombre de dés (plus de dés = légèrement plus aigu) */
 function playDiceRollSound(diceCount) {
     if (!_soundDiceEnabled) return;
     const ctx = getAudioCtx();
     if (!ctx) return;
     try {
         const n = Math.max(1, Math.min(20, diceCount || 1));
-        const duration = 0.35 + Math.min(0.4, n * 0.04);  // 0.35s pour 1 dé, max ~0.95s
-        const sampleRate = ctx.sampleRate;
-        const bufferSize = Math.floor(sampleRate * duration);
-        const buffer = ctx.createBuffer(1, bufferSize, sampleRate);
-        const data = buffer.getChannelData(0);
+        // Fréquence fondamentale légèrement variable selon le nombre de dés
+        // 1 dé = 1760Hz (A6), 5 dés = ~1900Hz, 10+ dés = ~2100Hz
+        const f0 = 1760 + (n - 1) * 35;
 
-        // Probabilité de "click" par sample (plus de dés = plus de clicks)
-        const clickProb = 0.0015 + n * 0.0008;
+        const now = ctx.currentTime;
+        const duration = 1.2;  // Durée totale (avec decay long pour la résonance)
 
-        for (let i = 0; i < bufferSize; i++) {
-            const t = i / sampleRate;
-            // Decay exponentiel (le son s'atténue rapidement)
-            const env = Math.exp(-t * 3.5);
-            // Bruit blanc de base (faible)
-            let sample = (Math.random() * 2 - 1) * 0.15 * env;
-            // Clicks aléatoires (rebonds des dés)
-            if (Math.random() < clickProb) {
-                sample += (Math.random() * 2 - 1) * 0.6 * env;
-            }
-            data[i] = sample;
+        // Master gain (volume global du chime)
+        const master = ctx.createGain();
+        master.gain.setValueAtTime(0, now);
+        master.gain.linearRampToValueAtTime(0.18, now + 0.005);  // Attaque très rapide
+        master.gain.exponentialRampToValueAtTime(0.001, now + duration);  // Decay exponentiel long
+        master.connect(ctx.destination);
+
+        // Harmoniques de cloche (inharmoniques pour le côté "cristallin")
+        // Les vraies cloches ont des harmoniques en ratios non-entiers
+        const harmonics = [
+            { freq: f0,         gain: 0.6 },  // Fondamentale
+            { freq: f0 * 2.01,  gain: 0.35 }, // Octave (légèrement détunée)
+            { freq: f0 * 2.76,  gain: 0.18 }, // Tierce mineure aiguë (donne le côté "cloche")
+            { freq: f0 * 3.50,  gain: 0.10 }, // Harmonique élevée (brillance)
+        ];
+
+        for (const h of harmonics) {
+            const osc = ctx.createOscillator();
+            const oscGain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = h.freq;
+            oscGain.gain.value = h.gain;
+            osc.connect(oscGain);
+            oscGain.connect(master);
+            osc.start(now);
+            osc.stop(now + duration);
         }
-
-        const source = ctx.createBufferSource();
-        source.buffer = buffer;
-
-        // Filtre passe-bande pour le son "sec et bois/plastique"
-        const bandpass = ctx.createBiquadFilter();
-        bandpass.type = 'bandpass';
-        bandpass.frequency.value = 1800;
-        bandpass.Q.value = 0.8;
-
-        // Petite réverbération via delay subtile (effet "plusieurs dés")
-        const gain = ctx.createGain();
-        gain.gain.value = 0.55;
-
-        source.connect(bandpass);
-        bandpass.connect(gain);
-        gain.connect(ctx.destination);
-
-        source.start();
-        source.stop(ctx.currentTime + duration);
     } catch (e) {
         /* silencieux : si l'audio échoue, on ne casse pas le jet */
     }
