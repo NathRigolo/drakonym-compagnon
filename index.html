@@ -519,7 +519,7 @@
                 <details class="config-block">
                     <summary class="config-summary">⚙️ Configuration du dragon</summary>
                     <div class="config-content">
-                        <p class="config-hint">📝 Modifie ici toutes les valeurs du dragon : attributs, PL max, vitesse, armure, breath weapon.</p>
+                        <p class="config-hint">📝 Modifie ici toutes les valeurs du dragon : attributs, PL max, vitesse, armure, souffle.</p>
 
                         <h4 class="config-subtitle">Attributs (1-5)</h4>
                         <div class="config-grid-3">
@@ -561,7 +561,7 @@
                                 <input type="number" id="cfg-d-armor" class="config-input" min="0" max="10">
                             </div>
                         </div>
-                        <p class="config-hint-small">Bonus d'armure additionnel (en plus des armures équipées). DS = Armures + Body + ½ niveau joueur.</p>
+                        <p class="config-hint-small">Bonus d'armure additionnel (en plus des armures équipées). Def = Armures + Body + ½ niveau joueur.</p>
                     </div>
                 </details>
 
@@ -632,7 +632,7 @@
                     </div>
 
                     <!-- Breath Weapon -->
-                    <h3 class="dragon-section-title">🔥 Breath Weapon</h3>
+                    <h3 class="dragon-section-title">🔥 Souffle</h3>
                     <button type="button" class="breath-card" id="breath-card">
                         <div class="breath-card-header">
                             <span class="breath-element" id="breath-element-display">— Aucun —</span>
@@ -653,14 +653,14 @@
                     </div>
 
                     <!-- Pillars -->
-                    <h3 class="dragon-section-title">💞 Pillars</h3>
+                    <h3 class="dragon-section-title">💞 Piliers</h3>
                     <div class="pillars-grid">
                         <div class="pillar-row">
-                            <label class="pillar-label">❤️ Love</label>
+                            <label class="pillar-label">❤️ Amour</label>
                             <textarea id="dragon-love" class="pillar-input" rows="2" placeholder="Ce qui apaise ou réjouit ton dragon"></textarea>
                         </div>
                         <div class="pillar-row">
-                            <label class="pillar-label">😨 Fear</label>
+                            <label class="pillar-label">😨 Peur</label>
                             <textarea id="dragon-fear" class="pillar-input" rows="2" placeholder="Ce qui le tourmente ou l'effraie"></textarea>
                         </div>
                         <div class="pillar-row">
@@ -757,7 +757,7 @@
                     <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.14.1 (Traduction modals)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.14.2 (Pass de traduction)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>
@@ -840,19 +840,19 @@
                 </button>
             </div>
 
-            <!-- Équipé (Vague B) -->
+            <!-- Équipé -->
             <div class="desktop-side-block">
                 <div class="desktop-side-label">Équipé</div>
                 <div class="desktop-side-content" id="desktop-equipped">
-                    <p class="desktop-side-empty">À venir (Vague B)</p>
+                    <p class="desktop-side-empty">Rien d'équipé.</p>
                 </div>
             </div>
 
-            <!-- Derniers jets (Vague C) -->
+            <!-- Derniers jets -->
             <div class="desktop-side-block desktop-side-block-grow">
                 <div class="desktop-side-label">Derniers jets</div>
                 <div class="desktop-side-content" id="desktop-rolls-log">
-                    <p class="desktop-side-empty">À venir (Vague C)</p>
+                    <p class="desktop-side-empty">Aucun jet pour l'instant.</p>
                 </div>
             </div>
 

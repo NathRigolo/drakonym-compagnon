@@ -1524,12 +1524,12 @@ function renderEquipementItem(type, item) {
     if (type === 'weapons') {
         if (item.type) metaTags += `<span class="capacite-meta-tag">${WEAPON_TYPE_LABELS[item.type] || item.type}</span>`;
         if (item.damage_type) metaTags += `<span class="capacite-meta-tag">${item.damage_type}</span>`;
-        if (item.range > 1) metaTags += `<span class="capacite-meta-tag">Range ${item.range}</span>`;
+        if (item.range > 1) metaTags += `<span class="capacite-meta-tag">Portée ${item.range}</span>`;
         if (item.min_body > 0) metaTags += `<span class="capacite-meta-tag">Min Body ${item.min_body}</span>`;
     } else if (type === 'armors') {
         if (item.type) metaTags += `<span class="capacite-meta-tag">${ARMOR_TYPE_LABELS[item.type] || item.type}</span>`;
         if (item.min_body > 0) metaTags += `<span class="capacite-meta-tag">Min Body ${item.min_body}</span>`;
-        if (item.speed_penalty < 0) metaTags += `<span class="capacite-meta-tag">Speed ${item.speed_penalty}</span>`;
+        if (item.speed_penalty < 0) metaTags += `<span class="capacite-meta-tag">Vitesse ${item.speed_penalty}</span>`;
     } else if (type === 'tools') {
         if (item.attribute) metaTags += `<span class="capacite-meta-tag">${item.attribute}</span>`;
         if (item.quantity > 1) metaTags += `<span class="capacite-meta-tag">×${item.quantity}</span>`;
@@ -1987,7 +1987,7 @@ function openArmorForm(existing) {
                     <input type="number" class="form-row-input" id="form-min-body" min="0" max="6" value="${e.min_body ?? 1}">
                 </div>
                 <div class="form-row">
-                    <label class="form-row-label">Speed Penalty</label>
+                    <label class="form-row-label">Pénalité Vitesse</label>
                     <input type="number" class="form-row-input" id="form-speed" min="-5" max="0" value="${e.speed_penalty ?? 0}">
                 </div>
             </div>
@@ -2295,7 +2295,7 @@ function renderDragonItem(type, item) {
     if (type === 'dweapons' && item.bonus_dice > 0) {
         costBadge = `<span class="capacite-item-cost">+${item.bonus_dice}d6</span>`;
     } else if (type === 'darmors' && item.armor_bonus > 0) {
-        costBadge = `<span class="capacite-item-cost">+${item.armor_bonus} DS</span>`;
+        costBadge = `<span class="capacite-item-cost">+${item.armor_bonus} Def</span>`;
     }
 
     let metaTags = '';
@@ -2643,7 +2643,7 @@ function openDragonBpEditor() {
             </div>
             <p style="font-size: 12px; color: var(--text-muted); font-style: italic;">
                 Cap suggéré selon stage : Hatchling=6 · Juvenile=9 · Mature=12 · Elder=15 · Mythic=18.<br>
-                Regain : 1 PL + ½ niv au début du Hero Round, +2 PL via Pillars/RP, ½ max au Repos court, full au Downtime.
+                Regain : 1 PL + ½ niv au début du Hero Round, +2 PL via Piliers/RP, ½ max au Repos court, full au Downtime.
             </p>
             <div class="form-row-grid">
                 <button type="button" class="form-btn cancel" data-action="m1">−1</button>
@@ -2707,10 +2707,10 @@ function openBreathEditor() {
                 <input type="text" class="form-row-input" id="form-element" placeholder="Foudre, Feu, Froid, Nécrotique, Radiant, Acide, Poison…" value="${escapeHtml(b.element || '')}">
             </div>
             <div class="form-row">
-                <label class="form-row-label">Shape</label>
+                <label class="form-row-label">Forme</label>
                 <select class="form-row-select" id="form-shape">${shapesOptions}</select>
                 <p style="font-size: 11px; color: var(--text-subtle); font-style: italic; margin-top: 4px;">
-                    Cone : 3 cases · Line : 5x1 · Sphere : rayon 2 dans la portée
+                    Cône : 3 cases · Ligne : 5x1 · Sphère : rayon 2 dans la portée
                 </p>
             </div>
             <div class="form-row">
@@ -2719,7 +2719,7 @@ function openBreathEditor() {
             </div>
             <div class="form-row">
                 <label class="form-row-label">Effet / Status infligé</label>
-                <input type="text" class="form-row-input" id="form-effect" placeholder="Ex: Stunned 1, Burning 2, Knocked Down…" value="${escapeHtml(b.effect || '')}">
+                <input type="text" class="form-row-input" id="form-effect" placeholder="Ex : Étourdi 1, En feu 2, À terre…" value="${escapeHtml(b.effect || '')}">
             </div>
             <div class="form-row-grid">
                 <div class="form-row">
@@ -2872,7 +2872,7 @@ function openDragonWeaponForm(itemId) {
                     </select>
                 </div>
                 <div class="form-row">
-                    <label class="form-row-label">Strike (zone)</label>
+                    <label class="form-row-label">Zone de frappe</label>
                     <select class="form-row-select" id="form-dmg-type">${strikeOptions}</select>
                 </div>
             </div>
@@ -2882,12 +2882,12 @@ function openDragonWeaponForm(itemId) {
                     <input type="number" class="form-row-input" id="form-bonus" min="0" max="5" value="${e.bonus_dice ?? 1}">
                 </div>
                 <div class="form-row">
-                    <label class="form-row-label">Range (1=mêlée)</label>
+                    <label class="form-row-label">Portée (1 = mêlée)</label>
                     <input type="number" class="form-row-input" id="form-range" min="0" max="20" value="${e.range ?? 1}">
                 </div>
             </div>
             <div class="form-row">
-                <label class="form-row-label">Damage Tiers (T1-T5)</label>
+                <label class="form-row-label">Dégâts par Tier (T1-T5)</label>
                 <div class="form-row-grid" style="grid-template-columns: repeat(5, 1fr); gap: 4px;">
                     <input type="number" class="form-row-input" id="form-t1" min="0" max="50" value="${tiers[0]}" style="text-align:center;">
                     <input type="number" class="form-row-input" id="form-t2" min="0" max="50" value="${tiers[1]}" style="text-align:center;">
@@ -2909,7 +2909,7 @@ function openDragonWeaponForm(itemId) {
             ${buildColorPickerHtml(e.color)}
             <div class="form-row">
                 <label class="form-row-label">Perk de l'arme</label>
-                <textarea class="form-row-textarea" id="form-perk" placeholder="Ex: On 2+ successes, target suffers Weakened 1.">${escapeHtml(e.perk || '')}</textarea>
+                <textarea class="form-row-textarea" id="form-perk" placeholder="Ex : Sur 2+ succès, la cible subit Affaibli 1.">${escapeHtml(e.perk || '')}</textarea>
             </div>
             <div class="form-actions">
                 <button type="button" class="form-btn cancel" data-action="cancel">Annuler</button>
@@ -2981,7 +2981,7 @@ function openDragonArmorForm(itemId) {
     const e = existing || {};
 
     const presetOptions = `<option value="">— Custom (saisie libre) —</option>` +
-        DRAGON_ARMOR_PRESETS.map((p, i) => `<option value="${i}">${p.nom} (+${p.armor_bonus} DS · Min Body ${p.min_body} · ${p.draviks} Drv)</option>`).join('');
+        DRAGON_ARMOR_PRESETS.map((p, i) => `<option value="${i}">${p.nom} (+${p.armor_bonus} Def · Min Body ${p.min_body} · ${p.draviks} Drv)</option>`).join('');
 
     const html = `
         <div class="capacite-form">
@@ -3208,12 +3208,12 @@ function rollD6() { return Math.floor(Math.random() * 6) + 1; }
 function rollD12() { return Math.floor(Math.random() * 12) + 1; }
 
 
-/* ─── Shadow Die outcomes (rulebook page 15) ─────────────── */
+/* ─── Outcomes du Dé d'Ombre (rulebook page 15) ─────────────── */
 function getShadowOutcome(value) {
-    if (value === 1)  return { name: 'Disaster',     cssClass: 'disaster',     desc: "Un revers narratif sévère, même si le check réussit." };
+    if (value === 1)  return { name: 'Désastre',     cssClass: 'disaster',     desc: "Un revers narratif sévère, même si le check réussit." };
     if (value <= 3)   return { name: 'Complication', cssClass: 'complication', desc: "Un revers négatif s'ajoute au résultat." };
     if (value <= 9)   return { name: 'Aucun changement', cssClass: 'neutral', desc: "Seul le résultat du check importe." };
-    if (value <= 11)  return { name: 'Opportunity',  cssClass: 'opportunity',  desc: "Un petit coup de pouce narratif." };
+    if (value <= 11)  return { name: 'Opportunité',  cssClass: 'opportunity',  desc: "Un petit coup de pouce narratif." };
     return                  { name: 'Miracle',       cssClass: 'miracle',      desc: "Si le check réussit, l'effet est amplifié. S'il échoue, le pire est évité." };
 }
 
@@ -3508,7 +3508,7 @@ function renderDiceConfigHtml() {
         <div class="dice-config-block">
             <div class="dice-config-label"><span>Options</span></div>
             <div class="dice-toggle${currentRoll.useShadow ? ' active' : ''}" data-toggle="useShadow">
-                <span class="dice-toggle-label"><span class="dice-toggle-icon">🌑</span> Shadow Die (d12)</span>
+                <span class="dice-toggle-label"><span class="dice-toggle-icon">🌑</span> Dé d'Ombre (d12)</span>
                 <span class="dice-toggle-switch"></span>
             </div>
             <div class="dice-toggle${currentRoll.useHpBoon ? ' active' : ''}${!hpAvailable ? ' disabled' : ''}" data-toggle="useHpBoon">
