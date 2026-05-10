@@ -3596,16 +3596,26 @@ function bindDiceConfigActions(root) {
 
 
 /* ═══════════════════════════════════════════════════════════════
-   AUDIO — Son des dés généré via WebAudio API (sans assets externes)
+   AUDIO — Son des dés via MP3 (dice-roll.mp3 à la racine du repo)
    ═══════════════════════════════════════════════════════════════ */
 const SOUND_DICE_KEY = 'drakonym_sound_dice_enabled';
-let _audioCtx = null;
 let _soundDiceEnabled = (function() {
     try {
         const v = localStorage.getItem(SOUND_DICE_KEY);
         return v === null ? true : v === '1';  // activé par défaut
     } catch (e) { return true; }
 })();
+
+let _diceRollAudio = null;
+
+function preloadDiceSound() {
+    if (_diceRollAudio) return;
+    try {
+        _diceRollAudio = new Audio('dice-roll.mp3');
+        _diceRollAudio.preload = 'auto';
+        _diceRollAudio.volume = 0.7;
+    } catch (e) { _diceRollAudio = null; }
+}
 
 function isDiceSoundEnabled() { return _soundDiceEnabled; }
 
@@ -3620,62 +3630,17 @@ function refreshSoundDiceToggle() {
     if (btn) btn.setAttribute('aria-pressed', _soundDiceEnabled ? 'true' : 'false');
 }
 
-function getAudioCtx() {
-    if (!_audioCtx) {
-        try {
-            _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        } catch (e) { return null; }
-    }
-    if (_audioCtx && _audioCtx.state === 'suspended') {
-        _audioCtx.resume().catch(() => {});
-    }
-    return _audioCtx;
-}
-
-/* Génère un son de chime/cloche fine fantasy via WebAudio
-   - 2 oscillateurs sinusoïdaux à fréquences harmoniques de cloche
-   - Enveloppe ADSR avec attaque rapide et decay long
-   - Légère variation de tonalité selon le nombre de dés (plus de dés = légèrement plus aigu) */
+/* Joue le son MP3 des dés (cloné pour permettre les jets rapprochés) */
 function playDiceRollSound(diceCount) {
     if (!_soundDiceEnabled) return;
-    const ctx = getAudioCtx();
-    if (!ctx) return;
     try {
-        const n = Math.max(1, Math.min(20, diceCount || 1));
-        // Fréquence fondamentale légèrement variable selon le nombre de dés
-        // 1 dé = 1760Hz (A6), 5 dés = ~1900Hz, 10+ dés = ~2100Hz
-        const f0 = 1760 + (n - 1) * 35;
-
-        const now = ctx.currentTime;
-        const duration = 1.2;  // Durée totale (avec decay long pour la résonance)
-
-        // Master gain (volume global du chime)
-        const master = ctx.createGain();
-        master.gain.setValueAtTime(0, now);
-        master.gain.linearRampToValueAtTime(0.18, now + 0.005);  // Attaque très rapide
-        master.gain.exponentialRampToValueAtTime(0.001, now + duration);  // Decay exponentiel long
-        master.connect(ctx.destination);
-
-        // Harmoniques de cloche (inharmoniques pour le côté "cristallin")
-        // Les vraies cloches ont des harmoniques en ratios non-entiers
-        const harmonics = [
-            { freq: f0,         gain: 0.6 },  // Fondamentale
-            { freq: f0 * 2.01,  gain: 0.35 }, // Octave (légèrement détunée)
-            { freq: f0 * 2.76,  gain: 0.18 }, // Tierce mineure aiguë (donne le côté "cloche")
-            { freq: f0 * 3.50,  gain: 0.10 }, // Harmonique élevée (brillance)
-        ];
-
-        for (const h of harmonics) {
-            const osc = ctx.createOscillator();
-            const oscGain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.value = h.freq;
-            oscGain.gain.value = h.gain;
-            osc.connect(oscGain);
-            oscGain.connect(master);
-            osc.start(now);
-            osc.stop(now + duration);
-        }
+        if (!_diceRollAudio) preloadDiceSound();
+        if (!_diceRollAudio) return;
+        // Clone pour pouvoir relancer même si le précédent joue encore
+        const audio = _diceRollAudio.cloneNode();
+        audio.volume = 0.7;
+        const playPromise = audio.play();
+        if (playPromise && playPromise.catch) playPromise.catch(() => {});
     } catch (e) {
         /* silencieux : si l'audio échoue, on ne casse pas le jet */
     }
@@ -4785,6 +4750,7 @@ function init() {
     applyTheme(getStoredTheme());
     bindThemeToggle();
     bindSoundToggle();
+    preloadDiceSound();
     bindTabNavigation();
     bindVitalBarActions();
     bindFicheActions();
