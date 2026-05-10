@@ -815,7 +815,7 @@ function confirmShortRest() {
         <div class="confirm-sheet">
             <p class="confirm-message">
                 <strong>Repos court</strong> appliquera&nbsp;:<br><br>
-                ▸ Blessures&nbsp;: Heavy → Light, Light → 0<br>
+                ▸ Blessures&nbsp;: Graves → Légères, Légères → 0<br>
                 ▸ Mana et Grit&nbsp;: +${refillAmount} chacun<br>
                 ${dragonHasBp ? '▸ Bond Points dragon&nbsp;: +1<br>' : ''}
                 ▸ Compteur&nbsp;: ${currentFiche.short_rests_used + 1} / 3
@@ -867,9 +867,9 @@ function confirmDowntime() {
             <p class="confirm-message">
                 <strong>Downtime</strong> appliquera&nbsp;:<br><br>
                 ▸ HP&nbsp;: ${f.hp_current}/${f.hp_max} → ${f.hp_max}/${f.hp_max}<br>
-                ▸ Blessures Light&nbsp;: ${f.wounds.light || 0} → 0<br>
-                ▸ Blessures Heavy&nbsp;: ${f.wounds.heavy || 0} → 0<br>
-                ${hasDeadly ? '▸ <span style="color:var(--crimson)">Deadly inchangées (nécessite une Downtime Activity)</span><br>' : ''}
+                ▸ Blessures Légères&nbsp;: ${f.wounds.light || 0} → 0<br>
+                ▸ Blessures Graves&nbsp;: ${f.wounds.heavy || 0} → 0<br>
+                ${hasDeadly ? '▸ <span style="color:var(--crimson)">Mortelles inchangées (nécessite une Activité de Downtime)</span><br>' : ''}
                 ▸ Mana&nbsp;: ${f.mana_current}/${f.mana_max} → ${f.mana_max}/${f.mana_max}<br>
                 ▸ Grit&nbsp;: ${f.grit_current}/${f.grit_max} → ${f.grit_max}/${f.grit_max}<br>
                 ▸ Repos courts&nbsp;: ${f.short_rests_used}/3 → 0/3<br>
@@ -1875,7 +1875,7 @@ function openWeaponForm(existing) {
             ${buildColorPickerHtml(e.color)}
             <div class="form-row">
                 <label class="form-row-label">Perk de l'arme</label>
-                <textarea class="form-row-textarea" id="form-perk" placeholder="Ex: Versatile : When two-handed, escalate damage by 1 Tier (max Tier 5).">${escapeHtml(e.perk || '')}</textarea>
+                <textarea class="form-row-textarea" id="form-perk" placeholder="Ex: Polyvalente : à deux mains, augmente les dégâts d'1 Tier (max Tier 5).">${escapeHtml(e.perk || '')}</textarea>
             </div>
             <div class="form-actions">
                 <button type="button" class="form-btn cancel" data-action="cancel">Annuler</button>
@@ -1966,7 +1966,7 @@ function openArmorForm(existing) {
             ` : ''}
             <div class="form-row">
                 <label class="form-row-label">Nom *</label>
-                <input type="text" class="form-row-input" id="form-nom" placeholder="Ex: Medium Armor" value="${escapeHtml(e.nom || '')}" maxlength="60">
+                <input type="text" class="form-row-input" id="form-nom" placeholder="Ex: Cotte de mailles" value="${escapeHtml(e.nom || '')}" maxlength="60">
             </div>
             <div class="form-row-grid">
                 <div class="form-row">
@@ -1977,7 +1977,7 @@ function openArmorForm(existing) {
                     </select>
                 </div>
                 <div class="form-row">
-                    <label class="form-row-label">Armor Bonus</label>
+                    <label class="form-row-label">Bonus Armure</label>
                     <input type="number" class="form-row-input" id="form-armor-bonus" min="0" max="5" value="${e.armor_bonus ?? 1}">
                 </div>
             </div>
@@ -2067,7 +2067,7 @@ function openToolForm(existing) {
         <div class="capacite-form">
             <div class="form-row">
                 <label class="form-row-label">Nom *</label>
-                <input type="text" class="form-row-input" id="form-nom" placeholder="Ex: Lockpick Set" value="${escapeHtml(e.nom || '')}" maxlength="60">
+                <input type="text" class="form-row-input" id="form-nom" placeholder="Ex: Trousseau de crochets" value="${escapeHtml(e.nom || '')}" maxlength="60">
             </div>
             <div class="form-row-grid">
                 <div class="form-row">
@@ -2860,7 +2860,7 @@ function openDragonWeaponForm(itemId) {
             ` : ''}
             <div class="form-row">
                 <label class="form-row-label">Nom *</label>
-                <input type="text" class="form-row-input" id="form-nom" placeholder="Ex: Iron Fangs" value="${escapeHtml(e.nom || '')}" maxlength="60">
+                <input type="text" class="form-row-input" id="form-nom" placeholder="Ex: Crocs de fer" value="${escapeHtml(e.nom || '')}" maxlength="60">
             </div>
             <div class="form-row-grid">
                 <div class="form-row">
@@ -2994,11 +2994,11 @@ function openDragonArmorForm(itemId) {
             ` : ''}
             <div class="form-row">
                 <label class="form-row-label">Nom *</label>
-                <input type="text" class="form-row-input" id="form-nom" placeholder="Ex: Iron Barding" value="${escapeHtml(e.nom || '')}" maxlength="60">
+                <input type="text" class="form-row-input" id="form-nom" placeholder="Ex: Caparaçon de fer" value="${escapeHtml(e.nom || '')}" maxlength="60">
             </div>
             <div class="form-row-grid">
                 <div class="form-row">
-                    <label class="form-row-label">Armor Bonus</label>
+                    <label class="form-row-label">Bonus Armure</label>
                     <input type="number" class="form-row-input" id="form-armor-bonus" min="0" max="10" value="${e.armor_bonus ?? 2}">
                 </div>
                 <div class="form-row">
@@ -3443,7 +3443,7 @@ function renderDiceConfigHtml() {
     return `
         ${currentRoll.attackMode ? `
             <div class="attack-mode-banner">
-                ⚔️ <strong>Mode attaque</strong> · Pool = Primary + Weapon Bonus (sans doublement)
+                ⚔️ <strong>Mode attaque</strong> · Pool = Primary + Bonus Arme (sans doublement)
             </div>
         ` : ''}
         <div class="dice-config-block">
@@ -3475,7 +3475,7 @@ function renderDiceConfigHtml() {
             </div>
             <div class="dice-bb-row">
                 <div class="dice-row-stepper">
-                    <span class="dice-row-stepper-label" style="color: var(--gold);">Boons</span>
+                    <span class="dice-row-stepper-label" style="color: var(--gold);">Faveurs</span>
                     <div class="dice-row-stepper-controls">
                         <button type="button" data-stepper="boons" data-delta="-1">−</button>
                         <span class="dice-row-stepper-value">${currentRoll.boons}</span>
@@ -3483,7 +3483,7 @@ function renderDiceConfigHtml() {
                     </div>
                 </div>
                 <div class="dice-row-stepper">
-                    <span class="dice-row-stepper-label" style="color: var(--shadow-bright);">Banes</span>
+                    <span class="dice-row-stepper-label" style="color: var(--shadow-bright);">Fardeaux</span>
                     <div class="dice-row-stepper-controls">
                         <button type="button" data-stepper="banes" data-delta="-1">−</button>
                         <span class="dice-row-stepper-value">${currentRoll.banes}</span>
@@ -3785,7 +3785,7 @@ function renderDiceResultHtml() {
                 ${actionsHtml}
             </div>`;
     } else if (currentRoll.boonsInitial > 0) {
-        boonHtml = `<p class="dice-boon-empty" style="margin-bottom: 14px;">Tous tes Boons ont été utilisés.</p>`;
+        boonHtml = `<p class="dice-boon-empty" style="margin-bottom: 14px;">Toutes tes Faveurs ont été utilisées.</p>`;
     }
 
     // Actions
