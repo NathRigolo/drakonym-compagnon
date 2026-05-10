@@ -17,6 +17,8 @@ const FICHE_DEMO = {
     niveau: 1,
     kin: '',
     classe: '',
+    voie: '',
+    carriere: '',
     primary: 'Body',
     attributs: { Body: 1, Mind: 1, Soul: 1, Shadow: 1, Gods: 1, World: 1 },
     hp_current: 1,
@@ -153,6 +155,9 @@ function mergeFicheDefaults(fiche) {
         const validIds = new Set(STATUSES_CATALOG.map(c => c.id));
         merged.statuses = merged.statuses.filter(s => validIds.has(s.id));
     }
+    // Migration v1.14 : champs voie + carriere
+    if (typeof merged.voie !== 'string') merged.voie = '';
+    if (typeof merged.carriere !== 'string') merged.carriere = '';
     // Capacités (Vague 4)
     if (!Array.isArray(merged.perks)) merged.perks = [];
     if (!Array.isArray(merged.sorts)) merged.sorts = [];
@@ -328,8 +333,8 @@ function renderAll() {
 
 function renderVitalBar(f) {
     document.getElementById('vital-name').textContent = f.nom;
-    document.getElementById('vital-subtitle').textContent =
-        `${f.kin.toUpperCase()} · ${f.classe.toUpperCase()}`;
+    const subtitleParts = [f.kin, f.classe, f.voie].filter(Boolean).map(s => s.toUpperCase());
+    document.getElementById('vital-subtitle').textContent = subtitleParts.join(' · ');
     document.getElementById('vital-level').textContent = f.niveau;
 
     const hpDisplay = document.getElementById('vital-hp-display');
@@ -360,7 +365,7 @@ function renderFiche(f) {
     const tagsEl = document.getElementById('identity-tags');
     if (tagsEl) {
         tagsEl.innerHTML = '';
-        for (const t of [f.kin, f.classe]) {
+        for (const t of [f.kin, f.classe, f.voie, f.carriere]) {
             if (!t) continue;
             const span = document.createElement('span');
             span.className = 'tag';
@@ -479,6 +484,8 @@ function bindFicheActions() {
 
     const restBtn = document.getElementById('btn-short-rest');
     if (restBtn) restBtn.addEventListener('click', confirmShortRest);
+    const downBtn = document.getElementById('btn-downtime');
+    if (downBtn) downBtn.addEventListener('click', confirmDowntime);
 }
 
 
@@ -802,13 +809,15 @@ function confirmShortRest() {
         return;
     }
 
-    const refillAmount = 3 + Math.ceil(currentFiche.niveau / 2);
+    const refillAmount = 3 + Math.floor(currentFiche.niveau / 2);
+    const dragonHasBp = currentFiche.dragon && currentFiche.dragon.bp_max > 0;
     const html = `
         <div class="confirm-sheet">
             <p class="confirm-message">
                 <strong>Repos court</strong> appliquera&nbsp;:<br><br>
                 ▸ Blessures&nbsp;: Heavy → Light, Light → 0<br>
                 ▸ Mana et Grit&nbsp;: +${refillAmount} chacun<br>
+                ${dragonHasBp ? '▸ Bond Points dragon&nbsp;: +1<br>' : ''}
                 ▸ Compteur&nbsp;: ${currentFiche.short_rests_used + 1} / 3
             </p>
             <div class="confirm-actions">
@@ -822,16 +831,19 @@ function confirmShortRest() {
         contentEl.querySelector('[data-action="cancel"]').addEventListener('click', closeBottomSheet);
         contentEl.querySelector('[data-action="confirm"]').addEventListener('click', () => {
             // Blessures : Heavy → Light (transfert), Light → 0. Deadly inchangé (règle officielle).
-            // Plafonné au light_max courant.
             const oldHeavy = currentFiche.wounds.heavy || 0;
             const lightMax = currentFiche.wounds.light_max || 3;
             currentFiche.wounds.light = Math.min(lightMax, oldHeavy);
             currentFiche.wounds.heavy = 0;
-            // Deadly inchangé volontairement.
 
             // Mana / Grit
             currentFiche.mana_current = Math.min(currentFiche.mana_max, currentFiche.mana_current + refillAmount);
             currentFiche.grit_current = Math.min(currentFiche.grit_max, currentFiche.grit_current + refillAmount);
+
+            // BP dragon +1 (règle officielle p.23)
+            if (dragonHasBp) {
+                currentFiche.dragon.bp_current = Math.min(currentFiche.dragon.bp_max, (currentFiche.dragon.bp_current || 0) + 1);
+            }
 
             currentFiche.short_rests_used += 1;
 
@@ -839,6 +851,57 @@ function confirmShortRest() {
             renderAll();
             closeBottomSheet();
             showToast('Repos court appliqué');
+        });
+    });
+}
+
+/* ─── Downtime : long rest officiel (règle p.23) ───────── */
+function confirmDowntime() {
+    const f = currentFiche;
+    const hasDeadly = (f.wounds.deadly || 0) > 0;
+    const dragon = f.dragon || {};
+    const dragonHasBp = dragon.bp_max > 0;
+    const breath = (dragon && dragon.breath) || {};
+    const html = `
+        <div class="confirm-sheet">
+            <p class="confirm-message">
+                <strong>Downtime</strong> appliquera&nbsp;:<br><br>
+                ▸ HP&nbsp;: ${f.hp_current}/${f.hp_max} → ${f.hp_max}/${f.hp_max}<br>
+                ▸ Blessures Light&nbsp;: ${f.wounds.light || 0} → 0<br>
+                ▸ Blessures Heavy&nbsp;: ${f.wounds.heavy || 0} → 0<br>
+                ${hasDeadly ? '▸ <span style="color:var(--crimson)">Deadly inchangées (nécessite une Downtime Activity)</span><br>' : ''}
+                ▸ Mana&nbsp;: ${f.mana_current}/${f.mana_max} → ${f.mana_max}/${f.mana_max}<br>
+                ▸ Grit&nbsp;: ${f.grit_current}/${f.grit_max} → ${f.grit_max}/${f.grit_max}<br>
+                ▸ Repos courts&nbsp;: ${f.short_rests_used}/3 → 0/3<br>
+                ${dragonHasBp ? `▸ Bond Points&nbsp;: ${dragon.bp_current || 0}/${dragon.bp_max} → ${dragon.bp_max}/${dragon.bp_max}<br>` : ''}
+                ${breath.charges_max > 0 ? `▸ Charges Souffle&nbsp;: ${breath.charges_current || 0}/${breath.charges_max} → ${breath.charges_max}/${breath.charges_max}<br>` : ''}
+            </p>
+            <div class="confirm-actions">
+                <button class="confirm-btn cancel" type="button" data-action="cancel">Annuler</button>
+                <button class="confirm-btn confirm" type="button" data-action="confirm">Confirmer</button>
+            </div>
+        </div>
+    `;
+    openBottomSheet('Downtime', html, (contentEl) => {
+        contentEl.querySelector('[data-action="cancel"]').addEventListener('click', closeBottomSheet);
+        contentEl.querySelector('[data-action="confirm"]').addEventListener('click', () => {
+            f.hp_current = f.hp_max;
+            f.wounds.light = 0;
+            f.wounds.heavy = 0;
+            // Deadly inchangé (règle officielle)
+            f.mana_current = f.mana_max;
+            f.grit_current = f.grit_max;
+            f.short_rests_used = 0;
+            if (dragonHasBp) {
+                f.dragon.bp_current = f.dragon.bp_max;
+            }
+            if (breath.charges_max > 0) {
+                f.dragon.breath.charges_current = f.dragon.breath.charges_max;
+            }
+            saveFiche();
+            renderAll();
+            closeBottomSheet();
+            showToast('🌙 Downtime appliqué');
         });
     });
 }
@@ -3967,6 +4030,8 @@ function bindConfigFields() {
     bindText('cfg-nom', 'nom');
     bindText('cfg-kin', 'kin');
     bindText('cfg-classe', 'classe');
+    bindText('cfg-voie', 'voie');
+    bindText('cfg-carriere', 'carriere');
     bindNumber('cfg-niveau', 'niveau', 20);
 
     // Primary
@@ -4038,6 +4103,8 @@ function renderConfigFields() {
     setVal('cfg-niveau', f.niveau || 1);
     setVal('cfg-kin', f.kin || '');
     setVal('cfg-classe', f.classe || '');
+    setVal('cfg-voie', f.voie || '');
+    setVal('cfg-carriere', f.carriere || '');
     setVal('cfg-primary', f.primary || 'Body');
     ['Body', 'Mind', 'Soul', 'Shadow', 'Gods', 'World'].forEach(name => {
         setVal(`cfg-attr-${name}`, (f.attributs && f.attributs[name]) || 0);
