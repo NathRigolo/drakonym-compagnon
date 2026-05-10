@@ -460,6 +460,41 @@ a:hover, a:focus { color: var(--gold-bright); }
     font-weight: 500;
 }
 
+/* Toggle ON/OFF (utilisé pour son des dés, etc.) */
+.setting-toggle {
+    display: inline-flex;
+    align-items: center;
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px;
+    cursor: pointer;
+    transition: border-color 150ms ease;
+}
+.setting-toggle:hover { border-color: var(--gold-bright); }
+.setting-toggle .setting-toggle-on,
+.setting-toggle .setting-toggle-off {
+    font-family: 'Spectral', sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 4px;
+    color: var(--text-muted);
+    transition: background-color 150ms ease, color 150ms ease;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+}
+.setting-toggle[aria-pressed="true"] .setting-toggle-on {
+    background: var(--gold);
+    color: var(--on-gold);
+    font-weight: 500;
+}
+.setting-toggle[aria-pressed="false"] .setting-toggle-off {
+    background: var(--crimson, #8a3a30);
+    color: #f5e8c5;
+    font-weight: 500;
+}
+
 /* Footer légal */
 .legal-footer {
     margin-top: 24px;

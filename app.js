@@ -114,7 +114,7 @@ function addWound(startTier) {
         i++;
     }
     // Toutes les tracks sont pleines, y compris Deadly
-    showToast('💀 Blessures overflow — la mort possible !');
+    showToast('💀 Blessures débordent — la mort possible !');
     return false;
 }
 
@@ -284,6 +284,22 @@ function bindThemeToggle() {
             applyTheme(btn.dataset.theme);
             showToast(`Thème : ${btn.textContent.trim()}`);
         });
+    });
+}
+
+function bindSoundToggle() {
+    const btn = document.getElementById('btn-sound-dice');
+    if (!btn) return;
+    refreshSoundDiceToggle();
+    btn.addEventListener('click', () => {
+        setDiceSoundEnabled(!isDiceSoundEnabled());
+        if (isDiceSoundEnabled()) {
+            // Test audible immédiat (pour confirmer que c'est activé)
+            playDiceRollSound(3);
+            showToast('🎲 Son des dés activé');
+        } else {
+            showToast('🔇 Son des dés désactivé');
+        }
     });
 }
 
@@ -663,7 +679,7 @@ function openWoundsSheet() {
                 </div>
             `;
         }
-        html += `<p class="wounds-hint">Track pleine → la wound suivante <em>overflow</em> au tier supérieur. Deadly overflow = mort.<br>Les maxes (3 par défaut) peuvent être étendues par certaines Perks.</p></div>`;
+        html += `<p class="wounds-hint">Track pleine → la blessure suivante déborde au tier supérieur. Une Mortelle qui déborde = mort.<br>Les maxes (3 par défaut) peuvent être étendues par certaines Perks.</p></div>`;
         return html;
     }
 
@@ -3579,10 +3595,106 @@ function bindDiceConfigActions(root) {
 }
 
 
+/* ═══════════════════════════════════════════════════════════════
+   AUDIO — Son des dés généré via WebAudio API (sans assets externes)
+   ═══════════════════════════════════════════════════════════════ */
+const SOUND_DICE_KEY = 'drakonym_sound_dice_enabled';
+let _audioCtx = null;
+let _soundDiceEnabled = (function() {
+    try {
+        const v = localStorage.getItem(SOUND_DICE_KEY);
+        return v === null ? true : v === '1';  // activé par défaut
+    } catch (e) { return true; }
+})();
+
+function isDiceSoundEnabled() { return _soundDiceEnabled; }
+
+function setDiceSoundEnabled(enabled) {
+    _soundDiceEnabled = !!enabled;
+    try { localStorage.setItem(SOUND_DICE_KEY, _soundDiceEnabled ? '1' : '0'); } catch (e) {}
+    refreshSoundDiceToggle();
+}
+
+function refreshSoundDiceToggle() {
+    const btn = document.getElementById('btn-sound-dice');
+    if (btn) btn.setAttribute('aria-pressed', _soundDiceEnabled ? 'true' : 'false');
+}
+
+function getAudioCtx() {
+    if (!_audioCtx) {
+        try {
+            _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) { return null; }
+    }
+    if (_audioCtx && _audioCtx.state === 'suspended') {
+        _audioCtx.resume().catch(() => {});
+    }
+    return _audioCtx;
+}
+
+/* Génère un son de dés roulés via WebAudio
+   - Bruit blanc filtré + clicks aléatoires pour simuler les rebonds
+   - Durée et intensité légèrement proportionnelles au nombre de dés */
+function playDiceRollSound(diceCount) {
+    if (!_soundDiceEnabled) return;
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    try {
+        const n = Math.max(1, Math.min(20, diceCount || 1));
+        const duration = 0.35 + Math.min(0.4, n * 0.04);  // 0.35s pour 1 dé, max ~0.95s
+        const sampleRate = ctx.sampleRate;
+        const bufferSize = Math.floor(sampleRate * duration);
+        const buffer = ctx.createBuffer(1, bufferSize, sampleRate);
+        const data = buffer.getChannelData(0);
+
+        // Probabilité de "click" par sample (plus de dés = plus de clicks)
+        const clickProb = 0.0015 + n * 0.0008;
+
+        for (let i = 0; i < bufferSize; i++) {
+            const t = i / sampleRate;
+            // Decay exponentiel (le son s'atténue rapidement)
+            const env = Math.exp(-t * 3.5);
+            // Bruit blanc de base (faible)
+            let sample = (Math.random() * 2 - 1) * 0.15 * env;
+            // Clicks aléatoires (rebonds des dés)
+            if (Math.random() < clickProb) {
+                sample += (Math.random() * 2 - 1) * 0.6 * env;
+            }
+            data[i] = sample;
+        }
+
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+
+        // Filtre passe-bande pour le son "sec et bois/plastique"
+        const bandpass = ctx.createBiquadFilter();
+        bandpass.type = 'bandpass';
+        bandpass.frequency.value = 1800;
+        bandpass.Q.value = 0.8;
+
+        // Petite réverbération via delay subtile (effet "plusieurs dés")
+        const gain = ctx.createGain();
+        gain.gain.value = 0.55;
+
+        source.connect(bandpass);
+        bandpass.connect(gain);
+        gain.connect(ctx.destination);
+
+        source.start();
+        source.stop(ctx.currentTime + duration);
+    } catch (e) {
+        /* silencieux : si l'audio échoue, on ne casse pas le jet */
+    }
+}
+
+
 /* ─── Effectue le jet ────────────────────────────────── */
 function performRoll() {
     const pool = computePoolSize();
     if (pool < 1) return;
+
+    // 🎲 Son des dés (si activé) — son proportionnel au nombre de dés
+    playDiceRollSound(pool);
 
     // Point de Héros boon : on consomme 1 HP et on ajoute 1 Faveur
     let totalBoons = currentRoll.boons + (currentRoll.useHpBoon ? 1 : 0);
@@ -4678,6 +4790,7 @@ function init() {
 
     applyTheme(getStoredTheme());
     bindThemeToggle();
+    bindSoundToggle();
     bindTabNavigation();
     bindVitalBarActions();
     bindFicheActions();
