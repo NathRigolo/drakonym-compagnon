@@ -2767,6 +2767,19 @@ a:hover, a:focus { color: var(--gold-bright); }
    ═══════════════════════════════════════════════════════════════ */
 
 /* ─── Carte Draviks (en haut de l'onglet équipement) ─── */
+/* Header de l'onglet Équipement : sous-onglets + Draviks
+   Mobile : empilement vertical, Draviks en haut (ordre via flexbox)
+   Desktop : côte à côte, Draviks compact à droite */
+.equipement-header-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 8px;
+}
+.equipement-header-row .draviks-card {
+    order: -1;  /* sur mobile, Draviks au-dessus comme avant */
+}
+
 .draviks-card {
     width: 100%;
     background: var(--bg-card);
@@ -4286,6 +4299,29 @@ a:hover, a:focus { color: var(--gold-bright); }
 }
 .subtab-text {
     font-size: 12px !important;
+}
+
+/* Header onglet Équipement : subtabs + Draviks côte à côte sur desktop */
+.equipement-header-row {
+    flex-direction: row !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+}
+.equipement-header-row .subtabs-bar {
+    flex: 1;
+    margin-bottom: 0 !important;
+}
+.equipement-header-row .draviks-card {
+    order: 0 !important;  /* à droite des subtabs sur desktop */
+    width: auto !important;
+    flex-shrink: 0;
+    min-width: 180px;
+    margin-bottom: 0 !important;
+    padding: 8px 14px !important;
+    min-height: auto !important;
+}
+.equipement-header-row .draviks-edit-hint {
+    display: none;  /* gain de place : retire le hint sur desktop */
 }
 
 /* Onglets du bas (Fiche / Capacités / Équipement / Dragon / Plus) */

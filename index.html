@@ -429,29 +429,32 @@
             <!-- Onglet : ÉQUIPEMENT -->
             <section class="tab-section" id="section-equipement" data-tab="equipement">
 
-                <!-- Compteur Draviks (la monnaie) -->
-                <button class="draviks-card" id="draviks-card" type="button">
-                    <span class="draviks-icon">◈</span>
-                    <span class="draviks-text">
-                        <span class="draviks-label">Draviks</span>
-                        <span class="draviks-value" id="draviks-value">0</span>
-                    </span>
-                    <span class="draviks-edit-hint">tap pour modifier</span>
-                </button>
+                <!-- Header : Sous-onglets + Compteur Draviks (côte à côte sur desktop) -->
+                <div class="equipement-header-row">
+                    <!-- Barre de sous-onglets (Armes / Armures / Outils) -->
+                    <div class="subtabs-bar" role="tablist" data-scope="equipement">
+                        <button class="subtab active" type="button" data-subtab="weapons" aria-selected="true">
+                            <span class="subtab-icon">⚔️</span>
+                            <span class="subtab-text">Armes</span>
+                        </button>
+                        <button class="subtab" type="button" data-subtab="armors" aria-selected="false">
+                            <span class="subtab-icon">🛡️</span>
+                            <span class="subtab-text">Armures</span>
+                        </button>
+                        <button class="subtab" type="button" data-subtab="tools" aria-selected="false">
+                            <span class="subtab-icon">🎒</span>
+                            <span class="subtab-text">Outils</span>
+                        </button>
+                    </div>
 
-                <!-- Barre de sous-onglets (Armes / Armures / Outils) -->
-                <div class="subtabs-bar" role="tablist" data-scope="equipement">
-                    <button class="subtab active" type="button" data-subtab="weapons" aria-selected="true">
-                        <span class="subtab-icon">⚔️</span>
-                        <span class="subtab-text">Armes</span>
-                    </button>
-                    <button class="subtab" type="button" data-subtab="armors" aria-selected="false">
-                        <span class="subtab-icon">🛡️</span>
-                        <span class="subtab-text">Armures</span>
-                    </button>
-                    <button class="subtab" type="button" data-subtab="tools" aria-selected="false">
-                        <span class="subtab-icon">🎒</span>
-                        <span class="subtab-text">Outils</span>
+                    <!-- Compteur Draviks (la monnaie) -->
+                    <button class="draviks-card" id="draviks-card" type="button">
+                        <span class="draviks-icon">◈</span>
+                        <span class="draviks-text">
+                            <span class="draviks-label">Draviks</span>
+                            <span class="draviks-value" id="draviks-value">0</span>
+                        </span>
+                        <span class="draviks-edit-hint">tap pour modifier</span>
                     </button>
                 </div>
 
@@ -769,7 +772,7 @@
                     <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.16.1 (Sous-onglets clean)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.16.2 (Draviks compact)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>
