@@ -2298,8 +2298,7 @@ a:hover, a:focus { color: var(--gold-bright); }
 
 /* ─── Barre de sous-onglets ──────────────────────────── */
 .subtabs-bar {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
     gap: 4px;
     background: var(--bg-card);
     border-radius: 8px;
@@ -2309,6 +2308,7 @@ a:hover, a:focus { color: var(--gold-bright); }
 }
 
 .subtab {
+    flex: 1;
     background: transparent;
     border: none;
     color: var(--text-muted);
@@ -4278,6 +4278,9 @@ a:hover, a:focus { color: var(--gold-bright); }
 }
 
 /* Sous-onglets (Perks/Sorts/Techniques/Wild + Stats/Capacités/Équipement Dragon) */
+.subtabs-bar {
+    max-width: 640px !important;
+}
 .subtab {
     min-height: 44px !important;
 }
