@@ -704,6 +704,27 @@
                     <h2 class="placeholder-title">Plus</h2>
 
                     <div class="settings-block">
+                        <h3 class="settings-block-title">📋 Mes fiches</h3>
+                        <p class="settings-info">Gère plusieurs personnages. La fiche active est en doré.</p>
+                        <div class="fiches-list" id="fiches-list"></div>
+                        <div class="fiches-actions">
+                            <button type="button" class="settings-btn" id="btn-fiche-new">+ Nouvelle fiche</button>
+                            <button type="button" class="settings-btn" id="btn-fiche-duplicate">⎘ Dupliquer la fiche active</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-block">
+                        <h3 class="settings-block-title">💾 Sauvegarde &amp; transfert</h3>
+                        <p class="settings-info">Exporte ta fiche en JSON pour la sauvegarder ou la transférer entre PC et téléphone.</p>
+                        <div class="fiches-actions">
+                            <button type="button" class="settings-btn" id="btn-export-active">⇩ Exporter la fiche active</button>
+                            <button type="button" class="settings-btn" id="btn-export-all">⇩ Exporter toutes les fiches</button>
+                            <button type="button" class="settings-btn" id="btn-import">⇧ Importer un fichier JSON</button>
+                            <input type="file" id="import-file-input" accept=".json,application/json" hidden>
+                        </div>
+                    </div>
+
+                    <div class="settings-block">
                         <h3 class="settings-block-title">Apparence</h3>
                         <div class="setting-row">
                             <span class="setting-label">Thème</span>
@@ -727,7 +748,7 @@
                         <p class="settings-info">Joue un son discret de dés roulés à chaque jet.</p>
                     </div>
 
-                    <div class="settings-block">
+                    <div class="settings-block" id="install-block">
                         <h3 class="settings-block-title">Installation</h3>
                         <p class="settings-info" id="install-status-hint">Vérification de la possibilité d'installer&hellip;</p>
                         <button id="btn-install" type="button" class="install-btn" hidden>
@@ -746,30 +767,9 @@
                     </div>
 
                     <div class="settings-block">
-                        <h3 class="settings-block-title">📋 Mes fiches</h3>
-                        <p class="settings-info">Gère plusieurs personnages. La fiche active est en doré.</p>
-                        <div class="fiches-list" id="fiches-list"></div>
-                        <div class="fiches-actions">
-                            <button type="button" class="settings-btn" id="btn-fiche-new">+ Nouvelle fiche</button>
-                            <button type="button" class="settings-btn" id="btn-fiche-duplicate">⎘ Dupliquer la fiche active</button>
-                        </div>
-                    </div>
-
-                    <div class="settings-block">
-                        <h3 class="settings-block-title">💾 Sauvegarde &amp; transfert</h3>
-                        <p class="settings-info">Exporte ta fiche en JSON pour la sauvegarder ou la transférer entre PC et téléphone.</p>
-                        <div class="fiches-actions">
-                            <button type="button" class="settings-btn" id="btn-export-active">⇩ Exporter la fiche active</button>
-                            <button type="button" class="settings-btn" id="btn-export-all">⇩ Exporter toutes les fiches</button>
-                            <button type="button" class="settings-btn" id="btn-import">⇧ Importer un fichier JSON</button>
-                            <input type="file" id="import-file-input" accept=".json,application/json" hidden>
-                        </div>
-                    </div>
-
-                    <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.15.2 (Son MP3)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.16.0 (Retours joueurs)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>
@@ -846,10 +846,10 @@
             <!-- Persona switcher -->
             <div class="desktop-side-block">
                 <div class="desktop-side-label">Personnage actif</div>
-                <button type="button" class="desktop-persona-btn" id="desktop-persona-btn">
-                    <span class="desktop-persona-name" id="desktop-persona-name">—</span>
-                    <span class="desktop-persona-arrow" aria-hidden="true">▾</span>
-                </button>
+                <div class="desktop-persona-row">
+                    <select class="desktop-persona-select" id="desktop-persona-select" aria-label="Sélectionner un personnage"></select>
+                    <button type="button" class="desktop-persona-add" id="desktop-persona-add" title="Créer une nouvelle fiche" aria-label="Créer une fiche">+</button>
+                </div>
             </div>
 
             <!-- Équipé -->

@@ -661,7 +661,7 @@ function openWoundsSheet() {
             let boxesHtml = '';
             for (let i = 0; i < max; i++) {
                 const filled = i < count ? ` filled tier-${tier}` : '';
-                boxesHtml += `<span class="wound-box${filled}"></span>`;
+                boxesHtml += `<span class="wound-box clickable${filled}" data-tier="${tier}" data-index="${i}" role="button" tabindex="0" aria-label="Case ${i + 1}"></span>`;
             }
             html += `
                 <div class="wound-track tier-${tier}" data-tier="${tier}">
@@ -679,7 +679,7 @@ function openWoundsSheet() {
                 </div>
             `;
         }
-        html += `<p class="wounds-hint">Track pleine → la blessure suivante déborde au tier supérieur. Une Mortelle qui déborde = mort.<br>Les maxes (3 par défaut) peuvent être étendues par certaines Perks.</p></div>`;
+        html += `<p class="wounds-hint">💡 Tape directement sur une case pour la cocher, ou utilise les boutons +/−. Une track pleine → la blessure suivante déborde au tier supérieur. Une Mortelle qui déborde = mort.</p></div>`;
         return html;
     }
 
@@ -690,13 +690,59 @@ function openWoundsSheet() {
         let boxesHtml = '';
         for (let i = 0; i < max; i++) {
             const filled = i < count ? ` filled tier-${tier}` : '';
-            boxesHtml += `<span class="wound-box${filled}"></span>`;
+            boxesHtml += `<span class="wound-box clickable${filled}" data-tier="${tier}" data-index="${i}" role="button" tabindex="0" aria-label="Case ${i + 1}"></span>`;
         }
         boxesEl.innerHTML = boxesHtml;
         contentEl.querySelector(`#wt-count-${tier}`).textContent = `${count} / ${max}`;
     }
 
+    /* Logique click sur case :
+       - Si on clique sur une case non remplie (i >= count) → count = i + 1 (remplit jusque là)
+       - Si on clique sur la dernière case remplie (i === count - 1) → count = i (décrémente d'1)
+       - Sinon (clique sur une case remplie pas la dernière) → count = i + 1 (réajuste vers le bas) */
+    function handleBoxClick(tier, index) {
+        const oldCount = currentFiche.wounds[tier] || 0;
+        let newCount;
+        if (index >= oldCount) {
+            newCount = index + 1;  // remplit jusque là
+        } else if (index === oldCount - 1) {
+            newCount = index;  // décrémente
+        } else {
+            newCount = index + 1;  // ajuste
+        }
+        const delta = newCount - oldCount;
+        if (delta > 0) {
+            for (let k = 0; k < delta; k++) addWound(tier);
+        } else if (delta < 0) {
+            for (let k = 0; k < -delta; k++) removeWound(tier);
+        }
+    }
+
     openBottomSheet('Blessures', buildHtml(), (contentEl) => {
+        // Listeners pour les cases cliquables (délégation)
+        contentEl.addEventListener('click', (ev) => {
+            const box = ev.target.closest('.wound-box.clickable');
+            if (!box) return;
+            const tier = box.dataset.tier;
+            const idx = parseInt(box.dataset.index, 10);
+            if (isNaN(idx)) return;
+            handleBoxClick(tier, idx);
+            ['light', 'heavy', 'deadly'].forEach(t => refreshTrack(contentEl, t));
+        });
+
+        // Support clavier (Enter / Space)
+        contentEl.addEventListener('keydown', (ev) => {
+            if (ev.key !== 'Enter' && ev.key !== ' ') return;
+            const box = ev.target.closest && ev.target.closest('.wound-box.clickable');
+            if (!box) return;
+            ev.preventDefault();
+            const tier = box.dataset.tier;
+            const idx = parseInt(box.dataset.index, 10);
+            if (isNaN(idx)) return;
+            handleBoxClick(tier, idx);
+            ['light', 'heavy', 'deadly'].forEach(t => refreshTrack(contentEl, t));
+        });
+
         contentEl.querySelectorAll('.wound-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const tier = btn.dataset.tier;
@@ -4670,6 +4716,7 @@ let deferredInstallPrompt = null;
 function setupInstallFlow() {
     const btnInstall = document.getElementById('btn-install');
     const statusHint = document.getElementById('install-status-hint');
+    const installBlock = document.getElementById('install-block');
     if (!btnInstall || !statusHint) return;
 
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -4677,8 +4724,9 @@ function setupInstallFlow() {
         window.matchMedia('(display-mode: standalone)').matches ||
         window.navigator.standalone === true;
 
+    // Si l'app est déjà installée et lancée en standalone, on cache TOUT le bloc Installation
     if (isStandalone) {
-        statusHint.innerHTML = '✓ <strong>App installée</strong> et lancée en mode plein écran.';
+        if (installBlock) installBlock.hidden = true;
         return;
     }
     if (isIOS) {
@@ -4707,8 +4755,7 @@ function setupInstallFlow() {
 
     window.addEventListener('appinstalled', () => {
         showToast('App installée avec succès !');
-        statusHint.innerHTML = '✓ <strong>App installée.</strong>';
-        btnInstall.hidden = true;
+        if (installBlock) installBlock.hidden = true;
     });
 }
 
@@ -4792,16 +4839,18 @@ function bindDesktopSidebar() {
         desktopDiceBtn.addEventListener('click', () => openDiceRoller([], {}));
     }
 
-    // Persona switcher sidebar droite
-    const personaBtn = document.getElementById('desktop-persona-btn');
-    if (personaBtn) {
-        personaBtn.addEventListener('click', () => {
-            switchToTab('plus');
-            setTimeout(() => {
-                const list = document.getElementById('list-fiches');
-                if (list) list.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
+    // Persona switcher sidebar droite (dropdown + bouton ajouter)
+    const personaSelect = document.getElementById('desktop-persona-select');
+    if (personaSelect) {
+        personaSelect.addEventListener('change', () => {
+            const id = personaSelect.value;
+            if (!id || (currentFiche && id === currentFiche._fiche_id)) return;
+            switchToFiche(id);
         });
+    }
+    const personaAdd = document.getElementById('desktop-persona-add');
+    if (personaAdd) {
+        personaAdd.addEventListener('click', () => createNewFiche());
     }
 
     // Toggle sidebar droite (Vague D)
@@ -4825,10 +4874,22 @@ function setDesktopSidebarRightHidden(hidden) {
 }
 
 function refreshDesktopPersona() {
-    const nameEl = document.getElementById('desktop-persona-name');
-    if (!nameEl) return;
-    const f = currentFiche;
-    nameEl.textContent = (f && f.nom) ? f.nom : '— Nouveau personnage —';
+    const select = document.getElementById('desktop-persona-select');
+    if (!select) return;
+
+    const fiches = getFichesList();
+    const activeId = currentFiche && currentFiche._fiche_id;
+    if (fiches.length === 0) {
+        select.innerHTML = '<option value="">— Aucune fiche —</option>';
+        select.disabled = true;
+        return;
+    }
+    select.disabled = false;
+    select.innerHTML = fiches.map(f => {
+        const meta = [f.kin, f.classe, f.niveau ? `Niv.${f.niveau}` : ''].filter(Boolean).join(' · ');
+        const label = meta ? `${f.nom} (${meta})` : f.nom;
+        return `<option value="${escapeHtml(f.id)}"${f.id === activeId ? ' selected' : ''}>${escapeHtml(label)}</option>`;
+    }).join('');
 }
 
 function renderDesktopEquipped() {

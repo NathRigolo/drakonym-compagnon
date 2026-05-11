@@ -1247,7 +1247,21 @@ a:hover, a:focus { color: var(--gold-bright); }
     border: 1.5px solid var(--text-subtle);
     border-radius: 3px;
     background: var(--bg-card-alt);
-    transition: background-color 150ms ease, border-color 150ms ease;
+    transition: background-color 150ms ease, border-color 150ms ease, transform 100ms ease;
+}
+.wound-box.clickable {
+    cursor: pointer;
+}
+.wound-box.clickable:hover {
+    border-color: var(--gold-bright);
+    transform: scale(1.08);
+}
+.wound-box.clickable:focus-visible {
+    outline: 2px solid var(--gold-bright);
+    outline-offset: 2px;
+}
+.wound-box.clickable:active {
+    transform: scale(0.95);
 }
 .wound-box.filled.tier-light  { background: #c08040; border-color: #8b5a25; }
 .wound-box.filled.tier-heavy  { background: var(--crimson-bright); border-color: var(--crimson); }
@@ -4011,36 +4025,60 @@ a:hover, a:focus { color: var(--gold-bright); }
         border-color: var(--gold);
         color: var(--gold);
     }
-    .desktop-persona-btn {
+    .desktop-persona-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .desktop-persona-select {
+        flex: 1;
         background: var(--bg-card);
         border: 1px solid var(--border);
         border-radius: 6px;
-        padding: 10px 12px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        color: var(--text);
+        padding: 9px 10px;
+        color: var(--gold);
         font-family: 'EB Garamond', serif;
         font-size: 14px;
-        transition: border-color 150ms ease;
-    }
-    .desktop-persona-btn:hover {
-        border-color: var(--gold);
-    }
-    .desktop-persona-name {
         font-weight: 500;
-        color: var(--gold);
-        text-align: left;
-        flex: 1;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='%23a89570'%3E%3Cpath d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 10px;
+        padding-right: 28px;
+        transition: border-color 150ms ease;
+        text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
     }
-    .desktop-persona-arrow {
-        color: var(--text-muted);
-        font-size: 12px;
+    .desktop-persona-select:hover,
+    .desktop-persona-select:focus {
+        border-color: var(--gold);
+        outline: none;
+    }
+    .desktop-persona-select:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+    .desktop-persona-add {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        color: var(--gold);
+        font-size: 20px;
+        font-weight: 300;
+        cursor: pointer;
+        line-height: 1;
+        transition: border-color 150ms ease, background-color 150ms ease;
+    }
+    .desktop-persona-add:hover {
+        border-color: var(--gold);
+        background: var(--bg-card-alt);
     }
 
     /* ─── App-shell central : pas de max-width sur desktop ─── */
