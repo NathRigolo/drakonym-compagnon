@@ -554,8 +554,12 @@
                                 <label class="config-label">Vitesse</label>
                                 <input type="number" id="cfg-d-speed" class="config-input" min="0" max="20">
                             </div>
+                            <div class="config-field">
+                                <label class="config-label">Vol</label>
+                                <input type="number" id="cfg-d-speed-fly" class="config-input" min="0" max="40">
+                            </div>
                         </div>
-                        <p class="config-hint-small">Cap suggéré par stage : Hatchling=6 · Juvenile=9 · Mature=12 · Elder=15 · Mythic=18</p>
+                        <p class="config-hint-small">Cap suggéré par stage : Hatchling=6 · Juvenile=9 · Mature=12 · Elder=15 · Mythic=18. Vol = généralement 2× la vitesse au sol.</p>
 
                         <h4 class="config-subtitle">Armure (bonus pour les Défense)</h4>
                         <div class="config-grid-3">
@@ -577,10 +581,6 @@
                     <button class="subtab" type="button" data-subtab="dperks" aria-selected="false">
                         <span class="subtab-icon">🔗</span>
                         <span class="subtab-text">Bond Perks</span>
-                    </button>
-                    <button class="subtab" type="button" data-subtab="dgear" aria-selected="false">
-                        <span class="subtab-icon">⚔️</span>
-                        <span class="subtab-text">Équipement</span>
                     </button>
                 </div>
 
@@ -627,11 +627,16 @@
                         </div>
                     </div>
 
-                    <!-- Vitesse -->
+                    <!-- Vitesse + Vol -->
                     <div class="dragon-speed-row">
                         <label class="dragon-speed-label">⚡ Vitesse</label>
                         <input type="number" id="dragon-speed" class="dragon-speed-input" min="0" max="20" value="6">
                         <span class="dragon-speed-hint">cases / round</span>
+                    </div>
+                    <div class="dragon-speed-row">
+                        <label class="dragon-speed-label">🦋 Vol</label>
+                        <input type="number" id="dragon-speed-fly" class="dragon-speed-input" min="0" max="40" value="0">
+                        <span class="dragon-speed-hint">cases / round (0 = ne vole pas)</span>
                     </div>
 
                     <!-- Breath Weapon -->
@@ -653,6 +658,26 @@
                     <div class="breath-actions">
                         <button type="button" class="capacite-action-btn primary" id="btn-breath-launch">🐉 Lancer le souffle</button>
                         <button type="button" class="capacite-action-btn" id="btn-breath-recharge">↻ Recharger</button>
+                    </div>
+
+                    <!-- Attaques naturelles -->
+                    <div class="dragon-natural-section">
+                        <div class="capacites-header">
+                            <h3 class="dragon-section-title" style="margin: 0;">⚔️ Attaques naturelles</h3>
+                            <button class="btn-add-capacite" type="button" data-list="dweapons">+ Ajouter</button>
+                        </div>
+                        <p class="capacites-hint">🦷 Crocs, griffes, queue, charge, etc. — les attaques propres au corps du dragon.</p>
+                        <div class="capacites-list" id="list-dweapons"></div>
+                    </div>
+
+                    <!-- Écailles (armure naturelle) -->
+                    <div class="dragon-natural-section">
+                        <div class="capacites-header">
+                            <h3 class="dragon-section-title" style="margin: 0;">🛡 Écailles</h3>
+                            <button class="btn-add-capacite" type="button" data-list="darmors">+ Ajouter</button>
+                        </div>
+                        <p class="capacites-hint">🐉 L'armure naturelle du dragon : couches d'écailles, plaques, carapace…</p>
+                        <div class="capacites-list" id="list-darmors"></div>
                     </div>
 
                     <!-- Pillars -->
@@ -682,21 +707,6 @@
                     </div>
                     <p class="capacites-hint">🔗 Ajoute ici les Bond Perks (génériques) et les Family Perks (Core/Minor/Major) propres à la famille de ton dragon. Tu peux marquer les "once per scene" comme utilisées.</p>
                     <div class="capacites-list" id="list-dperks"></div>
-                </div>
-
-                <!-- Sous-section : ÉQUIPEMENT DRAGON -->
-                <div class="subtab-section" id="subsection-dgear" data-subtab="dgear">
-                    <div class="capacites-header">
-                        <p class="capacites-count">Armes du dragon · <span id="count-dweapons">0</span></p>
-                        <button class="btn-add-capacite" type="button" data-list="dweapons">+ Ajouter</button>
-                    </div>
-                    <div class="capacites-list" id="list-dweapons"></div>
-
-                    <div class="capacites-header" style="margin-top: 16px;">
-                        <p class="capacites-count">Armures du dragon · <span id="count-darmors">0</span></p>
-                        <button class="btn-add-capacite" type="button" data-list="darmors">+ Ajouter</button>
-                    </div>
-                    <div class="capacites-list" id="list-darmors"></div>
                 </div>
 
             </section>
@@ -772,7 +782,7 @@
                     <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.16.2 (Draviks compact)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.17.0 (Refonte dragon + Vol + Bugs + Jets libres)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>

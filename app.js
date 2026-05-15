@@ -47,7 +47,7 @@ const FICHE_DEMO = {
     armors: [],
     tools: [],
     dragon: {
-        nom: '', family: '', stage: 'Hatchling', speed: 6,
+        nom: '', family: '', stage: 'Hatchling', speed: 6, speed_fly: 0,
         pillars: { love: '', fear: '', instinct: '' },
         attributs: { Body: 1, Mind: 1, Soul: 1 },
         bp_current: 0, bp_max: 6,
@@ -171,7 +171,7 @@ function mergeFicheDefaults(fiche) {
     if (!Array.isArray(merged.tools)) merged.tools = [];
     // Dragon (Vague 6)
     merged.dragon = Object.assign({
-        nom: '', family: '', stage: 'Hatchling', speed: 6,
+        nom: '', family: '', stage: 'Hatchling', speed: 6, speed_fly: 0,
         pillars: { love: '', fear: '', instinct: '' },
         attributs: { Body: 1, Mind: 1, Soul: 1 },
         bp_current: 0, bp_max: 6,
@@ -185,6 +185,7 @@ function mergeFicheDefaults(fiche) {
     if (!Array.isArray(merged.dragon.perks)) merged.dragon.perks = [];
     if (!Array.isArray(merged.dragon.weapons)) merged.dragon.weapons = [];
     if (!Array.isArray(merged.dragon.armors)) merged.dragon.armors = [];
+    if (typeof merged.dragon.speed_fly !== 'number') merged.dragon.speed_fly = 0;
     // Histoire (Vague 7)
     if (typeof merged.apparence !== 'string') merged.apparence = '';
     if (typeof merged.histoire !== 'string') merged.histoire = '';
@@ -1078,13 +1079,23 @@ function renderCapacitesList(type) {
 }
 
 function renderCapaciteItem(type, item) {
-    const typeClass = type === 'wild_perks' ? 'type-wild'
-        : type === 'sorts' ? 'type-sort'
-        : type === 'techniques' ? 'type-technique'
-        : 'type-perk';
+    // Bug fix : pour les types qui n'ont pas d'état "utilisé" (sorts/techniques/perks),
+    // on n'applique pas la classe type-* si une couleur custom est définie
+    // (sinon la spécificité CSS en thème dark écrase la couleur custom).
+    // Pour wild_perks, on garde type-wild même avec color custom car la classe sert aussi
+    // à l'effet "used" (opacité + barré).
+    const colorClass = item.color ? ` color-${item.color}` : '';
+    let typeClass;
+    if (type === 'wild_perks') {
+        typeClass = 'type-wild';
+    } else {
+        typeClass = item.color ? '' : (
+              type === 'sorts' ? 'type-sort'
+            : type === 'techniques' ? 'type-technique'
+            : 'type-perk');
+    }
     const usedClass = (type === 'wild_perks' && item.used) ? ' used' : '';
     const expanded = item._expanded ? ' expanded' : '';
-    const colorClass = item.color ? ` color-${item.color}` : '';
 
     let costBadge = '';
     if (type === 'sorts' && item.mana_cost > 0) {
@@ -1567,9 +1578,11 @@ function renderEquipementList(type) {
 }
 
 function renderEquipementItem(type, item) {
-    // Utilise les classes type-* existantes pour les couleurs par catégorie
-    const baseTypeClass = type === 'weapons' ? 'type-technique' : type === 'armors' ? 'type-sort' : 'type-perk';
+    // Classes type-* pour les couleurs par défaut, override par color-* si défini
+    // Bug fix : si item.color est défini, on n'applique PAS la classe type-* sinon
+    // elle override la couleur custom à cause de la spécificité CSS en thème dark.
     const colorClass = item.color ? ` color-${item.color}` : '';
+    const baseTypeClass = item.color ? '' : (type === 'weapons' ? 'type-technique' : type === 'armors' ? 'type-sort' : 'type-perk');
     const equippedClass = (type !== 'tools' && item.equipped) ? ' equipped' : '';
     const expanded = item._expanded ? ' expanded' : '';
 
@@ -2285,8 +2298,10 @@ function renderDragon() {
     const body = (d.attributs && d.attributs.Body) || 0;
     document.getElementById('dragon-ds-formula').textContent = `${armor} + ${body} + ${Math.floor(playerLvl/2)} (½ niv)`;
 
-    // Speed
+    // Speed + Fly
     document.getElementById('dragon-speed').value = d.speed || 6;
+    const flyEl = document.getElementById('dragon-speed-fly');
+    if (flyEl) flyEl.value = d.speed_fly || 0;
 
     // Breath
     const b = d.breath || {};
@@ -2313,6 +2328,7 @@ function renderDragon() {
     setCfg('cfg-d-bp-cur', d.bp_current || 0);
     setCfg('cfg-d-bp-max', d.bp_max || 0);
     setCfg('cfg-d-speed', d.speed || 0);
+    setCfg('cfg-d-speed-fly', d.speed_fly || 0);
     setCfg('cfg-d-armor', d.armor_bonus || 0);
 
     // Listes
@@ -2345,10 +2361,17 @@ function renderDragonList(type) {
 }
 
 function renderDragonItem(type, item) {
-    const baseTypeClass = type === 'dperks' ? 'type-perk'
-                        : type === 'dweapons' ? 'type-technique'
-                        : 'type-sort';
+    // Bug fix : pour dweapons/darmors, on n'applique pas la classe type-* si une couleur
+    // custom est définie (sinon la spécificité CSS en thème dark écrase la couleur custom).
+    // Pour dperks, on garde type-perk même avec color custom car la classe sert aussi
+    // à l'effet "used" (opacité + barré) sur les perks marqués utilisés.
     const colorClass = item.color ? ` color-${item.color}` : '';
+    let baseTypeClass;
+    if (type === 'dperks') {
+        baseTypeClass = 'type-perk';
+    } else {
+        baseTypeClass = item.color ? '' : (type === 'dweapons' ? 'type-technique' : 'type-sort');
+    }
     const equippedClass = (type !== 'dperks' && item.equipped) ? ' equipped' : '';
     const usedClass = (type === 'dperks' && item.used) ? ' used' : '';
     const expanded = item._expanded ? ' expanded' : '';
@@ -2456,10 +2479,15 @@ function bindDragonActions() {
         showToast(`Stage : ${d.stage} · PL cap suggéré ${newCap}`);
     });
 
-    // Speed
+    // Speed + Fly
     const speedInput = document.getElementById('dragon-speed');
     if (speedInput) speedInput.addEventListener('change', () => {
         d.speed = Math.max(0, parseInt(speedInput.value, 10) || 0);
+        saveFiche();
+    });
+    const flyInput = document.getElementById('dragon-speed-fly');
+    if (flyInput) flyInput.addEventListener('change', () => {
+        d.speed_fly = Math.max(0, parseInt(flyInput.value, 10) || 0);
         saveFiche();
     });
 
@@ -2493,6 +2521,7 @@ function bindDragonActions() {
         if (d.bp_current > v) d.bp_current = v;
     }, 50);
     cfgBindNumber('cfg-d-speed', (v) => { d.speed = v; }, 20);
+    cfgBindNumber('cfg-d-speed-fly', (v) => { d.speed_fly = v; }, 40);
     cfgBindNumber('cfg-d-armor', (v) => { d.armor_bonus = v; }, 10);
 
     // Attributs : tap pour ouvrir éditeur
@@ -3311,12 +3340,20 @@ function openDiceRoller(presetAttrs, options) {
         weaponBonus: options.weaponBonus || 0,
         weaponMinBody: options.weaponMinBody || 0,
         weaponMinBodyOk: options.weaponMinBodyOk !== false,
+        // Mode "jets libres" : autres dés classiques JDR
+        freeMode: false,
+        freeDieType: 6,         // d4, d6, d8, d10, d12, d20, d100
+        freeDiceCount: 1,
+        freeModifier: 0,
         // rempli après le jet :
         dice: null,
         shadowValue: null,
         boonsRemaining: 0,
         secondWindUsed: [],
         bonesAfterCancel: 0,
+        // pour les jets libres
+        freeResults: null,      // array de valeurs
+        freeTotal: null,
     };
     diceModalView = 'config';
     document.getElementById('dice-modal').hidden = false;
@@ -3350,6 +3387,20 @@ function renderDiceModal() {
         bodyEl.innerHTML = renderDiceRollingHtml();
         if (footerEl) footerEl.innerHTML = '';
         // Pas de bind, l'animation se gère via JS direct
+    } else if (diceModalView === 'result' && currentRoll && currentRoll.freeMode && currentRoll.freeResults) {
+        titleEl.textContent = 'Résultat';
+        bodyEl.innerHTML = renderDiceFreeResultHtml();
+        if (footerEl) footerEl.innerHTML = '';
+        // Bind les boutons reroll / back
+        const rerollBtn = bodyEl.querySelector('[data-action="reroll-free"]');
+        if (rerollBtn) rerollBtn.addEventListener('click', performFreeRoll);
+        const backBtn = bodyEl.querySelector('[data-action="back-config"]');
+        if (backBtn) backBtn.addEventListener('click', () => {
+            diceModalView = 'config';
+            currentRoll.freeResults = null;
+            currentRoll.freeTotal = null;
+            renderDiceModal();
+        });
     } else if (diceModalView === 'result' && currentRoll && currentRoll.dice) {
         titleEl.textContent = 'Résultat';
         bodyEl.innerHTML = renderDiceResultHtml();
@@ -3367,6 +3418,18 @@ function renderDiceModal() {
 
 /* Bouton "Lancer" rendu dans le footer fixe */
 function renderDiceLaunchButtonHtml() {
+    if (currentRoll && currentRoll.freeMode) {
+        const dieType = currentRoll.freeDieType || 6;
+        const count = currentRoll.freeDiceCount || 1;
+        const mod = currentRoll.freeModifier || 0;
+        const modStr = mod === 0 ? '' : (mod > 0 ? ` + ${mod}` : ` − ${-mod}`);
+        return `
+            <button type="button" class="dice-roll-btn" id="dice-roll-btn">
+                <span class="dice-roll-btn-glyph">🎲</span>
+                <span>LANCER ${count}d${dieType}${modStr}</span>
+            </button>
+        `;
+    }
     const pool = computePoolSize();
     const netBoon = Math.max(0, (currentRoll.boons || 0) - (currentRoll.banes || 0));
     const netBane = Math.max(0, (currentRoll.banes || 0) - (currentRoll.boons || 0));
@@ -3384,7 +3447,10 @@ function renderDiceLaunchButtonHtml() {
 function bindDiceLaunchButton(footerEl) {
     if (!footerEl) return;
     const btn = footerEl.querySelector('#dice-roll-btn');
-    if (btn) btn.addEventListener('click', performRoll);
+    if (btn) btn.addEventListener('click', () => {
+        if (currentRoll && currentRoll.freeMode) performFreeRoll();
+        else performRoll();
+    });
 }
 
 function refreshDiceLaunchButton() {
@@ -3469,6 +3535,24 @@ function getPoolModeLabel() {
 
 /* ─── Vue : Configuration ────────────────────────────── */
 function renderDiceConfigHtml() {
+    // Toggle mode Drakonym / Libre tout en haut
+    const modeToggleHtml = `
+        <div class="dice-mode-toggle" role="group" aria-label="Mode de lancer">
+            <button type="button" class="dice-mode-btn${currentRoll.freeMode ? '' : ' active'}" data-mode="drakonym">
+                <span class="dice-mode-icon">⚔️</span>
+                <span>Drakonym</span>
+            </button>
+            <button type="button" class="dice-mode-btn${currentRoll.freeMode ? ' active' : ''}" data-mode="free">
+                <span class="dice-mode-icon">🎲</span>
+                <span>Dés libres</span>
+            </button>
+        </div>
+    `;
+
+    if (currentRoll.freeMode) {
+        return modeToggleHtml + renderDiceConfigFreeHtml();
+    }
+
     const f = currentFiche;
     const pool = computePoolSize();
     const mode = getPoolModeLabel();
@@ -3503,6 +3587,7 @@ function renderDiceConfigHtml() {
         : 'SÉLECTIONNE UN ATTRIBUT';
 
     return `
+        ${modeToggleHtml}
         ${currentRoll.attackMode ? `
             <div class="attack-mode-banner">
                 ⚔️ <strong>Mode attaque</strong> · Pool = Primary + Bonus Arme (sans doublement)
@@ -3589,10 +3674,142 @@ function renderDiceConfigHtml() {
     `;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   MODE JETS LIBRES — d4, d6, d8, d10, d12, d20, d100
+   ═══════════════════════════════════════════════════════════════ */
+const FREE_DIE_TYPES = [4, 6, 8, 10, 12, 20, 100];
+
+function renderDiceConfigFreeHtml() {
+    const dieType = currentRoll.freeDieType || 6;
+    const count = currentRoll.freeDiceCount || 1;
+    const mod = currentRoll.freeModifier || 0;
+
+    const dieButtonsHtml = FREE_DIE_TYPES.map(d => `
+        <button type="button" class="free-die-btn${d === dieType ? ' active' : ''}" data-free-die="${d}">
+            d${d}
+        </button>
+    `).join('');
+
+    return `
+        <div class="dice-config-block">
+            <input type="text" class="dice-label-input" id="dice-label-input" placeholder="Nom du jet (optionnel)" value="${escapeHtml(currentRoll.label)}">
+        </div>
+
+        <div class="dice-config-block">
+            <div class="dice-config-label"><span>Type de dé</span></div>
+            <div class="free-dice-grid">${dieButtonsHtml}</div>
+        </div>
+
+        <div class="dice-config-block">
+            <div class="dice-row-stepper">
+                <span class="dice-row-stepper-label">Nombre de dés</span>
+                <div class="dice-row-stepper-controls">
+                    <button type="button" data-free-stepper="count" data-delta="-1">−</button>
+                    <span class="dice-row-stepper-value">${count}</span>
+                    <button type="button" data-free-stepper="count" data-delta="1">+</button>
+                </div>
+            </div>
+            <div class="dice-row-stepper">
+                <span class="dice-row-stepper-label">Modificateur</span>
+                <div class="dice-row-stepper-controls">
+                    <button type="button" data-free-stepper="modifier" data-delta="-1">−</button>
+                    <span class="dice-row-stepper-value">${mod > 0 ? '+' : ''}${mod}</span>
+                    <button type="button" data-free-stepper="modifier" data-delta="1">+</button>
+                </div>
+            </div>
+        </div>
+
+        <p class="dice-free-hint">💡 Mode libre : utilisé pour les jets d'autres systèmes (D&D, etc.). Affiche somme + détail. Pas de Faveurs/Fardeaux ni de succès.</p>
+    `;
+}
+
+function performFreeRoll() {
+    const dieType = currentRoll.freeDieType || 6;
+    const count = Math.max(1, Math.min(20, currentRoll.freeDiceCount || 1));
+    const mod = currentRoll.freeModifier || 0;
+
+    // Son des dés
+    playDiceRollSound(count);
+
+    const results = [];
+    for (let i = 0; i < count; i++) {
+        results.push(Math.floor(Math.random() * dieType) + 1);
+    }
+    const sum = results.reduce((a, b) => a + b, 0);
+    currentRoll.freeResults = results;
+    currentRoll.freeTotal = sum + mod;
+    diceModalView = 'result';
+    renderDiceModal();
+}
+
+function renderDiceFreeResultHtml() {
+    const dieType = currentRoll.freeDieType;
+    const count = currentRoll.freeDiceCount;
+    const mod = currentRoll.freeModifier;
+    const results = currentRoll.freeResults || [];
+    const sum = results.reduce((a, b) => a + b, 0);
+    const total = currentRoll.freeTotal;
+
+    const formula = mod !== 0
+        ? `${count}d${dieType}${mod > 0 ? ` + ${mod}` : ` − ${-mod}`} = <strong>${total}</strong>`
+        : `${count}d${dieType} = <strong>${total}</strong>`;
+
+    const detailsHtml = results.map(v => `<span class="free-die-result">${v}</span>`).join(' ');
+
+    return `
+        ${currentRoll.label ? `<p class="dice-result-label">${escapeHtml(currentRoll.label)}</p>` : ''}
+        <div class="dice-free-result">
+            <div class="dice-free-formula">${formula}</div>
+            <div class="dice-free-detail">
+                <span class="dice-free-detail-label">Détail : </span>
+                ${detailsHtml}
+                ${mod !== 0 ? `<span class="dice-free-mod"> ${mod > 0 ? '+' : '−'} ${Math.abs(mod)}</span>` : ''}
+            </div>
+        </div>
+        <div class="dice-result-actions">
+            <button type="button" class="dice-result-action-btn primary" data-action="reroll-free">↻ Relancer</button>
+            <button type="button" class="dice-result-action-btn" data-action="back-config">⚙️ Modifier</button>
+        </div>
+    `;
+}
+
 function bindDiceConfigActions(root) {
+    // Toggle Drakonym / Libre
+    root.querySelectorAll('[data-mode]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const newMode = btn.dataset.mode === 'free';
+            if (newMode === !!currentRoll.freeMode) return;
+            currentRoll.freeMode = newMode;
+            renderDiceModal();
+        });
+    });
+
     // Label
     const labelInput = root.querySelector('#dice-label-input');
-    labelInput.addEventListener('input', () => { currentRoll.label = labelInput.value; });
+    if (labelInput) labelInput.addEventListener('input', () => { currentRoll.label = labelInput.value; });
+
+    // ── MODE LIBRE : boutons de type de dé + steppers ──
+    if (currentRoll.freeMode) {
+        root.querySelectorAll('[data-free-die]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentRoll.freeDieType = parseInt(btn.dataset.freeDie, 10);
+                renderDiceModal();
+            });
+        });
+        root.querySelectorAll('[data-free-stepper]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const key = btn.dataset.freeStepper;
+                const delta = parseInt(btn.dataset.delta, 10);
+                if (key === 'count') {
+                    currentRoll.freeDiceCount = Math.max(1, Math.min(20, (currentRoll.freeDiceCount || 1) + delta));
+                } else if (key === 'modifier') {
+                    currentRoll.freeModifier = Math.max(-50, Math.min(50, (currentRoll.freeModifier || 0) + delta));
+                }
+                renderDiceModal();
+            });
+        });
+        return;  // pas besoin des autres bindings Drakonym
+    }
 
     // Attribute selection
     root.querySelectorAll('.dice-attr-cell').forEach(cell => {
@@ -4314,7 +4531,7 @@ function createBlankFiche(nom) {
         draviks: 0,
         weapons: [], armors: [], tools: [],
         dragon: {
-            nom: '', family: '', stage: 'Hatchling', speed: 6,
+            nom: '', family: '', stage: 'Hatchling', speed: 6, speed_fly: 0,
             pillars: { love: '', fear: '', instinct: '' },
             attributs: { Body: 1, Mind: 1, Soul: 1 },
             bp_current: 0, bp_max: 6,
