@@ -1079,21 +1079,11 @@ function renderCapacitesList(type) {
 }
 
 function renderCapaciteItem(type, item) {
-    // Bug fix : pour les types qui n'ont pas d'état "utilisé" (sorts/techniques/perks),
-    // on n'applique pas la classe type-* si une couleur custom est définie
-    // (sinon la spécificité CSS en thème dark écrase la couleur custom).
-    // Pour wild_perks, on garde type-wild même avec color custom car la classe sert aussi
-    // à l'effet "used" (opacité + barré).
+    const typeClass = type === 'wild_perks' ? 'type-wild'
+        : type === 'sorts' ? 'type-sort'
+        : type === 'techniques' ? 'type-technique'
+        : 'type-perk';
     const colorClass = item.color ? ` color-${item.color}` : '';
-    let typeClass;
-    if (type === 'wild_perks') {
-        typeClass = 'type-wild';
-    } else {
-        typeClass = item.color ? '' : (
-              type === 'sorts' ? 'type-sort'
-            : type === 'techniques' ? 'type-technique'
-            : 'type-perk');
-    }
     const usedClass = (type === 'wild_perks' && item.used) ? ' used' : '';
     const expanded = item._expanded ? ' expanded' : '';
 
@@ -1578,11 +1568,8 @@ function renderEquipementList(type) {
 }
 
 function renderEquipementItem(type, item) {
-    // Classes type-* pour les couleurs par défaut, override par color-* si défini
-    // Bug fix : si item.color est défini, on n'applique PAS la classe type-* sinon
-    // elle override la couleur custom à cause de la spécificité CSS en thème dark.
+    const baseTypeClass = type === 'weapons' ? 'type-technique' : type === 'armors' ? 'type-sort' : 'type-perk';
     const colorClass = item.color ? ` color-${item.color}` : '';
-    const baseTypeClass = item.color ? '' : (type === 'weapons' ? 'type-technique' : type === 'armors' ? 'type-sort' : 'type-perk');
     const equippedClass = (type !== 'tools' && item.equipped) ? ' equipped' : '';
     const expanded = item._expanded ? ' expanded' : '';
 
@@ -2361,17 +2348,10 @@ function renderDragonList(type) {
 }
 
 function renderDragonItem(type, item) {
-    // Bug fix : pour dweapons/darmors, on n'applique pas la classe type-* si une couleur
-    // custom est définie (sinon la spécificité CSS en thème dark écrase la couleur custom).
-    // Pour dperks, on garde type-perk même avec color custom car la classe sert aussi
-    // à l'effet "used" (opacité + barré) sur les perks marqués utilisés.
+    const baseTypeClass = type === 'dperks' ? 'type-perk'
+                        : type === 'dweapons' ? 'type-technique'
+                        : 'type-sort';
     const colorClass = item.color ? ` color-${item.color}` : '';
-    let baseTypeClass;
-    if (type === 'dperks') {
-        baseTypeClass = 'type-perk';
-    } else {
-        baseTypeClass = item.color ? '' : (type === 'dweapons' ? 'type-technique' : 'type-sort');
-    }
     const equippedClass = (type !== 'dperks' && item.equipped) ? ' equipped' : '';
     const usedClass = (type === 'dperks' && item.used) ? ' used' : '';
     const expanded = item._expanded ? ' expanded' : '';
@@ -2568,15 +2548,14 @@ function bindDragonActions() {
         listEl.addEventListener('click', (e) => handleDragonListClick(e, type));
     });
 
-    // Boutons "+ Ajouter" pour le dragon
-    ['dperks', 'dweapons', 'darmors'].forEach(type => {
-        document.querySelectorAll(`.btn-add-capacite[data-list="${type}"]`).forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (type === 'dperks') openDragonPerkForm(null);
-                else if (type === 'dweapons') openDragonWeaponForm(null);
-                else openDragonArmorForm(null);
-            });
-        });
+    // Boutons "+ Ajouter" pour le dragon — délégation globale pour survivre aux re-renders
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-add-capacite');
+        if (!btn) return;
+        const type = btn.dataset.list;
+        if (type === 'dperks') openDragonPerkForm(null);
+        else if (type === 'dweapons') openDragonWeaponForm(null);
+        else if (type === 'darmors') openDragonArmorForm(null);
     });
 }
 
@@ -3767,8 +3746,8 @@ function renderDiceFreeResultHtml() {
             </div>
         </div>
         <div class="dice-result-actions">
-            <button type="button" class="dice-result-action-btn primary" data-action="reroll-free">↻ Relancer</button>
-            <button type="button" class="dice-result-action-btn" data-action="back-config">⚙️ Modifier</button>
+            <button type="button" class="action-btn primary" data-action="reroll-free">↻ Relancer</button>
+            <button type="button" class="action-btn" data-action="back-config">⚙️ Modifier</button>
         </div>
     `;
 }
@@ -5057,18 +5036,20 @@ function bindDesktopSidebar() {
     }
 
     // Persona switcher sidebar droite (dropdown + bouton ajouter)
-    const personaSelect = document.getElementById('desktop-persona-select');
-    if (personaSelect) {
-        personaSelect.addEventListener('change', () => {
-            const id = personaSelect.value;
-            if (!id || (currentFiche && id === currentFiche._fiche_id)) return;
+    // Délégation globale pour robustesse (les listeners survivent aux re-renders)
+    document.addEventListener('change', (e) => {
+        if (e.target && e.target.id === 'desktop-persona-select') {
+            const id = e.target.value;
+            if (!id) return;
+            if (currentFiche && id === currentFiche._fiche_id) return;
             switchToFiche(id);
-        });
-    }
-    const personaAdd = document.getElementById('desktop-persona-add');
-    if (personaAdd) {
-        personaAdd.addEventListener('click', () => createNewFiche());
-    }
+        }
+    });
+    document.addEventListener('click', (e) => {
+        if (e.target && e.target.id === 'desktop-persona-add') {
+            createNewFiche();
+        }
+    });
 
     // Toggle sidebar droite (Vague D)
     const hideBtn = document.getElementById('desktop-sidebar-toggle-hide');

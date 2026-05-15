@@ -2586,25 +2586,32 @@ a:hover, a:focus { color: var(--gold-bright); }
 
 /* ─── Couleurs personnalisées (override le type) ─────────────
    Permet au joueur d'organiser ses perks/sorts/techniques par source
-   (ex: rouge = Class, bleu = Subclass, vert = Path, etc.) */
-.capacite-item.color-gold    { border-left-color: var(--gold); }
-.capacite-item.color-blue    { border-left-color: #4a7fc0; }
-.capacite-item.color-crimson { border-left-color: var(--crimson-bright); }
-.capacite-item.color-green   { border-left-color: #5a8744; }
-.capacite-item.color-purple  { border-left-color: #7a4a8c; }
-.capacite-item.color-orange  { border-left-color: #d97056; }
-.capacite-item.color-teal    { border-left-color: #4a9c9c; }
-.capacite-item.color-pink    { border-left-color: #c47fa0; }
+   (ex: rouge = Class, bleu = Subclass, vert = Path, etc.)
+   !important pour assurer la priorité sur les règles type-* et thème. */
+.capacite-item.color-gold    { border-left-color: var(--gold) !important; }
+.capacite-item.color-blue    { border-left-color: #4a7fc0 !important; }
+.capacite-item.color-crimson { border-left-color: var(--crimson-bright) !important; }
+.capacite-item.color-green   { border-left-color: #5a8744 !important; }
+.capacite-item.color-purple  { border-left-color: #7a4a8c !important; }
+.capacite-item.color-orange  { border-left-color: #d97056 !important; }
+.capacite-item.color-teal    { border-left-color: #4a9c9c !important; }
+.capacite-item.color-pink    { border-left-color: #c47fa0 !important; }
 
-:root[data-theme="dark"] .capacite-item.color-blue { border-left-color: #6a9eda; }
-:root[data-theme="dark"] .capacite-item.color-green { border-left-color: #7eaf68; }
-:root[data-theme="dark"] .capacite-item.color-purple { border-left-color: #9c6fae; }
-:root[data-theme="dark"] .capacite-item.color-teal { border-left-color: #6abebe; }
+:root[data-theme="dark"] .capacite-item.color-blue    { border-left-color: #6a9eda !important; }
+:root[data-theme="dark"] .capacite-item.color-green   { border-left-color: #7eaf68 !important; }
+:root[data-theme="dark"] .capacite-item.color-purple  { border-left-color: #9c6fae !important; }
+:root[data-theme="dark"] .capacite-item.color-teal    { border-left-color: #6abebe !important; }
+:root[data-theme="dark"] .capacite-item.color-orange  { border-left-color: #e8896a !important; }
+:root[data-theme="dark"] .capacite-item.color-pink    { border-left-color: #d99bb6 !important; }
+:root[data-theme="dark"] .capacite-item.color-crimson { border-left-color: #d96050 !important; }
 @media (prefers-color-scheme: dark) {
-    :root[data-theme="auto"] .capacite-item.color-blue { border-left-color: #6a9eda; }
-    :root[data-theme="auto"] .capacite-item.color-green { border-left-color: #7eaf68; }
-    :root[data-theme="auto"] .capacite-item.color-purple { border-left-color: #9c6fae; }
-    :root[data-theme="auto"] .capacite-item.color-teal { border-left-color: #6abebe; }
+    :root[data-theme="auto"] .capacite-item.color-blue    { border-left-color: #6a9eda !important; }
+    :root[data-theme="auto"] .capacite-item.color-green   { border-left-color: #7eaf68 !important; }
+    :root[data-theme="auto"] .capacite-item.color-purple  { border-left-color: #9c6fae !important; }
+    :root[data-theme="auto"] .capacite-item.color-teal    { border-left-color: #6abebe !important; }
+    :root[data-theme="auto"] .capacite-item.color-orange  { border-left-color: #e8896a !important; }
+    :root[data-theme="auto"] .capacite-item.color-pink    { border-left-color: #d99bb6 !important; }
+    :root[data-theme="auto"] .capacite-item.color-crimson { border-left-color: #d96050 !important; }
 }
 
 .capacite-item-header {
