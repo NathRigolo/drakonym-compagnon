@@ -1062,7 +1062,7 @@ function renderCapacitesList(type) {
     const countEl = document.getElementById(`count-${type}`);
     if (!listEl) return;
 
-    countEl.textContent = items.length;
+    if (countEl) countEl.textContent = items.length;
 
     if (items.length === 0) {
         const labels = {
@@ -1553,7 +1553,7 @@ function renderEquipementList(type) {
     const listEl = document.getElementById(`list-${type}`);
     const countEl = document.getElementById(`count-${type}`);
     if (!listEl) return;
-    countEl.textContent = items.length;
+    if (countEl) countEl.textContent = items.length;
 
     if (items.length === 0) {
         const labels = {
@@ -2333,7 +2333,7 @@ function renderDragonList(type) {
     const listEl = document.getElementById(`list-${type}`);
     const countEl = document.getElementById(`count-${type}`);
     if (!listEl) return;
-    countEl.textContent = items.length;
+    if (countEl) countEl.textContent = items.length;
 
     if (items.length === 0) {
         const labels = {
