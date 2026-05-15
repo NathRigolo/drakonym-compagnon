@@ -3864,7 +3864,6 @@ function refreshCombatToggle() {
     if (!btn) return;
     btn.classList.toggle('combat-on', _combatMode);
     btn.setAttribute('aria-pressed', _combatMode ? 'true' : 'false');
-    btn.title = _combatMode ? 'Mode combat actif — clique pour désactiver' : 'Activer le mode combat (UI simplifiée)';
 }
 
 /* ─── Render du panneau Combat sous la Vital Bar ─────────────── */

@@ -85,14 +85,8 @@
                 <div class="vital-subtitle" id="vital-subtitle">—</div>
             </div>
             <div class="vital-level">
-                <button class="vital-combat-toggle" id="vital-combat-toggle" type="button" aria-pressed="false" title="Activer le mode combat">
-                    <span class="vital-combat-icon">⚔️</span>
-                    <span class="vital-combat-text">Combat</span>
-                </button>
-                <span class="vital-level-block">
-                    <span class="vital-level-label">NIVEAU</span>
-                    <span class="vital-level-value" id="vital-level">5</span>
-                </span>
+                <span class="vital-level-label">NIVEAU</span>
+                <span class="vital-level-value" id="vital-level">5</span>
             </div>
 
             <div class="vital-stats">
@@ -131,6 +125,15 @@
                 </button>
             </div>
         </header>
+
+        <!-- ════════════════════════════════════════════════
+             TOGGLE MODE COMBAT — bande compacte sous la Vital Bar
+             ════════════════════════════════════════════════ -->
+        <button class="combat-toggle-bar" id="vital-combat-toggle" type="button" aria-pressed="false">
+            <span class="combat-toggle-icon">⚔️</span>
+            <span class="combat-toggle-text-off">Activer le Mode Combat</span>
+            <span class="combat-toggle-text-on">Mode Combat actif · Désactiver</span>
+        </button>
 
         <!-- ════════════════════════════════════════════════
              PANNEAU COMBAT — n'est rendu QUE quand combat-mode-on
@@ -793,7 +796,7 @@
                     <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.18.1 (Mode Combat responsive)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.18.2 (Combat mode refondu)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>
