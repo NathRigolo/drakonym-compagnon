@@ -4485,3 +4485,368 @@ a:hover, a:focus { color: var(--gold-bright); }
     font-size: 14px !important;
     line-height: 1.5 !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   COMBAT MODE — v1.18.0
+   Toggle dans Vital Bar + panneau épinglé sous la barre
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Toggle dans la Vital Bar */
+.vital-combat-toggle {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 150ms ease;
+    min-width: 56px;
+    min-height: 44px;
+}
+.vital-combat-toggle:hover {
+    color: var(--text);
+    border-color: var(--text-muted);
+}
+.vital-combat-toggle.combat-on {
+    background: var(--crimson-bright);
+    color: white;
+    border-color: var(--crimson-bright);
+    animation: combat-pulse 2s ease-in-out infinite;
+}
+.vital-combat-icon { font-size: 16px; line-height: 1; }
+.vital-combat-text { font-size: 9px; }
+
+@keyframes combat-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(217, 86, 80, 0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(217, 86, 80, 0); }
+}
+
+/* Panneau Combat (sous la Vital Bar) */
+.combat-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--crimson-bright);
+    border-top: none;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.combat-panel[hidden] { display: none; }
+
+/* Bouton "Début de round" — gros et visible */
+.combat-start-round-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--on-gold);
+    border: 1px solid var(--gold-bright);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    transition: transform 100ms ease, background-color 150ms ease;
+    min-height: 52px;
+}
+.combat-start-round-btn:hover { background: var(--gold-bright); }
+.combat-start-round-btn:active { transform: scale(0.98); }
+.combat-start-round-icon { font-size: 22px; }
+.combat-start-round-text { font-weight: 500; }
+.combat-start-round-hint {
+    font-size: 10px;
+    color: var(--on-gold);
+    opacity: 0.85;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    font-family: 'Spectral', sans-serif;
+}
+
+/* Grille de steppers HP/AP/Mana/Grit/Défense */
+.combat-steppers-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+}
+.combat-stepper {
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 4px;
+    text-align: center;
+}
+.combat-stepper-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+}
+.combat-stepper-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+.combat-stepper-btn {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 150ms ease;
+}
+.combat-stepper-btn:hover {
+    background: var(--gold);
+    color: var(--on-gold);
+    border-color: var(--gold);
+}
+.combat-stepper-btn:active { transform: scale(0.92); }
+.combat-stepper-value {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    min-width: 38px;
+    display: inline-block;
+}
+
+/* Actions row : Subir Wound + Lancer dés */
+.combat-actions-row {
+    display: flex;
+    gap: 6px;
+}
+.combat-action-btn {
+    flex: 1;
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Spectral', sans-serif;
+    font-size: 12px;
+    transition: all 150ms ease;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.combat-action-btn:hover { background: var(--bg-card); }
+.combat-action-btn:active { transform: scale(0.98); }
+.combat-action-btn.danger {
+    border-color: var(--crimson-bright);
+    color: var(--crimson-bright);
+}
+.combat-action-btn.danger:hover {
+    background: var(--crimson-bright);
+    color: white;
+}
+
+/* Quand Combat ON : cacher sections moins utiles */
+body.combat-mode-on .accordion-config,
+body.combat-mode-on .histoire-content,
+body.combat-mode-on #section-plus {
+    /* Ne pas cacher complètement, mais réduire la visibilité quand on est sur ces sections */
+}
+
+/* Sur desktop, le panneau est plus aéré */
+@media (min-width: 1024px) {
+    .combat-panel {
+        max-width: 720px;
+        margin: 0 auto;
+        border-radius: 0 0 10px 10px;
+    }
+    .combat-steppers-grid {
+        gap: 10px;
+    }
+    .combat-stepper {
+        padding: 8px 6px;
+    }
+    .combat-stepper-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 18px;
+    }
+    .combat-stepper-value {
+        font-size: 15px;
+    }
+}
+
+/* ─── Modal Début de round ─────────────────────────── */
+.start-round-intro {
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+.start-round-changes {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+.start-round-item {
+    display: grid;
+    grid-template-columns: 24px 1fr auto auto;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+.start-round-item.info {
+    border-color: var(--gold);
+    background: var(--bg-card-alt);
+}
+.start-round-icon { font-size: 18px; }
+.start-round-label {
+    font-family: 'Spectral', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+}
+.start-round-delta {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--bg-card-alt);
+}
+.start-round-delta.gain { color: var(--gold); }
+.start-round-result {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+.start-round-hint {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 8px;
+}
+
+/* ─── Modal Subir Wound ─────────────────────────── */
+.suffer-intro {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 12px;
+}
+.suffer-tier-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+}
+.suffer-tier-btn {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    color: var(--text);
+    padding: 12px 4px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: all 150ms ease;
+}
+.suffer-tier-btn .suffer-tier-name {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.suffer-tier-btn .suffer-tier-count {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+.suffer-tier-btn.tier-light { border-left-color: #d97056; }
+.suffer-tier-btn.tier-heavy { border-left-color: var(--crimson-bright); }
+.suffer-tier-btn.tier-deadly { border-left-color: #5a0000; }
+.suffer-tier-btn.selected {
+    background: var(--bg-card-alt);
+    border-color: var(--gold);
+    box-shadow: 0 0 0 1px var(--gold);
+}
+.suffer-ds-info {
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+.suffer-ds-info strong { color: var(--gold); }
+.suffer-ds-hint {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.4;
+}
+.suffer-actions {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+.suffer-action-btn {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Spectral', sans-serif;
+    font-size: 12px;
+    transition: all 150ms ease;
+}
+.suffer-action-btn:hover:not(:disabled) {
+    background: var(--bg-card-alt);
+}
+.suffer-action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.suffer-action-btn.reduce {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+.suffer-action-btn.absorb {
+    border-color: var(--crimson-bright);
+    color: var(--crimson-bright);
+}
+.suffer-preview {
+    background: var(--bg-card-alt);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    text-align: center;
+}

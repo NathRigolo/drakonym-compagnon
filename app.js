@@ -346,6 +346,7 @@ function renderAll() {
     refreshDesktopPersona();
     renderDesktopEquipped();
     renderDesktopRollsLog();
+    if (_combatMode) renderCombatPanel();
 }
 
 function renderVitalBar(f) {
@@ -468,6 +469,11 @@ function bindVitalBarActions() {
             else if (action === 'defense') openDefenseSheet();
         });
     });
+    // Toggle Mode Combat
+    const combatToggle = document.getElementById('vital-combat-toggle');
+    if (combatToggle) {
+        combatToggle.addEventListener('click', () => setCombatMode(!isCombatMode()));
+    }
 }
 
 function bindFicheActions() {
@@ -2553,10 +2559,6 @@ function bindDragonActions() {
         const btn = e.target.closest('.btn-add-capacite');
         if (!btn) return;
         const type = btn.dataset.list;
-        // Log diagnostic v1.17.2
-        if (type && type.startsWith('d')) {
-            console.log(`[Drakonym] Click bouton + dragon (type=${type})`);
-        }
         if (type === 'dperks') openDragonPerkForm(null);
         else if (type === 'dweapons') openDragonWeaponForm(null);
         else if (type === 'darmors') openDragonArmorForm(null);
@@ -3842,9 +3844,367 @@ function bindDiceConfigActions(root) {
 
 
 /* ═══════════════════════════════════════════════════════════════
-   AUDIO — Son des dés via MP3 (dice-roll.mp3 à la racine du repo)
+   COMBAT MODE — v1.18.0 — UI simplifiée pour gérer un combat
    ═══════════════════════════════════════════════════════════════ */
-const SOUND_DICE_KEY = 'drakonym_sound_dice_enabled';
+const COMBAT_MODE_KEY = 'drakonym_combat_mode';
+let _combatMode = (function() {
+    try { return localStorage.getItem(COMBAT_MODE_KEY) === '1'; }
+    catch (e) { return false; }
+})();
+function isCombatMode() { return _combatMode; }
+function setCombatMode(enabled) {
+    _combatMode = !!enabled;
+    try { localStorage.setItem(COMBAT_MODE_KEY, _combatMode ? '1' : '0'); } catch (e) {}
+    document.body.classList.toggle('combat-mode-on', _combatMode);
+    renderCombatPanel();
+    refreshCombatToggle();
+}
+function refreshCombatToggle() {
+    const btn = document.getElementById('vital-combat-toggle');
+    if (!btn) return;
+    btn.classList.toggle('combat-on', _combatMode);
+    btn.setAttribute('aria-pressed', _combatMode ? 'true' : 'false');
+    btn.title = _combatMode ? 'Mode combat actif — clique pour désactiver' : 'Activer le mode combat (UI simplifiée)';
+}
+
+/* ─── Render du panneau Combat sous la Vital Bar ─────────────── */
+function renderCombatPanel() {
+    const panel = document.getElementById('combat-panel');
+    if (!panel) return;
+    if (!_combatMode) {
+        panel.hidden = true;
+        panel.innerHTML = '';
+        return;
+    }
+    panel.hidden = false;
+    const f = currentFiche;
+    if (!f) { panel.innerHTML = ''; return; }
+
+    // Steppers compacts pour HP/AP/Mana/Grit/Défense
+    const stepperHtml = (label, current, max, key) => {
+        const display = (max !== null && max !== undefined) ? `${current}/${max}` : `${current}`;
+        return `
+            <div class="combat-stepper" data-stepper-key="${key}">
+                <div class="combat-stepper-label">${label}</div>
+                <div class="combat-stepper-controls">
+                    <button type="button" class="combat-stepper-btn" data-combat-stepper="${key}" data-delta="-1">−</button>
+                    <span class="combat-stepper-value">${display}</span>
+                    <button type="button" class="combat-stepper-btn" data-combat-stepper="${key}" data-delta="1">+</button>
+                </div>
+            </div>
+        `;
+    };
+
+    panel.innerHTML = `
+        <button type="button" class="combat-start-round-btn" id="combat-start-round-btn">
+            <span class="combat-start-round-icon">🎯</span>
+            <span class="combat-start-round-text">Début de round</span>
+            <span class="combat-start-round-hint">+3 AP · Def · Mana · Grit · BP</span>
+        </button>
+
+        <div class="combat-steppers-grid">
+            ${stepperHtml('PH', f.hp_current, f.hp_max, 'hp')}
+            ${stepperHtml('AP', f.ap_current, null, 'ap')}
+            ${stepperHtml('Mana', f.mana_current, f.mana_max, 'mana')}
+            ${stepperHtml('Grit', f.grit_current, f.grit_max, 'grit')}
+            ${stepperHtml('Déf', f.defense_current, f.defense_max, 'defense')}
+        </div>
+
+        <div class="combat-actions-row">
+            <button type="button" class="combat-action-btn danger" id="combat-suffer-wound-btn">
+                <span>💥</span> Subir Wound
+            </button>
+            <button type="button" class="combat-action-btn" id="combat-dice-btn">
+                <span>🎲</span> Lancer dés
+            </button>
+        </div>
+    `;
+
+    // Bind
+    document.getElementById('combat-start-round-btn').addEventListener('click', openStartOfRoundSheet);
+    document.getElementById('combat-suffer-wound-btn').addEventListener('click', openSufferWoundSheet);
+    document.getElementById('combat-dice-btn').addEventListener('click', () => openDiceRoller([], {}));
+    panel.querySelectorAll('[data-combat-stepper]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            applyCombatStepper(btn.dataset.combatStepper, parseInt(btn.dataset.delta, 10));
+        });
+    });
+}
+
+function applyCombatStepper(key, delta) {
+    const f = currentFiche;
+    if (!f) return;
+    switch (key) {
+        case 'hp':
+            f.hp_current = Math.max(0, Math.min(f.hp_max, (f.hp_current || 0) + delta));
+            break;
+        case 'ap':
+            f.ap_current = Math.max(0, (f.ap_current || 0) + delta);
+            break;
+        case 'mana':
+            f.mana_current = Math.max(0, Math.min(f.mana_max || 0, (f.mana_current || 0) + delta));
+            break;
+        case 'grit':
+            f.grit_current = Math.max(0, Math.min(f.grit_max || 0, (f.grit_current || 0) + delta));
+            break;
+        case 'defense':
+            f.defense_current = Math.max(0, Math.min(f.defense_max || 0, (f.defense_current || 0) + delta));
+            break;
+    }
+    saveFiche();
+    renderAll();  // refresh tout (vital bar + panel)
+}
+
+/* ─── Modal : Début de round (checklist officielle p.276) ─────── */
+function openStartOfRoundSheet() {
+    const f = currentFiche;
+    if (!f) return;
+    const halfLevel = Math.ceil((f.niveau || 1) / 2);
+
+    // Calculs (caps respectés)
+    const defGain = Math.ceil((f.defense_max || 0) / 2);
+    const defNew = Math.min(f.defense_max || 0, (f.defense_current || 0) + defGain);
+    const defDelta = defNew - (f.defense_current || 0);
+
+    const manaGain = 3 + halfLevel;
+    const manaNew = Math.min(f.mana_max || 0, (f.mana_current || 0) + manaGain);
+    const manaDelta = manaNew - (f.mana_current || 0);
+
+    const gritGain = 3 + halfLevel;
+    const gritNew = Math.min(f.grit_max || 0, (f.grit_current || 0) + gritGain);
+    const gritDelta = gritNew - (f.grit_current || 0);
+
+    const d = f.dragon || {};
+    const bpGain = 1 + halfLevel;
+    const bpNew = Math.min(d.bp_max || 0, (d.bp_current || 0) + bpGain);
+    const bpDelta = bpNew - (d.bp_current || 0);
+
+    const dragonDefMax = (d.armor_bonus || 0) + (d.attributs ? d.attributs.Body || 0 : 0) + halfLevel;
+
+    const html = `
+        <div class="capacite-form">
+            <p class="start-round-intro">📜 Checklist officielle (Drakonym p.276)</p>
+            <div class="start-round-changes">
+                <div class="start-round-item">
+                    <span class="start-round-icon">⚡</span>
+                    <span class="start-round-label">Points d'Action</span>
+                    <span class="start-round-delta gain">+3 AP</span>
+                    <span class="start-round-result">${f.ap_current || 0} → ${(f.ap_current || 0) + 3}</span>
+                </div>
+                <div class="start-round-item">
+                    <span class="start-round-icon">🛡</span>
+                    <span class="start-round-label">Defense Slots</span>
+                    <span class="start-round-delta gain">+${defDelta}</span>
+                    <span class="start-round-result">${f.defense_current || 0}/${f.defense_max || 0} → ${defNew}/${f.defense_max || 0}</span>
+                </div>
+                ${(f.mana_max || 0) > 0 ? `
+                <div class="start-round-item">
+                    <span class="start-round-icon">✨</span>
+                    <span class="start-round-label">Mana</span>
+                    <span class="start-round-delta gain">+${manaDelta}</span>
+                    <span class="start-round-result">${f.mana_current || 0}/${f.mana_max || 0} → ${manaNew}/${f.mana_max || 0}</span>
+                </div>` : ''}
+                ${(f.grit_max || 0) > 0 ? `
+                <div class="start-round-item">
+                    <span class="start-round-icon">💪</span>
+                    <span class="start-round-label">Grit</span>
+                    <span class="start-round-delta gain">+${gritDelta}</span>
+                    <span class="start-round-result">${f.grit_current || 0}/${f.grit_max || 0} → ${gritNew}/${f.grit_max || 0}</span>
+                </div>` : ''}
+                ${(d.bp_max || 0) > 0 ? `
+                <div class="start-round-item">
+                    <span class="start-round-icon">🔗</span>
+                    <span class="start-round-label">Bond Points (dragon)</span>
+                    <span class="start-round-delta gain">+${bpDelta}</span>
+                    <span class="start-round-result">${d.bp_current || 0}/${d.bp_max || 0} → ${bpNew}/${d.bp_max || 0}</span>
+                </div>
+                <div class="start-round-item info">
+                    <span class="start-round-icon">🐉</span>
+                    <span class="start-round-label">Defense Slots dragon</span>
+                    <span class="start-round-delta gain">Refresh complet</span>
+                    <span class="start-round-result">${dragonDefMax}/${dragonDefMax}</span>
+                </div>` : ''}
+            </div>
+            <p class="start-round-hint">Demi-niveau = ${halfLevel} (niveau ${f.niveau || 1})</p>
+            <div class="form-actions">
+                <button type="button" class="form-btn cancel" data-action="cancel">Annuler</button>
+                <button type="button" class="form-btn save" data-action="apply">✓ Appliquer</button>
+            </div>
+        </div>
+    `;
+
+    openBottomSheet('🎯 Début de round', html, (root) => {
+        root.querySelector('[data-action="cancel"]').addEventListener('click', closeBottomSheet);
+        root.querySelector('[data-action="apply"]').addEventListener('click', () => {
+            f.ap_current = (f.ap_current || 0) + 3;
+            f.defense_current = defNew;
+            if ((f.mana_max || 0) > 0) f.mana_current = manaNew;
+            if ((f.grit_max || 0) > 0) f.grit_current = gritNew;
+            if ((d.bp_max || 0) > 0) {
+                d.bp_current = bpNew;
+            }
+            saveFiche();
+            renderAll();
+            closeBottomSheet();
+            showToast('🎯 Round démarré');
+        });
+    });
+}
+
+/* ─── Modal : Subir une Wound (p.280) ─────────────────────────── */
+function openSufferWoundSheet(initialTier) {
+    const f = currentFiche;
+    if (!f) return;
+    const w = f.wounds || { light: 0, heavy: 0, deadly: 0, light_max: 3, heavy_max: 3, deadly_max: 3 };
+    const ds = f.defense_current || 0;
+
+    const html = `
+        <div class="capacite-form">
+            <p class="suffer-intro">⚠️ Quel Tier de Wound subis-tu ?</p>
+            <div class="suffer-tier-grid">
+                <button type="button" class="suffer-tier-btn tier-light${initialTier === 'light' ? ' selected' : ''}" data-tier="light">
+                    <span class="suffer-tier-name">Légère</span>
+                    <span class="suffer-tier-count">${w.light}/${w.light_max}</span>
+                </button>
+                <button type="button" class="suffer-tier-btn tier-heavy${initialTier === 'heavy' ? ' selected' : ''}" data-tier="heavy">
+                    <span class="suffer-tier-name">Grave</span>
+                    <span class="suffer-tier-count">${w.heavy}/${w.heavy_max}</span>
+                </button>
+                <button type="button" class="suffer-tier-btn tier-deadly${initialTier === 'deadly' ? ' selected' : ''}" data-tier="deadly">
+                    <span class="suffer-tier-name">Mortelle</span>
+                    <span class="suffer-tier-count">${w.deadly}/${w.deadly_max}</span>
+                </button>
+            </div>
+
+            <div class="suffer-ds-info">
+                <strong>Defense Slots disponibles :</strong> ${ds}
+                <p class="suffer-ds-hint">Coût : 2 DS pour réduire d'1 Tier (Mortelle → Grave → Légère → Annulée). Chainable.</p>
+            </div>
+
+            <div class="suffer-actions">
+                <button type="button" class="suffer-action-btn reduce" data-action="reduce" ${ds < 2 ? 'disabled' : ''}>
+                    🛡 Réduire (−2 DS)
+                </button>
+                <button type="button" class="suffer-action-btn absorb" data-action="absorb">
+                    💥 Encaisser ce Tier
+                </button>
+            </div>
+
+            <div class="suffer-preview" id="suffer-preview">
+                Choisis un Tier ci-dessus.
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="form-btn cancel" data-action="cancel">Fermer</button>
+            </div>
+        </div>
+    `;
+
+    openBottomSheet('💥 Subir un Wound', html, (root) => {
+        let selectedTier = initialTier || null;
+        const preview = root.querySelector('#suffer-preview');
+        const reduceBtn = root.querySelector('[data-action="reduce"]');
+        const absorbBtn = root.querySelector('[data-action="absorb"]');
+
+        const tierOrder = ['light', 'heavy', 'deadly'];
+        const tierLabel = { light: 'Légère', heavy: 'Grave', deadly: 'Mortelle' };
+
+        function refreshPreview() {
+            const fish = currentFiche;
+            const ws = fish.wounds;
+            const dsCur = fish.defense_current || 0;
+            if (!selectedTier) {
+                preview.textContent = 'Choisis un Tier ci-dessus.';
+                reduceBtn.disabled = true;
+                absorbBtn.disabled = true;
+                return;
+            }
+            const tierName = tierLabel[selectedTier];
+            const wsField = `${selectedTier}`;
+            const cur = ws[wsField];
+            const max = ws[`${wsField}_max`];
+            preview.innerHTML = `Tier sélectionné : <strong>${tierName}</strong> · Wounds ${tierName} : ${cur}/${max} · DS : ${dsCur}`;
+            reduceBtn.disabled = dsCur < 2;
+            absorbBtn.disabled = false;
+        }
+
+        root.querySelectorAll('[data-tier]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                root.querySelectorAll('[data-tier]').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedTier = btn.dataset.tier;
+                refreshPreview();
+            });
+        });
+
+        // Réduire : dépense 2 DS, downgrade d'un tier
+        reduceBtn.addEventListener('click', () => {
+            if (!selectedTier) { showToast('Choisis d\'abord un Tier'); return; }
+            if ((currentFiche.defense_current || 0) < 2) { showToast('Pas assez de Defense Slots'); return; }
+            currentFiche.defense_current -= 2;
+            const idx = tierOrder.indexOf(selectedTier);
+            if (idx <= 0) {
+                // Light → Negated
+                saveFiche();
+                renderAll();
+                closeBottomSheet();
+                showToast('🛡 Wound annulée (−2 DS)');
+                return;
+            }
+            selectedTier = tierOrder[idx - 1];
+            // Update visual selection
+            root.querySelectorAll('[data-tier]').forEach(b => {
+                b.classList.toggle('selected', b.dataset.tier === selectedTier);
+            });
+            saveFiche();
+            renderAll();
+            refreshPreview();
+            showToast(`🛡 Réduit à ${tierLabel[selectedTier]} (−2 DS)`);
+        });
+
+        // Encaisser : applique le wound au tier, gère overflow
+        absorbBtn.addEventListener('click', () => {
+            if (!selectedTier) { showToast('Choisis d\'abord un Tier'); return; }
+            applyWoundAtTier(selectedTier);
+            saveFiche();
+            renderAll();
+            closeBottomSheet();
+            showToast(`💥 Wound ${tierLabel[selectedTier]} subie`);
+        });
+
+        root.querySelector('[data-action="cancel"]').addEventListener('click', closeBottomSheet);
+
+        if (selectedTier) refreshPreview();
+    });
+}
+
+/* Applique +1 wound à un tier, avec gestion de l'overflow (track plein → tier suivant) */
+function applyWoundAtTier(tier) {
+    const f = currentFiche;
+    if (!f.wounds) f.wounds = { light: 0, heavy: 0, deadly: 0, light_max: 3, heavy_max: 3, deadly_max: 3 };
+    const w = f.wounds;
+    const apply = (tierName) => {
+        const cur = w[tierName] || 0;
+        const max = w[`${tierName}_max`] || 0;
+        if (cur < max) {
+            w[tierName] = cur + 1;
+            return true;
+        }
+        return false;  // overflow nécessaire
+    };
+    if (tier === 'light') {
+        if (apply('light')) return;
+        if (apply('heavy')) return;
+        apply('deadly');
+    } else if (tier === 'heavy') {
+        if (apply('heavy')) return;
+        apply('deadly');
+    } else if (tier === 'deadly') {
+        apply('deadly');
+    }
+}
+
+
 let _soundDiceEnabled = (function() {
     try {
         const v = localStorage.getItem(SOUND_DICE_KEY);
@@ -4994,13 +5354,6 @@ function init() {
     loadDiceLog();
     loadDicePresets();
 
-    // Logs diagnostic v1.17.2 (à retirer après vérification)
-    try {
-        const store = loadStore();
-        const nbFiches = Object.keys(store.fiches || {}).length;
-        console.log(`[Drakonym] init() — ${nbFiches} fiche(s) en localStorage. Active : ${store.activeId}`);
-    } catch (e) { console.warn('[Drakonym] Diag store error', e); }
-
     applyTheme(getStoredTheme());
     bindThemeToggle();
     bindSoundToggle();
@@ -5022,6 +5375,13 @@ function init() {
 
     renderAll();
     renderFichesList();
+
+    // Restaure l'état du Mode Combat (si activé avant un reload)
+    if (_combatMode) {
+        document.body.classList.add('combat-mode-on');
+    }
+    renderCombatPanel();
+    refreshCombatToggle();
 
     handleStartupAction();
     registerServiceWorker();

@@ -123,8 +123,18 @@
                         <span id="vital-defense">14</span>
                     </span>
                 </button>
+
+                <button class="vital-combat-toggle" id="vital-combat-toggle" type="button" aria-pressed="false" title="Activer le mode combat">
+                    <span class="vital-combat-icon">⚔️</span>
+                    <span class="vital-combat-text">Combat</span>
+                </button>
             </div>
         </header>
+
+        <!-- ════════════════════════════════════════════════
+             PANNEAU COMBAT — n'est rendu QUE quand combat-mode-on
+             ════════════════════════════════════════════════ -->
+        <section class="combat-panel" id="combat-panel" hidden></section>
 
         <!-- ════════════════════════════════════════════════
              CONTENU PRINCIPAL — sections, une visible à la fois
@@ -782,7 +792,7 @@
                     <div class="settings-block">
                         <h3 class="settings-block-title">À propos</h3>
                         <p class="settings-info">
-                            <strong>Drakonym Compagnon</strong> — v1.17.3 (Fix crash init)<br>
+                            <strong>Drakonym Compagnon</strong> — v1.18.0 (Mode Combat)<br>
                             <span class="muted-small">Indépendant, publié sous DCL.</span>
                         </p>
                     </div>
