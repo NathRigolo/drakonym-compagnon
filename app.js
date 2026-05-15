@@ -2553,6 +2553,10 @@ function bindDragonActions() {
         const btn = e.target.closest('.btn-add-capacite');
         if (!btn) return;
         const type = btn.dataset.list;
+        // Log diagnostic v1.17.2
+        if (type && type.startsWith('d')) {
+            console.log(`[Drakonym] Click bouton + dragon (type=${type})`);
+        }
         if (type === 'dperks') openDragonPerkForm(null);
         else if (type === 'dweapons') openDragonWeaponForm(null);
         else if (type === 'darmors') openDragonArmorForm(null);
@@ -4990,6 +4994,13 @@ function init() {
     loadDiceLog();
     loadDicePresets();
 
+    // Logs diagnostic v1.17.2 (à retirer après vérification)
+    try {
+        const store = loadStore();
+        const nbFiches = Object.keys(store.fiches || {}).length;
+        console.log(`[Drakonym] init() — ${nbFiches} fiche(s) en localStorage. Active : ${store.activeId}`);
+    } catch (e) { console.warn('[Drakonym] Diag store error', e); }
+
     applyTheme(getStoredTheme());
     bindThemeToggle();
     bindSoundToggle();
@@ -5035,21 +5046,8 @@ function bindDesktopSidebar() {
         desktopDiceBtn.addEventListener('click', () => openDiceRoller([], {}));
     }
 
-    // Persona switcher sidebar droite (dropdown + bouton ajouter)
-    // Délégation globale pour robustesse (les listeners survivent aux re-renders)
-    document.addEventListener('change', (e) => {
-        if (e.target && e.target.id === 'desktop-persona-select') {
-            const id = e.target.value;
-            if (!id) return;
-            if (currentFiche && id === currentFiche._fiche_id) return;
-            switchToFiche(id);
-        }
-    });
-    document.addEventListener('click', (e) => {
-        if (e.target && e.target.id === 'desktop-persona-add') {
-            createNewFiche();
-        }
-    });
+    // Persona switcher : le binding se fait dans refreshDesktopPersona()
+    // (bind direct sur le select et le bouton, idempotent via flag)
 
     // Toggle sidebar droite (Vague D)
     const hideBtn = document.getElementById('desktop-sidebar-toggle-hide');
@@ -5088,6 +5086,24 @@ function refreshDesktopPersona() {
         const label = meta ? `${f.nom} (${meta})` : f.nom;
         return `<option value="${escapeHtml(f.id)}"${f.id === activeId ? ' selected' : ''}>${escapeHtml(label)}</option>`;
     }).join('');
+
+    // (Re)bind le listener change. Pour éviter les doublons, on clone le select
+    // mais c'est plus simple d'utiliser une propriété sentinelle.
+    if (!select.__personaBound) {
+        select.addEventListener('change', () => {
+            const id = select.value;
+            if (!id) return;
+            if (currentFiche && id === currentFiche._fiche_id) return;
+            switchToFiche(id);
+        });
+        select.__personaBound = true;
+    }
+    // Idem pour le bouton +
+    const addBtn = document.getElementById('desktop-persona-add');
+    if (addBtn && !addBtn.__personaAddBound) {
+        addBtn.addEventListener('click', () => createNewFiche());
+        addBtn.__personaAddBound = true;
+    }
 }
 
 function renderDesktopEquipped() {
